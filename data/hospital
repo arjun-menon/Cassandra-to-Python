@@ -1,0 +1,1006 @@
+(A1.1.1)
+
+canActivate(mgr, Register-clinician(cli, spcty)) <-
+hasActivated(mgr, HR-mgr()),
+clinician-regs(n, cli, spcty),
+n=0
+
+(A1.1.2)
+
+canDeactivate(mgr, x, Register-clinician(cli, spcty)) <-
+hasActivated(mgr, HR-mgr())
+
+(A1.1.3)
+
+clinician-regs(count<x>, cli, spcty) <-
+hasActivated(x, Register-clinician(cli, spcty))
+
+(A1.1.4)
+
+canActivate(cli, Clinician(spcty)) <-
+hasActivated(x, Register-clinician(cli, spcty)),
+no-main-role-active(cli)
+
+(A1.1.5)
+
+canDeactivate(cli, cli, Clinician(spcty)) <-
+
+(A1.1.6)
+
+isDeactivated(cli, Clinician (spcty)) <-
+isDeactivated(x, Register-clinician(cli, spcty))
+
+(A1.1.7)
+
+count-clinician-activations(count<u>, user) <-
+hasActivated(u, Clinician(spcty)),
+u = user
+
+(A1.2.1)
+
+canActivate(mgr, Register-Caldicott-guardian(cg)) <-
+hasActivated(mgr, HR-mgr()),
+cg-regs(n, cg),
+n=0
+
+(A1.2.2)
+
+canDeactivate(mgr, x, Register-Caldicott-guardian(cg)) <-
+hasActivated(mgr, HR-mgr())
+
+(A1.2.3)
+
+cg-regs(count<x>, cg) <-
+hasActivated(x, Register-Caldicott-guardian(cg))
+
+(A1.2.4)
+
+canActivate(cg, Caldicott-guardian()) <-
+hasActivated(x, Register-Caldicott-guardian(cg)),
+no-main-role-active(cg)
+
+(A1.2.5)
+
+canDeactivate(cg, cg, Caldicott-guardian()) <-
+
+(A1.2.6)
+
+isDeactivated(cg, Caldicott-guardian()) <-
+isDeactivated(x, Register-Caldicott-guardian(cg))
+
+(A1.2.7)
+
+count-caldicott-guardian-activations(count<u>, user) <-
+hasActivated(u, Caldicott-guardian()),
+u = user
+
+(A1.3.1)
+
+canActivate(mgr, Register-HR-mgr(mgr2)) <-
+hasActivated(mgr, HR-mgr()),
+hr-manager-regs(n, mgr),
+n=0
+
+(A1.3.2)
+
+canDeactivate(mgr, x, Register-HR-mgr(mgr2)) <-
+hasActivated(mgr, HR-mgr())
+
+(A1.3.3)
+
+hr-manager-regs(count<x>, mgr) <-
+hasActivated(x, Register-HR-mgr(mgr))
+
+(A1.3.4)
+
+canActivate(mgr, HR-mgr()) <-
+hasActivated(x, Register-HR-mgr(mgr)),
+no-main-role-active(mgr)
+
+(A1.3.5)
+
+canDeactivate(mgr, mgr, HR-mgr()) <-
+
+(A1.3.6)
+
+isDeactivated(mgr, HR-mgr()) <-
+isDeactivated(x, Register-HR-mgr(mgr))
+
+(A1.3.7)
+
+count-hr-mgr-activations(count<u>, user) <-
+hasActivated(u, HR-mgr()),
+u = user
+
+(A1.4.1)
+
+canActivate(mgr, Register-receptionist(rec)) <-
+hasActivated(mgr, HR-mgr()),
+receptionist-regs(n, rec),
+n=0
+
+(A1.4.2)
+
+canDeactivate(mgr, x, Register-receptionist(rec)) <-
+hasActivated(mgr, HR-mgr())
+
+(A1.4.3)
+
+receptionist-regs(count<x>, rec) <-
+hasActivated(x, Register-receptionist(rec))
+
+(A1.4.4)
+
+canActivate(rec, Receptionist()) <-
+hasActivated(x, Register-receptionist(rec))
+
+(A1.4.5)
+
+canDeactivate(rec, rec, Receptionist()) <-
+
+(A1.4.6)
+
+isDeactivated(rec, Receptionist()) <-
+isDeactivated(x, Register-receptionist(rec)),
+no-main-role-active(rec)
+
+(A1.4.7)
+
+count-receptionist-activations(count<u>, user) <-
+hasActivated(u, Receptionist()),
+u = user
+
+(A1.5.1)
+
+canActivate(rec, Register-patient(pat)) <-
+hasActivated(rec, Receptionist()),
+patient-regs(n, pat),
+n=0
+
+(A1.5.2)
+
+canDeactivate(rec, x, Register-patient(pat)) <-
+hasActivated(rec, Receptionist())
+
+(A1.5.3)
+
+patient-regs(count<x>, pat) <-
+hasActivated(x, Register-patient(pat))
+
+(A1.5.4)
+
+canActivate(pat, Patient()) <-
+hasActivated(x, Register-patient(pat)),
+no-main-role-active(pat),
+"PDS"@"PDS".hasActivated(y, Register-patient(pat))
+
+(A1.5.5)
+
+canDeactivate(pat, pat, Patient()) <-
+
+(A1.5.6)
+
+isDeactivated(pat, Patient()) <-
+isDeactivated(x, Register-patient(pat))
+
+(A1.5.7)
+
+count-patient-activations(count<u>, user) <-
+hasActivated(u, Patient()),
+u = user
+
+(A1.6.1)
+
+canActivate(agent, Agent(pat)) <-
+hasActivated(x, Register-agent(agent, pat)),
+"PDS"@"PDS".hasActivated(x, Register-patient(agent)),
+no-main-role-active(agent)
+
+(A1.6.2)
+
+canActivate(agent, Agent(pat)) <-
+canActivate(pat, Patient()),
+no-main-role-active(agent),
+"PDS"@"PDS".hasActivated(x, Register-patient(agent)),
+"Spine"@"Spine".canActivate(agent, Agent(pat))
+
+(A1.6.3)
+
+isDeactivated(ag, Agent(pat)) <-
+isDeactivated(x, Register-agent(ag, pat)),
+other-agent-regs(n, x, ag, pat),
+n=0
+
+(A1.6.4)
+
+count-agent-activations(count<u>, user) <-
+hasActivated(u, Agent(pat)),
+u = user
+
+(A1.6.5)
+
+canActivate(pat, Register-agent(agent, pat)) <-
+hasActivated(pat, Patient())
+
+(A1.6.6)
+
+canActivate(cg, Register-agent(agent, pat)) <-
+hasActivated(cg, Caldicott-guardian()),
+canActivate(pat, Patient())
+
+(A1.6.7)
+
+canDeactivate(pat, pat, Register-agent(agent, pat)) <-
+hasActivated(pat, Patient())
+
+(A1.6.8)
+
+canDeactivate(cg, x, Register-agent(agent, pat)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A1.6.9)
+
+isDeactivated(x, Register-agent(agent, pat)) <-
+isDeactivated(y, Register-patient(pat))
+
+(A1.6.10)
+
+other-agent-regs(count<y>, x, ag, pat) <-
+hasActivated(y, Register-agent(ag, pat)),
+x != y
+
+(A1.7.1)
+
+no-main-role-active(user) <-
+count-agent-activations(n, user),
+count-caldicott-guardian-activations(n, user),
+count-clinician-activations(n, user),
+count-ext-treating-clinician-activations(n, user),
+count-hr-mgr-activations(n, user),
+count-patient-activations(n, user),
+count-receptionist-activations(n, user),
+count-third-party-activations(n, user),
+n=0
+
+(A1.7.2)
+
+canActivate(ra, Registration-authority()) <-
+"NHS".hasActivated(x, NHS-registration-authority(ra, start, end)),
+Current-time() in [start, end]
+
+(A1.7.3)
+
+canActivate(ra, Registration-authority()) <-
+ra@"NHS".hasActivated(x, NHS-registration-authority(ra, start, end)),
+Current-time() in [start, end]
+
+(A1.7.4)
+
+canReqCred(x, "RA-ADB".hasActivated(y,
+NHS-health-org-cert(org, start, end))) <-
+org="ADB"
+
+(A2.1.1)
+
+canActivate(cli1, Request-consent-to-referral(pat, ra, org, cli2, spcty2)) <-
+hasActivated(cli1, Clinician(spcty1)),
+canActivate(cli1, ADB-treating-clinician(pat, team, spcty1))
+
+(A2.1.2)
+
+canDeactivate(cli, cli,
+Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
+hasActivated(cli, Clinician(spcty))
+
+(A2.1.3)
+
+canDeactivate(pat, x, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
+hasActivated(pat, Patient())
+
+(A2.1.4)
+
+canDeactivate(ag, x, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
+hasActivated(ag, Agent(pat))
+
+(A2.1.5)
+
+canDeactivate(cg, x, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A2.1.6)
+
+isDeactivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
+isDeactivated(y, Register-patient(pat))
+
+(A2.1.7)
+
+other-consent-to-referral-requests(count<y>, x, pat, ra, org, cli, spcty) <-
+hasActivated(y, Request-consent-to-referral(pat, ra, org, cli, spcty)),
+x != y
+
+(A2.1.8)
+
+canActivate(pat, Consent-to-referral(pat, ra, org, cli, spcty)) <-
+hasActivated(pat, Patient()),
+hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
+
+(A2.1.9)
+
+canActivate(pat, Consent-to-referral(pat, ra, org, cli, spcty)) <-
+hasActivated(pat, Agent(pat)),
+hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
+
+(A2.1.10)
+
+canActivate(cg, Consent-to-referral(pat, ra, org, cli, spcty)) <-
+hasActivated(cg, Caldicott-guardian()),
+hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
+
+(A2.1.11)
+
+isDeactivated(x, Consent-to-referral(pat, ra, org, cli, spcty)) <-
+isDeactivated(y, Request-consent-to-referral(pat, ra, org, cli, spcty)),
+other-consent-to-referral-requests(n, y, pat, ra, org, cli, spcty),
+n=0
+
+(A2.1.12)
+
+other-referral-consents(count<y>, x, pat, ra, org, cli, spcty) <-
+hasActivated(y, Consent-to-referral(pat, ra, org, cli, spcty)),
+x != y
+
+(A2.2.1)
+
+canActivate(cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
+hasActivated(x, Consent-to-referral(pat, ra, org, cli, spcty)),
+no-main-role-active(cli),
+ra.hasActivated(y, NHS-clinician-cert(org, cli, spcty, start, end)),
+canActivate(ra, Registration-authority())
+
+(A2.2.2)
+
+canActivate(cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
+hasActivated(ref, Consent-to-referral(pat, ra, org, cli, spcty)),
+no-main-role-active(cli),
+ra@ra.hasActivated(y, NHS-clinician-cert(org, cli, spcty, start, end)),
+canActivate(ra, Registration-authority())
+
+(A2.2.3)
+
+canDeactivate(cli, cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
+
+(A2.2.4)
+
+isDeactivated(cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
+isDeactivated(x, Consent-to-referral(pat, ra, org, cli2, spcty)),
+other-referral-consents(n, x, pat, ra, org, cli, spcty),
+n=0
+
+(A2.2.5)
+
+count-ext-treating-clinician-activations(count<u>, user) <-
+hasActivated(u, Ext-treating-clinician(pat, ra, org, spcty)),
+u = user
+
+(A2.3.1)
+
+canActivate(pat, Request-third-party-consent(x, pat, id)) <-
+hasActivated(pat, Patient()),
+x in Get-record-third-parties(pat, id)
+
+(A2.3.2)
+
+canActivate(ag, Request-third-party-consent(x, pat, id)) <-
+hasActivated(ag, Agent(pat)),
+x in Get-record-third-parties(pat, id)
+
+(A2.3.3)
+
+canActivate(cli, Request-third-party-consent(x, pat, id)) <-
+hasActivated(cli, Clinician(spcty)),
+x in Get-record-third-parties(pat, id)
+
+(A2.3.4)
+
+canActivate(cg, Request-third-party-consent(x, pat, id)) <-
+hasActivated(cg, Caldicott-guardian()),
+x in Get-record-third-parties(pat, id)
+
+(A2.3.5)
+
+canDeactivate(pat, pat, Request-third-party-consent(x, pat, id)) <-
+hasActivated(pat, Patient())
+
+(A2.3.6)
+
+canDeactivate(ag, ag, Request-third-party-consent(x, pat, id)) <-
+hasActivated(pat, Agent(pat))
+
+(A2.3.7)
+
+canDeactivate(cli, cli, Request-third-party-consent(x, pat, id)) <-
+hasActivated(cli, Clinician(spcty))
+
+(A2.3.8)
+
+canDeactivate(cg, x, Request-third-party-consent(y, pat, id)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A2.3.9)
+
+canDeactivate(x, y, Request-third-party-consent(x, pat, id)) <-
+hasActivated(x, Third-party())
+
+(A2.3.10)
+
+isDeactivated(x, Request-third-party-consent(x2, pat, id)) <-
+isDeactivated(y, Register-patient(pat))
+
+(A2.3.11)
+
+count-third-party-activations(count<u>, user) <-
+hasActivated(u, Third-party()),
+u = user
+
+(A2.3.12)
+
+canActivate(x, Third-party()) <-
+hasActivated(y, Request-third-party-consent(x, pat, id)),
+no-main-role-active(x),
+"PDS"@"PDS".hasActivated(z, Register-patient(x))
+
+(A2.3.13)
+
+canDeactivate(x, x, Third-party()) <-
+
+(A2.3.14)
+
+other-third-party-requests(count<y>, x, third-party) <-
+hasActivated(y, Request-third-party-consent(third-party, pat, id)),
+x != y
+
+(A2.3.15)
+
+isDeactivated(x, Third-party()) <-
+isDeactivated(y, Request-third-party-consent(x, pat, id)),
+other-third-party-requests(n, y, x),
+n=0
+
+(A2.3.16)
+
+canActivate(x, Third-party-consent(x, pat, id)) <-
+hasActivated(x, Third-party()),
+hasActivated(y, Request-third-party-consent(x, pat, id))
+
+(A2.3.17)
+
+canActivate(cg, Third-party-consent(x, pat, id)) <-
+hasActivated(cg, Caldicott-guardian()),
+hasActivated(y, Request-third-party-consent(x, pat, id))
+
+(A2.3.18)
+
+canDeactivate(x, x, Third-party-consent(x, pat, id)) <-
+hasActivated(x, Third-party())
+
+(A2.3.19)
+
+canDeactivate(cg, x, Third-party-consent(x, pat, id)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A2.3.20)
+
+isDeactivated(x, Third-party-consent(x, pat, id)) <-
+isDeactivated(y, Register-patient(pat))
+
+(A2.3.21)
+
+third-party-consent(group<consenter>, pat, id) <-
+hasActivated(x, Third-party-consent(consenter, pat, id))
+
+(A3.1.1)
+
+canActivate(hd, Head-of-team(team)) <-
+hasActivated(x, Register-head-of-team(hd, team))
+
+(A3.1.2)
+
+canDeactivate(hd, hd, Head-of-team(team)) <-
+
+(A3.1.3)
+
+isDeactivated(hd, Head-of-team(team)) <-
+isDeactivated(x, Register-head-of-team(hd, team))
+
+(A3.1.4)
+
+canActivate(mgr, Register-head-of-team(hd, team)) <-
+hasActivated(mgr, HR-mgr()),
+hasActivated(x, Register-team-member(hd, team, spcty)),
+head-of-team-regs(n, hd, team),
+n=0
+
+(A3.1.5)
+
+canDeactivate(mgr, x, Register-head-of-team(hd, team)) <-
+hasActivated(mgr, HR-mgr())
+
+(A3.1.6)
+
+isDeactivated(x, Register-head-of-team(hd, team)) <-
+isDeactivated(y, Register-team-member(hd, team, spcty))
+
+(A3.1.7)
+
+head-of-team-regs(count<x>, hd, team) <-
+hasActivated(x, Register-head-of-team(hd, team))
+
+(A3.2.1)
+
+canActivate(mgr, Register-team-member(mem, team, spcty)) <-
+hasActivated(mgr, HR-mgr()),
+canActivate(mem, Clinician(spcty)),
+team-member-regs(n, mem, team, spcty),
+n=0
+
+(A3.2.2)
+
+canActivate(hd, Register-team-member(mem, team, spcty)) <-
+hasActivated(hd, Clinician(spcty2)),
+canActivate(hd, Head-of-team(team)),
+canActivate(mem, Clinician(spcty)),
+team-member-regs(n, mem, team, spcty),
+n=0
+
+(A3.2.3)
+
+canDeactivate(mgr, x, Register-team-member(mem, team, spcty)) <-
+hasActivated(mgr, HR-mgr())
+
+(A3.2.4)
+
+canDeactivate(hd, x, Register-team-member(mem, team, spcty)) <-
+hasActivated(hd, Clinician(spcty2)),
+canActivate(hd, Head-of-team(team))
+
+(A3.2.5)
+
+isDeactivated(x, Register-team-member(mem, team, spcty)) <-
+isDeactivated(y, Register-clinician(mem, spcty))
+
+(A3.2.6)
+
+canReqCred(ra, "ADB".Register-team-member(cli, tea, spcty)) <-
+ra = "RA-ADB"
+
+(A3.2.7)
+
+team-member-regs(count<x>, mem, team, spcty) <-
+hasActivated(x, Register-team-member(mem, team, spcty))
+
+(A3.3.1)
+
+canActivate(rec, Register-team-episode(pat, team)) <-
+hasActivated(rec, Receptionist()),
+canActivate(pat, Patient()),
+team-episode-regs(n, pat, team),
+n=0
+
+(A3.3.2)
+
+canActivate(cli, Register-team-episode(pat, team)) <-
+hasActivated(cli, Clinician(spcty)),
+hasActivated(x, Register-team-member(cli, team, spcty)),
+canActivate(pat, Patient()),
+team-episode-regs(n, pat, team),
+n=0
+
+(A3.3.3)
+
+canDeactivate(cg, x, Register-team-episode(pat, team)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A3.3.4)
+
+canDeactivate(rec, x, Register-team-episode(pat, team)) <-
+hasActivated(rec, Receptionist())
+
+(A3.3.5)
+
+canDeactivate(cli, x, Register-team-episode(pat, team)) <-
+hasActivated(cli, Clinician(spcty)),
+hasActivated(x, Register-team-member(cli, team, spcty))
+
+(A3.3.6)
+
+isDeactivated(x, Register-team-episode(pat, team)) <-
+isDeactivated(y, Register-patient(pat))
+
+(A3.3.7)
+
+team-episode-regs(count<x>, pat, team) <-
+hasActivated(x, Register-team-episode(pat, team))
+
+(A3.4.1)
+
+canActivate(cli, Head-of-ward(ward)) <-
+hasActivated(x, Register-head-of-ward(cli, ward))
+
+(A3.4.2)
+
+canDeactivate(cli, cli, Head-of-ward(ward)) <-
+
+(A3.4.3)
+
+isDeactivated(cli, Head-of-ward(ward)) <-
+isDeactivated(x, Register-head-of-ward(cli, ward))
+
+(A3.4.4)
+
+canActivate(mgr, Register-head-of-ward(cli, ward)) <-
+hasActivated(mgr, HR-mgr()),
+hasActivated(x, Register-ward-member(cli, ward, spcty)),
+head-of-ward-regs(n, cli, ward),
+n=0
+
+(A3.4.5)
+
+canDeactivate(mgr, x, Register-head-of-ward(cli, ward)) <-
+hasActivated(mgr, HR-mgr())
+
+(A3.4.6)
+
+isDeactivated(x, Register-head-of-ward(cli, ward)) <-
+isDeactivated(y, Register-ward-member(cli, ward, spcty))
+
+(A3.4.7)
+
+head-of-ward-regs(count<x>, cli, ward) <-
+hasActivated(x, Register-head-of-ward(cli, ward))
+
+(A3.5.1)
+
+canActivate(mgr, Register-ward-member(cli, ward, spcty)) <-
+hasActivated(mgr, HR-mgr()),
+canActivate(cli, Clinician(spcty)),
+ward-member-regs(n, cli, ward, spcty),
+n=0
+
+(A3.5.2)
+
+canActivate(hd, Register-ward-member(cli, ward, spcty)) <-
+hasActivated(cli, Clinician(spcty2)),
+canActivate(hd, Head-of-ward(ward)),
+canActivate(cli, Clinician(spcty)),
+ward-member-regs(n, cli, ward, spcty),
+n=0
+
+(A3.5.3)
+
+canDeactivate(mgr, x, Register-ward-member(cli, ward, spcty)) <-
+hasActivated(mgr, HR-mgr())
+
+(A3.5.4)
+
+canDeactivate(hd, x, Register-ward-member(cli, ward, spcty)) <-
+hasActivated(hd, Clinician(spcty2)),
+canActivate(hd, Head-of-ward(ward))
+
+(A3.5.5)
+
+canReqCred(ra, "ADB".Register-ward-member(cli, ward, spcty)) <-
+ra = "RA-ADB"
+
+(A3.5.6)
+
+isDeactivated(x, Register-ward-member(cli, ward, spcty)) <-
+isDeactivated(y, Register-clinician(cli, spcty))
+
+(A3.5.7)
+
+ward-member-regs(count<x>, cli, ward, spcty) <-
+hasActivated(x, Register-ward-member(cli, ward, spcty))
+
+(A3.6.1)
+
+canActivate(rec, Register-ward-episode(pat, ward)) <-
+hasActivated(rec, Receptionist()),
+canActivate(pat, Patient()),
+ward-episode-regs(n, pat, ward),
+n=0
+
+(A3.6.2)
+
+canActivate(hd, Register-ward-episode(pat, ward)) <-
+hasActivated(hd, Clinician(spcty)),
+canActivate(hd, Head-of-ward(ward)),
+canActivate(pat, Patient()),
+ward-episode-regs(n, pat, ward),
+n=0
+
+(A3.6.3)
+
+canDeactivate(cg, x, Register-ward-episode(pat, ward)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A3.6.4)
+
+canDeactivate(rec, x, Register-ward-episode(pat, ward)) <-
+hasActivated(rec, Receptionist())
+
+(A3.6.5)
+
+canDeactivate(hd, x, Register-ward-episode(pat, ward)) <-
+hasActivated(hd, Clinician(spcty)),
+canActivate(hd, Head-of-ward(ward))
+
+(A3.6.6)
+
+isDeactivated(x, Register-ward-episode(pat, ward)) <-
+isDeactivated(y, Register-patient(pat))
+
+(A3.6.7)
+
+ward-episode-regs(count<x>, pat, ward) <-
+hasActivated(x, Register-ward-episode(pat, ward))
+
+(A3.7.1)
+
+canActivate(cli, Emergency-clinician(pat)) <-
+hasActivated(cli, Clinician(spcty)),
+canActivate(pat, Patient())
+
+(A3.7.2)
+
+canDeactivate(cli, cli, Emergency-clinician(pat)) <-
+
+(A3.7.3)
+
+canDeactivate(cg, cli, Emergency-clinician(pat)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A3.7.4)
+
+isDeactivated(x, Emergency-clinician(pat)) <-
+isDeactivated(y, Register-patient(pat))
+
+(A3.7.5)
+
+isDeactivated(x, Emergency-clinician(pat)) <-
+isDeactivated(x, Clinician(spcty))
+
+(A3.7.6)
+
+is-emergency-clinician(group<x>, pat) <-
+hasActivated(x, Emergency-clinician(pat))
+
+(A3.8.1)
+
+canActivate(cli, ADB-treating-clinician(pat, group, spcty)) <-
+canActivate(cli, Clinician(spcty)),
+hasActivated(x, Register-team-member(cli, team, spcty)),
+hasActivated(y, Register-team-episode(pat, team)),
+group = team
+
+(A3.8.2)
+
+canActivate(cli, ADB-treating-clinician(pat, group, spcty)) <-
+canActivate(cli, Clinician(spcty)),
+hasActivated(x, Register-ward-member(cli, ward, spcty)),
+hasActivated(x, Register-ward-episode(pat, ward)),
+group = ward
+
+(A3.8.3)
+
+canActivate(cli, ADB-treating-clinician(pat, group, spcty)) <-
+hasActivated(cli, Emergency-clinician(pat)),
+group = "A-and-E",
+spcty = "A-and-E"
+
+(A4.1.1)
+
+canActivate(cli, Concealed-by-clinician(pat, id, start, end)) <-
+hasActivated(cli, Clinician(spcty)),
+canActivate(cli, ADB-treating-clinician(pat, group, spcty))
+
+(A4.1.2)
+
+canDeactivate(cli, cli, Concealed-by-clinician(pat, id, start, end)) <-
+hasActivated(cli, Clinician(spcty))
+
+(A4.1.3)
+
+canDeactivate(cli1, cli2, Concealed-by-clinician(pat, id, start, end)) <-
+hasActivated(cli1, Clinician(spcty1)),
+canActivate(cli1, ADB-treating-clinician(pat, group, spcty1)),
+canActivate(cli2, ADB-treating-clinician(pat, group, spcty2))
+
+(A4.1.4)
+
+canDeactivate(cg, cli, Concealed-by-clinician(pat, id, start, end)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A4.1.5)
+
+isDeactivated(x, Concealed-by-clinician(pat, id, start, end)) <-
+isDeactivated(y, Register-patient(pat))
+
+(A4.1.6)
+
+count-concealed-by-clinician(count<x>, pat, id) <-
+hasActivated(x, Concealed-by-clinician(pat, id, start, end)),
+Current-time() in [start, end]
+
+(A4.2.1)
+
+canActivate(pat, Concealed-by-patient(what, who, start, end)) <-
+hasActivated(pat, Patient()),
+count-concealed-by-patient(n, pat),
+what=(pat, ids, authors, groups, subjects, from-time, to-time),
+who=(orgs1, readers1, groups1, spctys1),
+n < 100
+
+(A4.2.2)
+
+canActivate(ag, Concealed-by-patient(what, who, start, end)) <-
+hasActivated(ag, Agent(pat)),
+count-concealed-by-patient(n, pat),
+what=(pat, ids, authors, groups, subjects, from-time, to-time),
+who=(orgs1, readers1, groups1, spctys1),
+n < 100
+
+(A4.2.3)
+
+canDeactivate(pat, x, Concealed-by-patient(what, whom, start, end)) <-
+hasActivated(pat, Patient()),
+pi7_1(what) = pat
+
+(A4.2.4)
+
+canDeactivate(ag, x, Concealed-by-patient(what, whom, start, end)) <-
+hasActivated(ag, Agent(pat)),
+pi7_1(what) = pat
+
+(A4.2.5)
+
+canDeactivate(cg, x, Concealed-by-patient(what, whom, start, end)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A4.2.6)
+
+isDeactivated(x, Concealed-by-patient(what, whom, start, end)) <-
+isDeactivated(y, Register-patient(pat)),
+pi7_1(what) = pat
+
+(A4.2.7)
+
+count-concealed-by-patient(count<y>, pat) <-
+hasActivated(x, Concealed-by-patient(y)),
+what=(pat, ids, authors, groups, subjects, from-time, to-time),
+who=(orgs1, readers1, groups1, spctys1),
+y=(what,who, start, end)
+
+(A4.2.8)
+
+count-concealed-by-patient2(count<x>, a, b) <-
+hasActivated(x, Concealed-by-patient(what, whom, start, end)),
+a=(pat, id), b=(org, reader, group, spcty),
+what=(pat, ids, authors, groups, subjects, from-time, to-time),
+whom=(orgs1, readers1, groups1, spctys1),
+Get-record-author(pat, id) in authors,
+Get-record-group(pat, id) in groups,
+sub in Get-record-subjects(pat, id),
+sub in subjects,
+Get-record-time(pat, id) in [from-time, to-time],
+id in ids,
+org in orgs1,
+reader in readers1,
+group in groups1,
+spcty in spctys1,
+Current-time() in [start, end]
+
+(A5.1.1)
+
+permits(cli, Add-record-item(pat)) <-
+hasActivated(cli, Clinician(spcty)),
+canActivate(cli, ADB-treating-clinician(pat, group, spcty))
+
+(A5.1.2)
+
+permits(cli, Add-record-item(pat)) <-
+hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty))
+
+(A5.1.3)
+
+permits(ag, Annotate-record-item(pat, id)) <-
+hasActivated(ag, Agent(pat))
+
+(A5.1.4)
+
+permits(pat, Annotate-record-item(pat, id)) <-
+hasActivated(pat, Patient())
+
+(A5.1.5)
+
+permits(pat, Annotate-record-item(pat, id)) <-
+hasActivated(cli, Clinician(spcty)),
+canActivate(cli, ADB-treating-clinician(pat, group, spcty))
+
+(A5.2.1)
+
+permits(pat, Get-record-item-ids(pat)) <-
+hasActivated(pat, Patient())
+
+(A5.2.2)
+
+permits(ag, Get-record-item-ids(pat)) <-
+hasActivated(ag, Agent(pat))
+
+(A5.2.3)
+
+permits(cli, Get-record-item-ids(pat)) <-
+hasActivated(cli, Clinician(spcty)),
+canActivate(cli, ADB-treating-clinician(pat, group, spcty))
+
+(A5.3.1)
+
+permits(ag, Read-record-item(pat, id)) <-
+hasActivated(ag, Agent(pat)),
+count-concealed-by-patient2(n, a, b),
+count-concealed-by-clinician(m, pat, id),
+third-party-consent(consenters, pat, id),
+a=(pat, id), b=("No-org", ag, "No-group", "No-spcty"),
+n=0, m=0,
+Get-record-third-parties(pat, id) subseteq consenters
+
+(A5.3.2)
+
+permits(cli, Read-record-item(pat, id)) <-
+hasActivated(cli, Clinician(spcty)),
+Get-record-author(pat, id) = cli
+
+(A5.3.3)
+
+permits(cli, Read-record-item(pat, id)) <-
+hasActivated(cli, Clinician(spcty)),
+hasActivated(x, Register-team-member(cli, team, spcty)),
+Get-record-group(pat, id) = team
+
+(A5.3.4)
+
+permits(cli, Read-record-item(pat, id)) <-
+hasActivated(cli, Clinician(spcty)),
+canActivate(cli, ADB-treating-clinician(pat, group, spcty)),
+count-concealed-by-patient2(n, a, b),
+n=0, a=(pat, id), b=("ADB", cli, group, spcty),
+Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
+
+(A5.3.5)
+
+permits(cli, Read-record-item(pat, id)) <-
+hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty)),
+count-concealed-by-patient2(n, a, b),
+n=0, a=(pat, id), b=(org, cli, "Ext-group", spcty),
+Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
+
+(A5.3.6)
+
+permits(pat, Read-record-item(pat, id)) <-
+hasActivated(pat, Patient()),
+count-concealed-by-patient2(n, a, b),
+count-concealed-by-clinician(m, pat, id),
+third-party-consent(consenters, pat, id),
+n=0, m=0, a=(pat, id), b=("No-org", pat, "No-group", "No-spcty"),
+Get-record-third-parties(pat, id) subseteq consenters
+
+(A5.3.7)
+
+permits(cg, Force-read-record-item(pat, id)) <-
+hasActivated(cg, Caldicott-guardian())
+
+(A5.3.8)
+
+permits(cli, Force-read-record-item(pat, id)) <-
+hasActivated(cli, Clinician(spcty)),
+canActivate(cli, ADB-treating-clinician(pat, group, spcty))
+
