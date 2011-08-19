@@ -1,7 +1,6 @@
+from datetime import datetime
 
-# Current activations are stored in a dictionary which maps strings to Role objects,
-#  where the strings are the entity names and the Role objects are activated roles.
-current_activations = {}
+hasActivated = set()  # Set of (entity, role) pairs representing current activations.
 
 class Role(object):
     def __init__(self, name, args):
@@ -23,14 +22,6 @@ def constraint(constraint_function, constraint_description):
     if not constraint_function():
         raise CassandraException("Constraint [" + constraint_description + "] failed.")
 
-def hasActivated(entity, role):
-    if entity in current_activations:
-        if type(current_activations[entity]) != set:
-            raise CassandraException("[fatal] Corrupted data state - current_activations member nor set")
-        if role in current_activations[entity]:
-            return # successful
-    raise CassandraException(entity + " has not activated " + role)
-
 def activate(subject, role):
     try:
         role.canActivate(subject)
@@ -45,10 +36,28 @@ def hyphens_to_underscores(s):
 ########
 
 class Spine_clinician(Role):
-    def __init__(self, ra, org, spcty):
-        super(Spine_clinician, self).__init__("Spine-clinician", (ra, org, spcty))
+    name = "Spine-clinician"
     
-    def canActivate(self, subject):
+    def __init__(self, ra, org, spcty):
+        super(Spine_clinician, self).__init__(self.name, (ra, org, spcty))
+        self.ra, self.org, self.spcty = ra, org, spcty
+    
+    def canActivate(self, cli):
+        current_time = datetime.utcnow()
+        return no_main_role_active(cli) and \
+            Registration_authority.canActivate(self.ra) and \
+            len([x for (x, y) in hasActivated if y.name==NHS_clinician_cert.name and y.start < current_time and y.end > current_time]) > 0 #todo issuer ra, check both locations here and ra
+
+class NHS_clinician_cert(Role):
+    name = "NHS-clinician-cert"
+    
+    def __init__(self, org, cli, spcty, start, end):
+        super(NHS_clinician_cert, self).__init__(NHS_clinician_cert.name, (org, cli, spcty, start, end))
+        self.org, self.cli, self.spcty, self.start, self.end = org, cli, spcty, start, end
+
+class Registration_authority(Role):
+    def canActivate(self):
         pass
 
-print hyphens_to_underscores("asdfasd-ads")
+def no_main_role_active(user):
+    pass
