@@ -25,39 +25,20 @@ def constraint(constraint_function, constraint_description):
 
 def hasActivated(entity, role):
     if entity in current_activations:
-        assert(type(current_activations[entity]) == set)
+        if type(current_activations[entity]) != set:
+            raise CassandraException("[fatal] Corrupted data state - current_activations member nor set")
         if role in current_activations[entity]:
             return # successful
-    raise CassandraException("hasActivated("+entity+","+role+") failed.")
+    raise CassandraException(entity + " has not activated " + role)
 
-def activate(entity, role):
+def activate(subject, role):
     try:
-        pass
+        role.canActivate(subject)
     except CassandraException:
         print "Error: ", CassandraException.explanation
 
-
-#######
-## RA
-#######
-#
-#class Register_RA_Manager(Role):
-#    name = "Register-RA-Manger"
-#    
-#    def __init__(self, mgr):
-#        super(Register_RA_Manager, self).__init__(Register_RA_Manager.name, (mgr))
-#    
-#    def canActivate(self, mgr): # (R1.1.1)
-#        hasActivated(mgr, Role("RA-manager",()))
-#        constraint(lambda: RA_manager_regs(self) == 0, "RA-manager-regs(n, mgr2), n=0")
-#    
-#    def canDeactivate(self, mgr, x): # (R1.1.2)
-#        #hasActivated(, role)
-#        pass
-#
-#def RA_manager_regs(mgr): # (R1.1.3)
-#    return sum([ len([r for r in entity if r==Register_RA_Manager(mgr)]) for entity in current_activations ])
-
+def hyphens_to_underscores(s):
+    return "".join('_' if c == '-' else c for c in s)
 
 ########
 # Spine
@@ -67,18 +48,7 @@ class Spine_clinician(Role):
     def __init__(self, ra, org, spcty):
         super(Spine_clinician, self).__init__("Spine-clinician", (ra, org, spcty))
     
-    def canActivate(self, entity):
+    def canActivate(self, subject):
         pass
 
-#####################
-# External Interface
-#####################
-
-def repl():
-    # use python's quit() to exit
-    while True:
-        print ">",
-        x = raw_input()
-        print eval(x)
-
-# test code:
+print hyphens_to_underscores("asdfasd-ads")

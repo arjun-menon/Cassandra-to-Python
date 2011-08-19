@@ -1,6 +1,6 @@
 
 import cPickle as pickle
-import ehrparse
+#import ehrparse
 
 #rules = ehrparse.parse()
 #pickle.dump(rules, open("parse_tree", "wb"))
