@@ -82,7 +82,7 @@ class EhrParser(tpg.Parser):
     Operator/o -> in/o | notin/o | subseteq/o | eq/o | neq/o | langle/o;
     """
 
-class Rule:
+class Rule(object):
     def __init__(self,name,concl):
         self.name = name
         self.concl = concl
@@ -93,7 +93,7 @@ class Rule:
         x = [repr(i) for i in self.hypos]
         return repr(self.name)+ '\n' +repr(self.concl)+ ' <-\n\t' + ','.join(x)
 
-class Atom:
+class Atom(object):
     def __init__(self,name,arg):
         self.name = name
         self.args = [arg]
@@ -103,7 +103,7 @@ class Atom:
         x = [repr(i) for i in self.args]
         return self.name + '(' + ','.join(x) + ')'
 
-class Constant:
+class Constant(object):
     def __init__(self,value,number=False):
         self.value = value
         self.number = number
@@ -111,13 +111,15 @@ class Constant:
         if self.number: return self.value
         return '\"' + self.value + '\"'
 
-class Variable:
+class Variable(object):
     def __init__(self,name):
         self.name = name
     def __repr__(self):
         return self.name
+    def __eq__(self, other):
+        return other.name == self.name
 
-class Function:
+class Function(object):
     def __init__(self,name):
         self.name = name
         self.args = []
@@ -127,7 +129,7 @@ class Function:
         x = [repr(i) for i in self.args]
         return (self.name) + '(' + ','.join(x) + ')'
 
-class Aggregate:
+class Aggregate(object):
     def __init__(self,name,arg):
         self.name = name
         self.args = [arg]
@@ -137,7 +139,7 @@ class Aggregate:
         x = [repr(i) for i in self.args]
         return self.name + '<' + ','.join(x) + '>'
         
-class Constraint:
+class Constraint(object):
     def __init__(self,left,op,right):
         self.left = left
         self.right = right
@@ -145,7 +147,7 @@ class Constraint:
     def __repr__(self):
         return repr(self.left) + ' ' + self.op + ' ' + repr(self.right)
 
-class RemoteAtom:
+class RemoteAtom(object):
     def __init__(self,location,issuer,atom):
         self.location = location
         self.issuer = issuer
@@ -155,14 +157,14 @@ class RemoteAtom:
         if self.location: ret += repr(self.location) + "@"
         return ret + repr(self.issuer) + '.' + repr(self.atom)
 
-class Range:
+class Range(object):
     def __init__(self,start,end):
         self.start = start
         self.end = end
     def __repr__(self):
         return '[' + repr(self.start) + ',' + repr(self.end) + ']'
 
-class Tuple:
+class Tuple(object):
     def __init__(self,first):
         self.elems = [first]
     def addElement(self,elem):
