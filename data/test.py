@@ -22,6 +22,14 @@ def uniq(seq):
     seen_add = seen.add
     return [ x for x in seq if x not in seen and not seen_add(x)]
 
+def iden(seq):
+    if len(seq):
+        x = seq[0]
+        for i in seq:
+            if i != x:
+                return False
+    return True
+
 ####################
 
 class Role(object):
@@ -39,19 +47,10 @@ canAc_role_names_uniq = uniq([role.name for role in canAc_roles])
 canAc_roles_grouped = [[role for role in canAc_roles if role.name == i] for i in canAc_role_names_uniq]
 canAc_roles_grouped_multi = filter(lambda g: len(g) > 1, canAc_roles_grouped)
 
-def check_group_integrity(canAc_role_names_group):
-    args_list = [x.args for x in canAc_role_names_group]
-    if len(set([len(lst) for lst in args_list])) == 1: # check if they have the same number of arguments
-        if len(args_list[0]) == 0:
-            return True
-        else:
-            return True
-    else:
-        return False
-    #return reduce( operator.and_, [ pair[0] == pair[1] for pair in reduce( lambda a,b: zip(a.args, b.args), canAc_role_names_group ) ] )
-
 for g in canAc_roles_grouped_multi:
-    print check_group_integrity(g), " ", g
+    print iden([x.args for x in g]),
+    print iden(g), # why doesn't this work?
+    print " ", g
 
 #[rl for rl in canAc_grouped]
 

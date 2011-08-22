@@ -127,7 +127,9 @@ class Function(object):
         self.args.append(arg)
     def __repr__(self):
         x = [repr(i) for i in self.args]
-        return (self.name) + '(' + ','.join(x) + ')'
+        return (self.name) + '(' + ','.join(x) + ')'    
+    def __eq__(self, other):
+        return self.args == other.args
 
 class Aggregate(object):
     def __init__(self,name,arg):
