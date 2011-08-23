@@ -7,7 +7,7 @@ import operator
 #pickle.dump(rules, open("data/parse_tree.pickle", "wb"))
 rules = pickle.load(open("data/parse_tree.pickle"))
 
-def repl():
+def repl(): # use python's quit() to break out
     while True:
         #print ">",
         x = raw_input()
@@ -17,12 +17,12 @@ def repl():
         except Exception as e:
             print e.message
 
-def uniq(seq):
+def uniq(seq): # order preserving uniqifier
     seen = set()
     seen_add = seen.add
     return [ x for x in seq if x not in seen and not seen_add(x) ]
 
-def iden(seq):
+def iden(seq): # check if all elements in a sequence are identical
     if len(seq):
         x = seq[0]
         for i in seq:
@@ -47,27 +47,19 @@ the_role_predicates = ("canActivate", "canDeactivate", "isDeactivated")
 role_rules = [rule for rule in rules if rule.concl.name in the_role_predicates]
 non_role_rules = [rule for rule in rules if rule.concl.name not in the_role_predicates]
 
-# canActivate rules
+# Separating the role rules
 canAc_rules = [rule for rule in rules if rule.concl.name == the_role_predicates[0]]
-canAc_roles = [rule.concl.args[1] for rule in canAc_rules]
-canAc_role_names_uniq = uniq([role.name for role in canAc_roles])
-#canAc_roles_grouped = [[role for role in canAc_roles if role.name == i] for i in canAc_role_names_uniq]
-#canAc_roles_grouped_multi = filter(lambda g: len(g) > 1, canAc_roles_grouped)
+canDe_rules = [rule for rule in rules if rule.concl.name == the_role_predicates[1]]
+isDac_rules = [rule for rule in rules if rule.concl.name == the_role_predicates[2]]
 
-# canDeactivate rules
-canDc_rules = [rule for rule in rules if rule.concl.name == the_role_predicates[1]]
-canDc_roles = [rule.concl.args[1] for rule in canDc_rules]
+# Get the names of unqiue roles
+uniq_role_names = uniq([rule.concl.args[1].name for rule in canAc_rules])
 
-# isDeactivated rules
-isDea_rules = [rule for rule in rules if rule.concl.name == the_role_predicates[2]]
-isDea_roles = [rule.concl.args[1] for rule in isDea_rules]
+roles = dict([(role_name, Role(role_name)) for role_name in uniq_role_names])
 
-roles = {}
+# load canAcs grouping them by name into roles
+for canAc_rules_group in ([rule for rule in canAc_rules if rule.concl.args[1].name == role_name] for role_name in uniq_role_names):
+    roles[ canAc_rules_group[0].concl.args[1].name ].canAcs = canAc_rules_group
 
-for i in canAc_role_names_uniq:
-    roles[i] = Role(i)
-    roles[i].canAcs = [rule for rule in canAc_rules if rule.concl.args[1].name == i]
-
-#[rl for rl in canAc_grouped]
 
 repl()
