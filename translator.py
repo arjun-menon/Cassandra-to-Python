@@ -4,8 +4,8 @@ import cPickle as pickle
 import operator
 
 #rules = ehrparse.parse()
-#pickle.dump(rules, open("parse_tree", "wb"))
-rules = pickle.load(open("data/parse_tree"))
+#pickle.dump(rules, open("data/parse_tree.pickle", "wb"))
+rules = pickle.load(open("data/parse_tree.pickle"))
 
 def repl():
     while True:
@@ -13,9 +13,9 @@ def repl():
         x = raw_input()
         try:
             y = eval(x)
+            print y
         except Exception as e:
             print e.message
-        print y
 
 def uniq(seq):
     seen = set()
