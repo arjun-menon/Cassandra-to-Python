@@ -177,9 +177,9 @@ class Tuple(object):
 
 def parse():
     parser = EhrParser()
-    ehr = file("spine").read() +\
-      file("pds").read() +\
-      file("hospital").read() +\
-      file("ra").read()
+    ehr = file("data/spine").read() +\
+      file("data/pds").read() +\
+      file("data/hospital").read() +\
+      file("data/ra").read()
     parse = parser(ehr)
     return parse

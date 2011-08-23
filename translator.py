@@ -1,11 +1,11 @@
 
-import cPickle as pickle
 import ehrparse
+import cPickle as pickle
 import operator
 
 #rules = ehrparse.parse()
 #pickle.dump(rules, open("parse_tree", "wb"))
-rules = pickle.load(open("parse_tree"))
+rules = pickle.load(open("data/parse_tree"))
 
 def repl():
     while True:
