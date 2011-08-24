@@ -52,8 +52,9 @@ def extract_roles():
     """
     
     class RoleIR(object):
-        def __init__(self, name):
+        def __init__(self, name, params):
             self.name = name
+            self.params = params
             self.canAcs = []
             self.canDcs = []
             self.isDacs = []
@@ -67,11 +68,17 @@ def extract_roles():
     canDc_rules = [rule for rule in rules if rule.concl.name == special_predicates[4]]
     isDac_rules = [rule for rule in rules if rule.concl.name == special_predicates[5]]
        
-    # Get the names of unqiue roles
-    
+    # get role names & params and build dict with it
     role_names = set([rule.concl.args[1].name for rule in canAc_rules])
+    role_params = []
+    for rn in role_names:
+        # search and find rn in rules:
+        for r in canAc_rules:
+            if r.concl.args[1].name == rn:
+                role_params.append(r.concl.args[1].args)
+                break
     
-    roles = dict((role_name, RoleIR(role_name)) for role_name in role_names)
+    roles = dict((rn, RoleIR(rn, rp)) for (rn, rp) in zip(role_names, role_params))
     
     # grab the rules:
     
