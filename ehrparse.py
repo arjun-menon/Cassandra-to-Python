@@ -183,3 +183,9 @@ def parse():
       file("data/ra.txt").read()
     parse = parser(ehr)
     return parse
+
+def parse_one(file_name):
+    parser = EhrParser()
+    ehr = file(file_name).read()
+    parse = parser(ehr)
+    return parse
