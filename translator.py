@@ -2,6 +2,7 @@
 import ehrparse
 import cPickle as pickle
 import operator
+from string import Template
 
 #rules = ehrparse.parse_one("data/pds.txt")
 #pickle.dump(rules, open("data/parse_tree.pickle", "wb"))
@@ -19,18 +20,14 @@ def repl(): # use python's quit() to break out
         except Exception as e:
             print e.message
 
-def uniq(seq): # order preserving uniqifier
+def uniqify(seq): # order preserving uniqifier
     seen = set()
-    seen_add = seen.add
-    return [ x for x in seq if x not in seen and not seen_add(x) ]
+    return [ x for x in seq if x not in seen and not seen.add(x) ]
 
-def iden(seq): # check if all elements in a sequence are identical
-    if len(seq):
-        x = seq[0]
-        for i in seq:
-            if i != x:
-                return False
-    return True
+def identical(seq): # check if all elements in a sequence are identical
+    return reduce(lambda a, b: (b, a[0]==b), seq, (seq[0], None))[1]
+
+
 
 ####################
 
@@ -40,34 +37,48 @@ special_predicates = (None,
 'hasActivated',  # 3. hasActivated(e, r) indicates that the entity e has currently activated role r.
 'canDeactivate', # 4. canDeactivate(e1,e2, r) indicates that e1 can deactivate e2's role r (if e2 has really currently activated r).
 'isDeactivated', # 5. isDeactivated(e, r) indicates that e's role r shall be deactivated as a consequence of another role deactivation (if e has really currently activated r).
-'canReqCred',)   # 6. canReqCred(e1,e2.p(~e)) indicates that e1 is allowed to request and receive credentials asserting p(~e) and issued by e2.
+'canReqCred')    # 6. canReqCred(e1,e2.p(~e)) indicates that e1 is allowed to request and receive credentials asserting p(~e) and issued by e2.
+
+class canAc(object):
+    def __init__(self, rule):
+        self.rule = rule
+    def __repr__(self):
+        return repr(self.rule)
+    def translate(self):
+        t = Template("""\
+def canActivate(self$params):
+""")
+        params = ", " + ", ".join(map(repr, self.rule.concl.args)) if len(self.rule.concl.args) else ""
+        return t.substitute(params = params)
+
+class RoleClass(object):
+    def __init__(self, name, params):
+        self.name = name
+        self.params = params
+        self.canAcs = []
+        self.canDcs = []
+        self.isDacs = []
+    def __repr__(self):
+        return "\ncanActivate rules:\n" + repr(self.canAcs) + "\ncanDeactivate rules:\n" + repr(self.canDcs) + ", \nisDeactivated rules:\n" + repr(self.isDacs) + "\n"
+    def trans(self):
+        pass
 
 def extract_roles():
     """
-    Builds a dictionary mapping each unique role to a RoleIR objects containing a lists 
+    Builds a dictionary mapping each unique role to RoleClass objects containing lists 
     of 'canActivate' , 'canDeactivate' , 'isDeactivated' rules associated with that role.
     
     'canActivate' and 'canDeactivate' rules are assigned naively to their associated roles. 
     'isDeactivated' rules are assigned to the predicate that triggers that deactivation.
     """
     
-    class RoleIR(object):
-        def __init__(self, name, params):
-            self.name = name
-            self.params = params
-            self.canAcs = []
-            self.canDcs = []
-            self.isDacs = []
-        def __repr__(self):
-            return "\ncanActivate rules:\n" + repr(self.canAcs) + "\ncanDeactivate rules:\n" + repr(self.canDcs) + ", \nisDeactivated rules:\n" + repr(self.isDacs) + "\n"
-    
     # Separating the role rules
     three_special_predicates = (special_predicates[2], special_predicates[4], special_predicates[5])
     
-    canAc_rules = [rule for rule in rules if rule.concl.name == special_predicates[2]]
-    canDc_rules = [rule for rule in rules if rule.concl.name == special_predicates[4]]
-    isDac_rules = [rule for rule in rules if rule.concl.name == special_predicates[5]]
-       
+    canAc_rules = [rule for rule in rules if rule.concl.name == special_predicates[2]] # canActivate
+    canDc_rules = [rule for rule in rules if rule.concl.name == special_predicates[4]] # canDeactivate
+    isDac_rules = [rule for rule in rules if rule.concl.name == special_predicates[5]] # isDeactivated
+    
     # get role names & params and build dict with it
     role_names = set([rule.concl.args[1].name for rule in canAc_rules])
     role_params = []
@@ -78,19 +89,19 @@ def extract_roles():
                 role_params.append(r.concl.args[1].args)
                 break
     
-    roles = dict((rn, RoleIR(rn, rp)) for (rn, rp) in zip(role_names, role_params))
+    roles = dict((rn, RoleClass(rn, rp)) for (rn, rp) in zip(role_names, role_params))
     
     # grab the rules:
     
     for r in canAc_rules:
-        roles[r.concl.args[1].name].canAcs.append(r)
+        roles[r.concl.args[1].name].canAcs.append( canAc(r) )
     
     for r in canDc_rules:
         roles[r.concl.args[2].name].canDcs.append(r)
     
     for r in isDac_rules:
         for h in r.hypos:
-            if type(h) == ehrparse.Atom and h.name == special_predicates[5]:
+            if type(h) == ehrparse.Atom and h.name == special_predicates[5]: # isDeactivated
                 role_name = h.args[1].name
         roles[role_name].isDacs.append(r)
     
@@ -111,20 +122,20 @@ def extract_roles():
         if rule_name not in three_special_predicates:
             outline.append(rule)
     
-    for i in outline:
-        if type(i) != RoleIR:
-            print i
-        else:
-            print "<", i.name, ">"
-    
     return outline, roles
 
 ####################
 
 outline, roles = extract_roles()
 
-print "\n\n\n"
-print roles
+#for i in outline:
+#    if type(i) == RoleClass:
+#        print "<", i.name, i.params, ">"
+#    else:
+#        print i
 
-with open('pds.py', 'w') as f:
-    pass
+print roles['PDS-manager'].canAcs[0].translate()
+
+#with open('pds.py', 'w') as f:
+#    pass
+
