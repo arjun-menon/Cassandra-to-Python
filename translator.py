@@ -27,7 +27,9 @@ def uniqify(seq): # order preserving uniqifier
 def identical(seq): # check if all elements in a sequence are identical
     return reduce(lambda a, b: (b, a[0]==b), seq, (seq[0], None))[1]
 
-
+def hyphens_to_underscores(s):
+    if type(s) != str: raise TypeError("argument must be str!")
+    return "".join('_' if c == '-' else c for c in s)
 
 ####################
 
@@ -44,11 +46,11 @@ class canAc(object):
         self.rule = rule
     def __repr__(self):
         return repr(self.rule)
-    def translate(self):
+    def trans(self):
         t = Template("""\
 def canActivate(self$params):
 """)
-        params = ", " + ", ".join(map(repr, self.rule.concl.args)) if len(self.rule.concl.args) else ""
+        params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else ""
         return t.substitute(params = params)
 
 class RoleClass(object):
@@ -60,8 +62,35 @@ class RoleClass(object):
         self.isDacs = []
     def __repr__(self):
         return "\ncanActivate rules:\n" + repr(self.canAcs) + "\ncanDeactivate rules:\n" + repr(self.canDcs) + ", \nisDeactivated rules:\n" + repr(self.isDacs) + "\n"
+    
+    def get_signature(self):
+        if not len(self.canAcs):
+            raise TypeError("No canActivates associated with this role :(")
+        role = self.canAcs[0].rule.concl.args[-1:][0]
+        name = role.name
+        params = role.args
+        return name, params
+    
     def trans(self):
-        pass
+        name, params = self.get_signature()
+        
+        return Template(
+"""\
+class $name_u(Role):
+    name = "$name"
+    
+    def __init__(self$params_1):
+        super($name_u, self).__init__($name_u.name, ($params_2))
+        $params_3 = $params_2
+"""
+        ).substitute\
+        (
+            name = name,
+            name_u = hyphens_to_underscores(name),
+            params_1 = "".join(", " + repr(s) for s in params) if len(params) else "",
+            params_2 = ", ".join(repr(s) for s in params) if len(params) else "",
+            params_3 = ", ".join("self."+repr(s) for s in params) if len(params) else "",
+        )
 
 def extract_roles():
     """
@@ -134,7 +163,8 @@ outline, roles = extract_roles()
 #    else:
 #        print i
 
-print roles['PDS-manager'].canAcs[0].translate()
+print roles['Professional-user'].trans()
+#print roles['PDS-manager'].canAcs[0].trans()
 
 #with open('pds.py', 'w') as f:
 #    pass
