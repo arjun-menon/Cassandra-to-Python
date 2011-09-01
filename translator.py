@@ -47,11 +47,14 @@ class canAc(object):
     def __repr__(self):
         return repr(self.rule)
     def trans(self):
-        t = Template("""\
-def canActivate(self$params):
-""")
+        return lambda number: Template(
+"""\
+    def canActivate$num(self$params):
+        pass
+""").substitute(
+        num = "" if number==0 else "_" + str(number),
         params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else ""
-        return t.substitute(params = params)
+        )
 
 class RoleClass(object):
     def __init__(self, name, params):
@@ -163,8 +166,9 @@ outline, roles = extract_roles()
 #    else:
 #        print i
 
-print roles['Professional-user'].trans()
-#print roles['PDS-manager'].canAcs[0].trans()
+#print roles['Professional-user'].trans()
+#print roles['Professional-user'].canAcs[0].trans()
+print roles['PDS-manager'].canAcs[0].trans()(0)
 
 #with open('pds.py', 'w') as f:
 #    pass
