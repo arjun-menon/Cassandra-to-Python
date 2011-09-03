@@ -1,8 +1,7 @@
 
-import ehrparse
-import cPickle as pickle
-import operator
 from string import Template
+import cPickle as pickle, sys
+import ehrparse
 
 #rules = ehrparse.parse_one("data/pds.txt")
 #pickle.dump(rules, open("data/parse_tree.pickle", "wb"))
@@ -31,8 +30,11 @@ def hyphens_to_underscores(s):
     if type(s) != str: raise TypeError("argument must be str!")
     return "".join('_' if c == '-' else c for c in s)
 
-def tab(s, indentation_level):
-    return "".join( "    " + line + "\n" for line in s.split('\n') )
+def prefix_line(s, prefix):
+    return "".join( prefix + line + "\n" for line in s.split('\n') )
+
+def tab(s, indentation_level=1):
+    return prefix_line(s, '    '*indentation_level)
 
 ####################
 
@@ -50,13 +52,12 @@ class canAc(RuleTranslator):
         return lambda number: Template(
 """\
 def canActivate$num(self$params):
-$hypotheses
-"""
+$hypotheses"""
         ).substitute\
         (
             num = "" if number==0 else "_" + str(number),
             params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
-            hypotheses = tab( ("".join("#" + repr(x) + '\n' for x in self.rule.hypos)) , 1)
+            hypotheses = tab("".join("#" + repr(x) + '\n' for x in self.rule.hypos) + 'pass\n')
         )
 
 ####################
@@ -90,22 +91,25 @@ class RoleClass(object):
     def trans(self):
         name, params = self.get_signature()
         
-        return Template(
-"""\
+        canAc_translation = "".join( rule.trans()(i+1) for (i, rule) in zip(range(len(self.canAcs)), self.canAcs) )
+        
+        return Template("""\
 class $name_u(Role):
     name = "$name"
     
-    def __init__(self$params_1):
-        super($name_u, self).__init__($name_u.name, ($params_2))
-        $params_3 = $params_2
-"""
+    def __init__(self$params_with_front_comma):
+        super($name_u, self).__init__($name_u.name, ($params))
+        $self_params_assignment $params
+    
+$canAc_translation"""
         ).substitute\
         (
             name = name,
             name_u = hyphens_to_underscores(name),
-            params_1 = "".join(", " + repr(s) for s in params) if len(params) else "",
-            params_2 = ", ".join(repr(s) for s in params) if len(params) else "",
-            params_3 = ", ".join("self."+repr(s) for s in params) if len(params) else "",
+            params = ", ".join(map(repr, params)) if len(params) else "",
+            params_with_front_comma = "".join(", " + repr(s) for s in params) if len(params) else "",
+            self_params_assignment = ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "",
+            canAc_translation = tab(canAc_translation),
         )
 
 def extract_roles():
@@ -173,16 +177,23 @@ def extract_roles():
 
 outline, roles = extract_roles()
 
-#for i in outline:
-#    if type(i) == RoleClass:
-#        print "<", i.name, i.params, ">"
-#    else:
-#        print i
 
 #print roles['Professional-user'].trans()
 #print roles['Professional-user'].canAcs[0].trans()
-print roles['PDS-manager'].canAcs[0].trans()(0)
+#print roles['PDS-manager'].canAcs[0].trans()(0)
+#print roles['PDS-manager'].trans()
 
-#with open('pds.py', 'w') as f:
-#    pass
+
+with open('pds.py', 'w') as f:
+    sys.stdout = f
+    
+    print "from core import *\n\n"
+    for i in outline:
+        if type(i) == RoleClass:
+            #print "<", i.name, i.params, ">"
+            print i.trans()
+        else:
+            print "#\n" + prefix_line(repr(i), "#") + "#\n"
+    
+    sys.stdout = sys.__stdout__
 
