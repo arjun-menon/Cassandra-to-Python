@@ -31,6 +31,34 @@ def hyphens_to_underscores(s):
     if type(s) != str: raise TypeError("argument must be str!")
     return "".join('_' if c == '-' else c for c in s)
 
+def tab(s, indentation_level):
+    return "".join( "    " + line + "\n" for line in s.split('\n') )
+
+####################
+
+class RuleTranslator(object):
+    def __init__(self, rule):
+        self.rule = rule
+    def __repr__(self):
+        return repr(self.rule)
+
+class canAc(RuleTranslator):
+    def __init__(self, rule):
+        super(canAc, self).__init__(rule)
+        
+    def trans(self):
+        return lambda number: Template(
+"""\
+def canActivate$num(self$params):
+$hypotheses
+"""
+        ).substitute\
+        (
+            num = "" if number==0 else "_" + str(number),
+            params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
+            hypotheses = tab( ("".join("#" + repr(x) + '\n' for x in self.rule.hypos)) , 1)
+        )
+
 ####################
 
 special_predicates = (None,
@@ -40,21 +68,6 @@ special_predicates = (None,
 'canDeactivate', # 4. canDeactivate(e1,e2, r) indicates that e1 can deactivate e2's role r (if e2 has really currently activated r).
 'isDeactivated', # 5. isDeactivated(e, r) indicates that e's role r shall be deactivated as a consequence of another role deactivation (if e has really currently activated r).
 'canReqCred')    # 6. canReqCred(e1,e2.p(~e)) indicates that e1 is allowed to request and receive credentials asserting p(~e) and issued by e2.
-
-class canAc(object):
-    def __init__(self, rule):
-        self.rule = rule
-    def __repr__(self):
-        return repr(self.rule)
-    def trans(self):
-        return lambda number: Template(
-"""\
-    def canActivate$num(self$params):
-        pass
-""").substitute(
-        num = "" if number==0 else "_" + str(number),
-        params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else ""
-        )
 
 class RoleClass(object):
     def __init__(self, name, params):
