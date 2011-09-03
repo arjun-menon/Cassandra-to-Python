@@ -3,10 +3,8 @@ from string import Template
 import cPickle as pickle, sys
 import ehrparse
 
-#rules = ehrparse.parse_one("data/pds.txt")
-#pickle.dump(rules, open("data/parse_tree.pickle", "wb"))
-rules = pickle.load(open("data/parse_tree.pickle"))
-
+####################
+# Utility functions
 ####################
 
 def repl(): # use python's quit() to break out
@@ -112,7 +110,7 @@ $canAc_translation"""
             canAc_translation = tab(canAc_translation),
         )
 
-def extract_roles():
+def extract_roles(rules):
     """
     Builds a dictionary mapping each unique role to RoleClass objects containing lists 
     of 'canActivate' , 'canDeactivate' , 'isDeactivated' rules associated with that role.
@@ -175,17 +173,22 @@ def extract_roles():
 
 ####################
 
-outline, roles = extract_roles()
+def translate_to_file(rules):
+    with open('pds.py', 'w') as f:
+        sys.stdout = f
+        translate_rules(rules)
+        sys.stdout = sys.__stdout__
 
+def translate_rules(rules):
+    
+    outline, roles = extract_roles(rules)
 
-#print roles['Professional-user'].trans()
-#print roles['Professional-user'].canAcs[0].trans()
-#print roles['PDS-manager'].canAcs[0].trans()(0)
-#print roles['PDS-manager'].trans()
+    
+    #print roles['Professional-user'].trans()
+    #print roles['Professional-user'].canAcs[0].trans()
+    #print roles['PDS-manager'].canAcs[0].trans()(0)
+    #print roles['PDS-manager'].trans()
 
-
-with open('pds.py', 'w') as f:
-    sys.stdout = f
     
     print "from core import *\n\n"
     for i in outline:
@@ -194,6 +197,13 @@ with open('pds.py', 'w') as f:
             print i.trans()
         else:
             print "#\n" + prefix_line(repr(i), "#") + "#\n"
-    
-    sys.stdout = sys.__stdout__
 
+
+
+####################
+
+#rules = ehrparse.parse_one("data/pds.txt")
+#pickle.dump(rules, open("data/parse_tree.pickle", "wb"))
+rules = pickle.load(open("data/parse_tree.pickle"))
+
+translate_rules(rules)
