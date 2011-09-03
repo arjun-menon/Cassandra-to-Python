@@ -173,8 +173,8 @@ def extract_roles(rules):
 
 ####################
 
-def translate_to_file(rules):
-    with open('pds.py', 'w') as f:
+def translate_to_file(rules, output_file_name):
+    with open(output_file_name, 'w') as f:
         sys.stdout = f
         translate_rules(rules)
         sys.stdout = sys.__stdout__
@@ -207,3 +207,4 @@ def translate_rules(rules):
 rules = pickle.load(open("data/parse_tree.pickle"))
 
 translate_rules(rules)
+translate_to_file(rules, "pds.py")
