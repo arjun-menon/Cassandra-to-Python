@@ -1,7 +1,6 @@
 
 from string import Template
-import cPickle as pickle, sys
-import ehrparse
+import sys
 
 ####################
 # Utility functions
@@ -202,9 +201,11 @@ def translate_rules(rules):
 
 ####################
 
+import ehrparse, cPickle as pickle
+
 #rules = ehrparse.parse_one("data/pds.txt")
 #pickle.dump(rules, open("data/parse_tree.pickle", "wb"))
 rules = pickle.load(open("data/parse_tree.pickle"))
 
 translate_rules(rules)
-translate_to_file(rules, "pds.py")
+#translate_to_file(rules, "pds.py")
