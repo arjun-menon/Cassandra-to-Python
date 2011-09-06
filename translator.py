@@ -2,7 +2,7 @@
 import ehrparse, pickle, sys
 from string import Template
 
-from helpers import hyphens_to_underscores, prefix_line, tab
+from helpers import hyphens_to_underscores, prefix_lines, tab
 
 ####################
 
@@ -14,9 +14,9 @@ class RuleTranslator(object):
 
 class canAc(RuleTranslator):
     def __init__(self, rule):
-        super(canAc, self).__init__(rule)
+        super().__init__(rule)
         
-    def trans(self):
+    def translate(self):
         return lambda number: Template(
 """\
 def canActivate$num(self$params):
@@ -56,17 +56,17 @@ class RoleClass(object):
         params = role.args
         return name, params
     
-    def trans(self):
+    def translate(self):
         name, params = self.get_signature()
         
-        canAc_translation = "".join( rule.trans()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
+        canAc_translation = "".join( rule.translate()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
         
         return Template("""\
 class $name_u(Role):
     name = "$name"
     
-    def __init__(self$params_with_front_comma):
-        super($name_u, self).__init__($name_u.name, ($params))
+    def __init__(self$params_front_comma$params):
+        super().__init__($name_u.name, ($params))
         $self_params_assignment $params
     
 $canAc_translation"""
@@ -74,9 +74,13 @@ $canAc_translation"""
         (
             name = name,
             name_u = hyphens_to_underscores(name),
+            
+            params_front_comma = ", " if len(params) else "",
             params = ", ".join(map(repr, params)) if len(params) else "",
-            params_with_front_comma = "".join(", " + repr(s) for s in params) if len(params) else "",
-            self_params_assignment = ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "",
+            
+            self_params_newline = "\n" if len(params) else "",
+            self_params_assignment = ( ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "" ) if len(params) else "# no parameters",
+            
             canAc_translation = tab(canAc_translation),
         )
 
@@ -141,6 +145,14 @@ def extract_roles(rules):
     
     return outline, roles
 
+
+def trans(obj):
+    """Translate object by invoking the translate() method."""
+    if hasattr(obj, "translate"):
+        return obj.translate()
+    else: # comment out the repr
+        return "\n" + prefix_lines(repr(obj), "#") + "\n"
+
 ####################
 
 def translate_to_file(rules, output_file_name):
@@ -151,25 +163,13 @@ def translate_to_file(rules, output_file_name):
 
 
 def translate_rules(rules):
-    
     outline, roles = extract_roles(rules)
 
+    translation  = ""
+    translation += "from core import *\n\n"
+    translation += "".join( map(trans, outline) )
     
-    #print roles['Professional-user'].trans()
-    #print roles['Professional-user'].canAcs[0].trans()
-    #print roles['PDS-manager'].canAcs[0].trans()(0)
-    #print roles['PDS-manager'].trans()
-
-    
-    print("from core import *\n\n")
-    for i in outline:
-        if type(i) == RoleClass:
-            #print "<", i.name, i.params, ">"
-            print((i.trans()))
-        else:
-            print(("#\n" + prefix_line(repr(i), "#") + "#\n"))
-
-
+    print(translation)
 
 def repl(): # use python's quit() to break out
     while True:
@@ -191,6 +191,12 @@ def parse():
 #parse()
 with open("data/parse_tree.pickle", "rb") as f:
     rules = pickle.load(f)
+
+
+#print roles['Professional-user'].translate()
+#print roles['Professional-user'].canAcs[0].translate()
+#print roles['PDS-manager'].canAcs[0].translate()(0)
+#print roles['PDS-manager'].translate()
 
 translate_rules(rules)
 #translate_to_file(rules, "pds.py")
