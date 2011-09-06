@@ -5,8 +5,7 @@ class PDS_manager(Role):
     name = "PDS-manager"
     
     def __init__(self):
-        super().__init__(PDS_manager.name, ())
-        # no parameters 
+        super().__init__(PDS_manager.name, ())  
     
     def canActivate(self, adm):
         #hasActivated(x,Register-PDS-manager(adm))
@@ -21,7 +20,7 @@ class Register_PDS_manager(Role):
     name = "Register-PDS-manager"
     
     def __init__(self, adm2):
-        super().__init__(Register_PDS_manager.name, (adm2))
+        super().__init__(Register_PDS_manager.name, (adm2)) 
         self.adm2 =  adm2
     
     def canActivate(self, adm1):
@@ -38,8 +37,7 @@ class Patient(Role):
     name = "Patient"
     
     def __init__(self):
-        super().__init__(Patient.name, ())
-        # no parameters 
+        super().__init__(Patient.name, ())  
     
     def canActivate(self, pat):
         #hasActivated(x,Register-patient(pat))
@@ -54,7 +52,7 @@ class Agent(Role):
     name = "Agent"
     
     def __init__(self, pat):
-        super().__init__(Agent.name, (pat))
+        super().__init__(Agent.name, (pat)) 
         self.pat =  pat
     
     def canActivate(self, ag):
@@ -71,7 +69,7 @@ class Professional_user(Role):
     name = "Professional-user"
     
     def __init__(self, ra, org):
-        super().__init__(Professional_user.name, (ra, org))
+        super().__init__(Professional_user.name, (ra, org)) 
         self.ra, self.org =  ra, org
     
     def canActivate(self, *params):
@@ -117,8 +115,7 @@ class Registration_authority(Role):
     name = "Registration-authority"
     
     def __init__(self):
-        super().__init__(Registration_authority.name, ())
-        # no parameters 
+        super().__init__(Registration_authority.name, ())  
     
     def canActivate(self, *params):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params))
@@ -137,7 +134,7 @@ class Register_patient(Role):
     name = "Register-patient"
     
     def __init__(self, pat):
-        super().__init__(Register_patient.name, (pat))
+        super().__init__(Register_patient.name, (pat)) 
         self.pat =  pat
     
     def canActivate(self, adm):
