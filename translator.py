@@ -1,37 +1,8 @@
 
 from string import Template
+from itertools import imap
+from helper import hyphens_to_underscores, prefix_line, tab
 import sys
-
-####################
-# Utility functions
-####################
-
-def repl(): # use python's quit() to break out
-    while True:
-        #print ">",
-        x = raw_input()
-        try:
-            y = eval(x)
-            print y
-        except Exception as e:
-            print e.message
-
-def uniqify(seq): # order preserving uniqifier
-    seen = set()
-    return [ x for x in seq if x not in seen and not seen.add(x) ]
-
-def identical(seq): # check if all elements in a sequence are identical
-    return reduce(lambda a, b: (b, a[0]==b), seq, (seq[0], None))[1]
-
-def hyphens_to_underscores(s):
-    if type(s) != str: raise TypeError("argument must be str!")
-    return "".join('_' if c == '-' else c for c in s)
-
-def prefix_line(s, prefix):
-    return "".join( prefix + line + "\n" for line in s.split('\n') )
-
-def tab(s, indentation_level=1):
-    return prefix_line(s, '    '*indentation_level)
 
 ####################
 
@@ -103,7 +74,7 @@ $canAc_translation"""
         (
             name = name,
             name_u = hyphens_to_underscores(name),
-            params = ", ".join(map(repr, params)) if len(params) else "",
+            params = ", ".join(imap(repr, params)) if len(params) else "",
             params_with_front_comma = "".join(", " + repr(s) for s in params) if len(params) else "",
             self_params_assignment = ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "",
             canAc_translation = tab(canAc_translation),
@@ -178,6 +149,7 @@ def translate_to_file(rules, output_file_name):
         translate_rules(rules)
         sys.stdout = sys.__stdout__
 
+
 def translate_rules(rules):
     
     outline, roles = extract_roles(rules)
@@ -198,6 +170,16 @@ def translate_rules(rules):
             print "#\n" + prefix_line(repr(i), "#") + "#\n"
 
 
+
+def repl(): # use python's quit() to break out
+    while True:
+        #print ">",
+        x = raw_input()
+        try:
+            y = eval(x)
+            print y
+        except Exception as e:
+            print e.message
 
 ####################
 
