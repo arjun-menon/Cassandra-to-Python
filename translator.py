@@ -82,7 +82,8 @@ class $name_u(Role):
     name = "$name"
     
     def __init__(self$params_front_comma$params):
-        super().__init__($name_u.name, ($params)) $self_params_assignment $params
+        super().__init__($name_u.name, ($params))
+        $self_params_assignment $params
 $canAc_translation"""
         ).substitute\
         (
@@ -92,7 +93,8 @@ $canAc_translation"""
             params_front_comma = ", " if len(params) else "",
             params = ", ".join(map(repr, params)) if len(params) else "",
             
-            self_params_assignment = ("\n        " + ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "" ) if len(params) else "",
+            self_params_newline = "\n" if len(params) else "",
+            self_params_assignment = ( ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "" ) if len(params) else "# no parameters",
             
             canAc_translation = self.canAcs_translator(),
         )
