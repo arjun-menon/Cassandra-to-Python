@@ -27,7 +27,7 @@ def activate(subject, role):
         role.canActivate(subject)
     except CassandraException:
         print("Error: ", CassandraException.description)
-    
+
 def multi_try(*funcs):
     def try_and_get_exception(func):
         try:
@@ -75,3 +75,14 @@ class Registration_authority(Role):
 def no_main_role_active(user):
     pass
 
+def repl(): # use python's quit() to break out
+    while True:
+        #print ">",
+        x = input()
+        try:
+            if not len(x):
+                continue
+            y = eval(x)
+            print(y)
+        except Exception as e:
+            print(repr(e))

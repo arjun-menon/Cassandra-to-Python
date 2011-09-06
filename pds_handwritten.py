@@ -12,10 +12,13 @@ class PDS_manager(Role):
         #hasActivated(x,Register-PDS-manager(adm))
         #no-main-role-active(adm)
         pass
+    
+    #'P1.1.2'
+    #canDeactivate(adm,adm,PDS-manager()) <-
+    #    
 
-#'P1.1.4'
-#count-PDS-manager-activations(count<u>,user) <-
-#    hasActivated(u,PDS-manager()),u = user
+def count_PDS_manager_activations(user):
+    return len( subj for (subj, role) in hasActivated if role.name=='PDS-manager' and subj==user )
 
 class Register_PDS_manager(Role):
     name = "Register-PDS-manager"
@@ -29,6 +32,14 @@ class Register_PDS_manager(Role):
         #pds-admin-regs(n,adm2)
         #n = 0
         pass
+    
+    #'P1.1.6'
+    #canDeactivate(adm1,x,Register-PDS-manager(adm2)) <-
+    #    hasActivated(adm1,PDS-manager())
+    
+    #'P1.1.3'
+    #isDeactivated(adm,PDS-manager()) <-
+    #    isDeactivated(x,Register-PDS-manager(adm))
 
 #'P1.1.7'
 #pds-admin-regs(count<x>,adm) <-
@@ -45,6 +56,10 @@ class Patient(Role):
         #hasActivated(x,Register-patient(pat))
         #no-main-role-active(pat)
         pass
+    
+    #'P1.2.2'
+    #canDeactivate(pat,pat,Patient()) <-
+    #    
 
 #'P1.2.4'
 #count-patient-activations(count<u>,user) <-
@@ -62,6 +77,10 @@ class Agent(Role):
         #no-main-role-active(ag)
         #"Spine"@"Spine".canActivate(ag,Agent(pat))
         pass
+    
+    #'P1.3.2'
+    #canDeactivate(ag,ag,Agent(pat)) <-
+    #    
 
 #'P1.3.5'
 #count-agent-activations(count<u>,user) <-
@@ -104,6 +123,10 @@ class Professional_user(Role):
         #canActivate(ra,Registration-authority())
         #Current-time() in [start,end]
         pass
+    
+    #'P1.4.5'
+    #canDeactivate(x,x,Professional-user(ra,org)) <-
+    #    
 
 #'P1.4.6'
 #count-professional-user-activations(count<u>,user) <-
@@ -145,6 +168,22 @@ class Register_patient(Role):
         #patient-regs(n,pat)
         #n = 0
         pass
+    
+    #'P2.1.2'
+    #canDeactivate(adm,x,Register-patient(pat)) <-
+    #    hasActivated(adm,PDS-manager())
+    
+    #'P1.2.3'
+    #isDeactivated(pat,Patient()) <-
+    #    isDeactivated(x,Register-patient(pat))
+    
+    #'P1.3.3'
+    #isDeactivated(ag,Agent(pat)) <-
+    #    isDeactivated(x,Register-patient(ag))
+    
+    #'P1.3.4'
+    #isDeactivated(ag,Agent(pat)) <-
+    #    isDeactivated(x,Register-patient(pat))
 
 #'P2.1.3'
 #patient-regs(count<x>,pat) <-
@@ -177,3 +216,8 @@ class Register_patient(Role):
 #'P2.2.5'
 #canReqCred(spine,"PDS".hasActivated(x,Register-patient(pat))) <-
 #    spine = "Spine"
+
+h2u = lambda s: "".join('_' if c == '-' else c for c in s)
+while True:
+    x = input()
+    print(h2u(x))
