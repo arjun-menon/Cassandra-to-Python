@@ -60,17 +60,15 @@ class RoleClass(object):
         return name, params
     
     def canAcs_translator(self):
+        assert len(self.canAcs)
         if len(self.canAcs) == 1:
             canAc_translation = self.canAcs[0].translate()(0)
         else:
-            assert len(self.canAcs) > 1
-            
             canAc_translation = """
 def canActivate(self, *params):
     multi_try(%s)
-""" % ", ".join("lambda: self.canActivate_%d(*params)" % i for i in list(range(1, len(self.canAcs) + 1)))
-            
-            canAc_translation += "".join( rule.translate()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
+""" % ", ".join("lambda: self.canActivate_%d(*params)" % i for i in list(range(1, len(self.canAcs) + 1))) +\
+        "".join( rule.translate()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
         
         return tab(canAc_translation)
     
@@ -84,7 +82,7 @@ class $name_u(Role):
     def __init__(self$params_front_comma$params):
         super().__init__($name_u.name, ($params))
         $self_params_assignment $params
-$canAc_translation"""
+$canAcs_trans$canDcs_trans$isDacs_trans"""
         ).substitute\
         (
             name = name,
@@ -96,7 +94,9 @@ $canAc_translation"""
             self_params_newline = "\n" if len(params) else "",
             self_params_assignment = ( ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "" ) if len(params) else "# no parameters",
             
-            canAc_translation = self.canAcs_translator(),
+            canAcs_trans = self.canAcs_translator(),
+            canDcs_trans = tab(''.join(map(trans, self.canDcs))),
+            isDacs_trans = tab(''.join(map(trans, self.isDacs))),
         )
 
 def extract_roles(rules):
@@ -207,6 +207,6 @@ with open("data/parse_tree.pickle", "rb") as f:
 #print roles['PDS-manager'].translate()
 
 tr = translate_rules(rules)
-print(tr)
-#with open("pds.py", 'w') as f:
-#    f.write(tr)
+
+with open("pds.py", 'w') as f:
+    f.write(tr)
