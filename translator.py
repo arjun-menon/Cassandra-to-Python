@@ -68,7 +68,7 @@ class RoleClass(object):
             canAc_translation = """
 def canActivate(self, *params):
     multi_try(%s)
-""" % ", ".join("lambda: canActivate_%d(*params)" % i for i in list(range(1, len(self.canAcs) + 1)))
+""" % ", ".join("lambda: self.canActivate_%d(*params)" % i for i in list(range(1, len(self.canAcs) + 1)))
             
             canAc_translation += "".join( rule.translate()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
         
@@ -172,7 +172,9 @@ def translate_rules(rules):
     outline, roles = extract_roles(rules)
 
     translation  = ""
-    translation += "from core import *\n"
+    translation += """from core import *
+from datetime import datetime
+"""
     translation += "".join( map(trans, outline) )
     
     return translation
