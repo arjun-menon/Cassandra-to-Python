@@ -4,6 +4,10 @@ from string import Template
 
 from helpers import hyphens_to_underscores, prefix_lines, tab
 
+# As a general translation policy, translated segments begin with 
+# an empty line - this is how individual segments are spaced out.
+# There are no blank lines at the end of a segment. 
+
 ####################
 
 class RuleTranslator(object):
@@ -17,8 +21,7 @@ class canAc(RuleTranslator):
         super().__init__(rule)
         
     def translate(self):
-        return lambda number: Template(
-"""\
+        return lambda number: Template("""
 def canActivate$num(self$params):
 $hypotheses"""
         ).substitute\
@@ -56,19 +59,26 @@ class RoleClass(object):
         params = role.args
         return name, params
     
+    def canAcs_translator(self):
+        if len(self.canAcs) == 1:
+            canAc_translation = self.canAcs[0].translate()(0)
+        else:
+            assert len(self.canAcs) > 1
+            
+            canAc_translation = "".join( rule.translate()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
+        
+        return tab(canAc_translation)
+    
     def translate(self):
         name, params = self.get_signature()
         
-        canAc_translation = "".join( rule.translate()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
-        
-        return Template("""\
+        return Template("""
 class $name_u(Role):
     name = "$name"
     
     def __init__(self$params_front_comma$params):
         super().__init__($name_u.name, ($params))
         $self_params_assignment $params
-    
 $canAc_translation"""
         ).substitute\
         (
@@ -81,7 +91,7 @@ $canAc_translation"""
             self_params_newline = "\n" if len(params) else "",
             self_params_assignment = ( ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "" ) if len(params) else "# no parameters",
             
-            canAc_translation = tab(canAc_translation),
+            canAc_translation = self.canAcs_translator(),
         )
 
 def extract_roles(rules):
@@ -151,13 +161,13 @@ def trans(obj):
     if hasattr(obj, "translate"):
         return obj.translate()
     else: # comment out the repr
-        return "\n" + prefix_lines(repr(obj), "#") + "\n"
+        return "\n" + prefix_lines(repr(obj), "#")
 
 def translate_rules(rules):
     outline, roles = extract_roles(rules)
 
     translation  = ""
-    translation += "from core import *\n\n"
+    translation += "from core import *\n"
     translation += "".join( map(trans, outline) )
     
     return translation
