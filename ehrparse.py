@@ -1,4 +1,4 @@
-import tpg;
+import tpg
 
 class EhrParser(tpg.Parser):
     r"""
@@ -175,17 +175,10 @@ class Tuple(object):
         x = [repr(i) for i in self.elems]
         return '(' + ','.join(x) + ')'
 
-def parse():
-    parser = EhrParser()
-    ehr = file("data/spine.txt").read() +\
-      file("data/pds.txt").read() +\
-      file("data/hospital.txt").read() +\
-      file("data/ra.txt").read()
-    parse = parser(ehr)
-    return parse
-
 def parse_one(file_name):
-    parser = EhrParser()
-    ehr = file(file_name).read()
-    parse = parser(ehr)
-    return parse
+    with open(file_name) as f:
+        return EhrParser()( f.read() )
+
+def parse_all():
+    with open("data/spine.txt") as spine, open("data/pds.txt") as pds, open("data/hospital.txt") as hospital, open("data/ra.txt") as ra:
+        return EhrParser()( spine.read() + pds.read() + hospital.read() + ra.read() )

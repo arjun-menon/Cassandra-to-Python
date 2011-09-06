@@ -1,8 +1,8 @@
 
+import ehrparse, pickle, sys
 from string import Template
-from itertools import imap
-from helper import hyphens_to_underscores, prefix_line, tab
-import sys
+
+from helpers import hyphens_to_underscores, prefix_line, tab
 
 ####################
 
@@ -59,7 +59,7 @@ class RoleClass(object):
     def trans(self):
         name, params = self.get_signature()
         
-        canAc_translation = "".join( rule.trans()(i+1) for (i, rule) in zip(range(len(self.canAcs)), self.canAcs) )
+        canAc_translation = "".join( rule.trans()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
         
         return Template("""\
 class $name_u(Role):
@@ -74,7 +74,7 @@ $canAc_translation"""
         (
             name = name,
             name_u = hyphens_to_underscores(name),
-            params = ", ".join(imap(repr, params)) if len(params) else "",
+            params = ", ".join(map(repr, params)) if len(params) else "",
             params_with_front_comma = "".join(", " + repr(s) for s in params) if len(params) else "",
             self_params_assignment = ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "",
             canAc_translation = tab(canAc_translation),
@@ -161,33 +161,36 @@ def translate_rules(rules):
     #print roles['PDS-manager'].trans()
 
     
-    print "from core import *\n\n"
+    print("from core import *\n\n")
     for i in outline:
         if type(i) == RoleClass:
             #print "<", i.name, i.params, ">"
-            print i.trans()
+            print((i.trans()))
         else:
-            print "#\n" + prefix_line(repr(i), "#") + "#\n"
+            print(("#\n" + prefix_line(repr(i), "#") + "#\n"))
 
 
 
 def repl(): # use python's quit() to break out
     while True:
         #print ">",
-        x = raw_input()
+        x = eval(input())
         try:
             y = eval(x)
-            print y
+            print(y)
         except Exception as e:
-            print e.message
+            print((e.message))
 
 ####################
 
-import ehrparse, cPickle as pickle
+def parse():
+    rules = ehrparse.parse_one("data/pds.txt")   
+    with open("data/parse_tree.pickle", "wb") as f:
+        pickle.dump(rules, f)
 
-#rules = ehrparse.parse_one("data/pds.txt")
-#pickle.dump(rules, open("data/parse_tree.pickle", "wb"))
-rules = pickle.load(open("data/parse_tree.pickle"))
+#parse()
+with open("data/parse_tree.pickle", "rb") as f:
+    rules = pickle.load(f)
 
 translate_rules(rules)
 #translate_to_file(rules, "pds.py")

@@ -25,7 +25,7 @@ def activate(subject, role):
     try:
         role.canActivate(subject)
     except CassandraException:
-        print "Error: ", CassandraException.explanation
+        print("Error: ", CassandraException.explanation)
 
 def hyphens_to_underscores(s):
     return "".join('_' if c == '-' else c for c in s)

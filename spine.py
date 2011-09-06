@@ -32,3 +32,4 @@ class Registration_authority(Role):
 
 def no_main_role_active(user):
     pass
+

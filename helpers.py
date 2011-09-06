@@ -1,4 +1,6 @@
 
+from functools import reduce
+
 ##################
 # Helper functions
 ##################
