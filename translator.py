@@ -153,15 +153,6 @@ def trans(obj):
     else: # comment out the repr
         return "\n" + prefix_lines(repr(obj), "#") + "\n"
 
-####################
-
-def translate_to_file(rules, output_file_name):
-    with open(output_file_name, 'w') as f:
-        sys.stdout = f
-        translate_rules(rules)
-        sys.stdout = sys.__stdout__
-
-
 def translate_rules(rules):
     outline, roles = extract_roles(rules)
 
@@ -169,19 +160,19 @@ def translate_rules(rules):
     translation += "from core import *\n\n"
     translation += "".join( map(trans, outline) )
     
-    print(translation)
+    return translation
+
+####################
 
 def repl(): # use python's quit() to break out
     while True:
         #print ">",
-        x = eval(input())
+        x = input()
         try:
             y = eval(x)
             print(y)
         except Exception as e:
             print((e.message))
-
-####################
 
 def parse():
     rules = ehrparse.parse_one("data/pds.txt")   
@@ -198,5 +189,7 @@ with open("data/parse_tree.pickle", "rb") as f:
 #print roles['PDS-manager'].canAcs[0].translate()(0)
 #print roles['PDS-manager'].translate()
 
-translate_rules(rules)
-#translate_to_file(rules, "pds.py")
+tr = translate_rules(rules)
+print(tr)
+#with open("pds.py", 'w') as f:
+#    f.write(tr)
