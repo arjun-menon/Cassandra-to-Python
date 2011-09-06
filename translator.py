@@ -65,7 +65,12 @@ class RoleClass(object):
         else:
             assert len(self.canAcs) > 1
             
-            canAc_translation = "".join( rule.translate()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
+            canAc_translation = """
+def canActivate(self, *params):
+    multi_try(%s)
+""" % ", ".join("lambda: canActivate_%d(*params)" % i for i in list(range(1, len(self.canAcs) + 1)))
+            
+            canAc_translation += "".join( rule.translate()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
         
         return tab(canAc_translation)
     
