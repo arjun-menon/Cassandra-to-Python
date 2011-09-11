@@ -73,31 +73,28 @@ def canActivate(self, *params):
         return tab(canAc_translation)
     
     def translate(self):
-        name, params = self.get_signature()
-        
-        return Template("""
-class $name_u(Role):
-    name = "$name"
-    
-    def __init__(self$params_front_comma$params):
-        super().__init__($name_u.name, ($params))
-        $self_params_assignment $params
+        template = """
+class $name_u(Role): 
+    def __init__(self$optional_front_comma$params_comma):
+        super().__init__('$name', [$params_quote]) $optional_self_assignment_newline_tab$self_assignment($params_comma)
 $canAcs_trans$canDcs_trans$isDacs_trans"""
-        ).substitute\
-        (
-            name = name,
-            name_u = hyphens_to_underscores(name),
-            
-            params_front_comma = ", " if len(params) else "",
-            params = ", ".join(map(repr, params)) if len(params) else "",
-            
-            self_params_newline = "\n" if len(params) else "",
-            self_params_assignment = ( ", ".join("self."+repr(s) for s in params) + " = " if len(params) else "" ) if len(params) else "# no parameters",
-            
-            canAcs_trans = self.canAcs_translator(),
-            canDcs_trans = tab(''.join(map(trans, self.canDcs))),
-            isDacs_trans = tab(''.join(map(trans, self.isDacs))),
-        )
+
+        d = {}
+        d['name'], params = self.get_signature()        
+        d['name_u'] = hyphens_to_underscores(d['name'])
+        
+        d["optional_front_comma"] = ", " if len(params) else ""        
+        d["params_comma"]= ", ".join(map(repr, params))        
+        d["params_quote"] = ", ".join("'" + repr(p) + "'" for p in params) if len(params) else ""
+        
+        d["optional_self_assignment_newline_tab"] = "\n        " if len(params) else ""        
+        d["self_assignment"] = ", ".join("self."+repr(s) for s in params) + " = " if len(params) else ""
+        
+        d["canAcs_trans"] = self.canAcs_translator()
+        d["canDcs_trans"] = tab(''.join(map(trans, self.canDcs)))
+        d["isDacs_trans"] = tab(''.join(map(trans, self.isDacs)))
+
+        return Template(template).substitute(d)
 
 def extract_roles(rules):
     """
@@ -220,4 +217,4 @@ print("Translating %d rules..." % len(rules))
 
 tr = translate_rules(rules)
 
-#save(rules)
+save(rules)
