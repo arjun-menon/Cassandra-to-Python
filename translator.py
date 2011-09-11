@@ -181,6 +181,8 @@ from datetime import datetime
 
 ####################
 
+rule_set = ('spine', 'pds', 'hospital', 'ra')[1]
+
 def repl(): # use python's quit() to break out
     while True:
         #print ">",
@@ -193,22 +195,29 @@ def repl(): # use python's quit() to break out
         except Exception as e:
             print((e.message))
 
-def parse():
-    rules = ehrparse.parse_one("data/pds.txt")   
-    with open("data/parse_tree.pickle", "wb") as f:
-        pickle.dump(rules, f)
+def save(rules):
+    with open("%s.py" % rule_set, 'w') as f:
+        f.write(tr)
+    print("Done. Wrote to %s.py" % rule_set)
 
-#parse()
-with open("data/parse_tree.pickle", "rb") as f:
-    rules = pickle.load(f)
+def get_rules():
+    
+    def reparse():
+        rules = ehrparse.parse_one("data/%s.txt" % rule_set)
+        with open("data/parse_tree.pickle", "wb") as f:
+            pickle.dump(rules, f)
 
+    reparse()
 
-#print roles['Professional-user'].translate()
-#print roles['Professional-user'].canAcs[0].translate()
-#print roles['PDS-manager'].canAcs[0].translate()(0)
-#print roles['PDS-manager'].translate()
+    with open("data/parse_tree.pickle", "rb") as f:
+        return pickle.load(f)
+
+rules = get_rules()
+
+####################
+
+print("Translating %d rules..." % len(rules))
 
 tr = translate_rules(rules)
 
-with open("pds.py", 'w') as f:
-    f.write(tr)
+#save(rules)

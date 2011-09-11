@@ -132,9 +132,12 @@ class Professional_user(Role):
 #count-professional-user-activations(count<u>,user) <-
 #    hasActivated(u,Professional-user(ra,org)),u = user
 
+
 #'P1.5.1'
-#no-main-role-active(user) <-
-#    count-agent-activations(n,user),count-patient-activations(n,user),count-PDS-manager-activations(n,user),count-professional-user-activations(n,user),n = 0
+def no_main_role_active(user):
+    #no-main-role-active(user) <-
+    #    count-agent-activations(n,user),count-patient-activations(n,user),count-PDS-manager-activations(n,user),count-professional-user-activations(n,user),n = 0    
+    pass
 
 class Registration_authority(Role):
     name = "Registration-authority"

@@ -7,10 +7,10 @@ class Role(object):
         assert type(args) == tuple
         self.name = name
         self.args = args
-    def __eq__(self, other):
-        return self.name == other.args and self.args == other.args
-    def __repr__(self):
-        return self.name + '(' + ', '.join(map(repr, self.args)) + ')'
+#    def __eq__(self, other):
+#        return self.name == other.args and self.args == other.args
+#    def __repr__(self):
+#        return self.name + '(' + ', '.join(map(repr, self.args)) + ')'
 
 class CassandraException(Exception):
     def __init__(self, description):
@@ -29,14 +29,19 @@ def activate(subject, role):
         print("Error: ", CassandraException.description)
 
 def multi_try(*funcs):
-    def try_and_get_exception(func):
+    """
+    Try multiple functions, if any of them do not throw a CassandraException, multi_try returns None.
+    If all of them throw CassandraExceptions, then multi_try throws a CassandraException their descriptions.
+    """
+    
+    def try_func(func):
         try:
             func()
         except CassandraException as e:
             return e
         return None
     
-    e_list = map(try_and_get_exception, funcs)
+    e_list = map(try_func, funcs)
     
     for e in e_list:
         if e == None:
@@ -74,6 +79,8 @@ class Registration_authority(Role):
 
 def no_main_role_active(user):
     pass
+
+##########
 
 def repl(): # use python's quit() to break out
     while True:
