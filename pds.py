@@ -3,7 +3,7 @@ from datetime import datetime
 
 class PDS_manager(Role): 
     def __init__(self):
-        super().__init__('PDS-manager', []) ()
+        super().__init__('PDS-manager', []) 
     
     def canActivate(self, adm):
         #hasActivated(x,Register-PDS-manager(adm))
@@ -21,7 +21,7 @@ class PDS_manager(Role):
 class Register_PDS_manager(Role): 
     def __init__(self, adm2):
         super().__init__('Register-PDS-manager', ['adm2']) 
-        self.adm2 = (adm2)
+        self.adm2 = adm2
     
     def canActivate(self, adm1):
         #hasActivated(adm1,PDS-manager())
@@ -43,7 +43,7 @@ class Register_PDS_manager(Role):
 
 class Patient(Role): 
     def __init__(self):
-        super().__init__('Patient', []) ()
+        super().__init__('Patient', []) 
     
     def canActivate(self, pat):
         #hasActivated(x,Register-patient(pat))
@@ -61,7 +61,7 @@ class Patient(Role):
 class Agent(Role): 
     def __init__(self, pat):
         super().__init__('Agent', ['pat']) 
-        self.pat = (pat)
+        self.pat = pat
     
     def canActivate(self, ag):
         #hasActivated(x,Register-patient(ag))
@@ -80,7 +80,7 @@ class Agent(Role):
 class Professional_user(Role): 
     def __init__(self, ra, org):
         super().__init__('Professional-user', ['ra', 'org']) 
-        self.ra, self.org = (ra, org)
+        self.ra, self.org = ra, org
     
     def canActivate(self, *params):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params), lambda: self.canActivate_3(*params), lambda: self.canActivate_4(*params))
@@ -127,7 +127,7 @@ class Professional_user(Role):
 
 class Registration_authority(Role): 
     def __init__(self):
-        super().__init__('Registration-authority', []) ()
+        super().__init__('Registration-authority', []) 
     
     def canActivate(self, *params):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params))
@@ -145,7 +145,7 @@ class Registration_authority(Role):
 class Register_patient(Role): 
     def __init__(self, pat):
         super().__init__('Register-patient', ['pat']) 
-        self.pat = (pat)
+        self.pat = pat
     
     def canActivate(self, adm):
         #hasActivated(adm,PDS-manager())

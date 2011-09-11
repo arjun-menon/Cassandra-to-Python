@@ -76,7 +76,7 @@ def canActivate(self, *params):
         template = """
 class $name_u(Role): 
     def __init__(self$optional_front_comma$params_comma):
-        super().__init__('$name', [$params_quote]) $optional_self_assignment_newline_tab$self_assignment($params_comma)
+        super().__init__('$name', [$params_quote]) $optional_self_assignment_newline_tab$self_assignment$params_comma
 $canAcs_trans$canDcs_trans$isDacs_trans"""
 
         d = {}
