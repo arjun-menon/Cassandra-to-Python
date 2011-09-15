@@ -18,15 +18,9 @@ class CassandraException(Exception):
     def __str__(self):
         return repr(self.description)
 
-def condition(constraint_function, constraint_description):
-    if not constraint_function():
-        raise CassandraException("Constraint [" + constraint_description + "] failed.")
-
-def activate(subject, role):
-    try:
-        role.canActivate(subject)
-    except CassandraException:
-        print("Error: ", CassandraException.description)
+def test(func, src):
+    if not func():
+        raise CassandraException("test <" + src + "> failed.")
 
 def multi_try(*funcs):
     """
@@ -49,6 +43,15 @@ def multi_try(*funcs):
      
     raise CassandraException( "Tried %d rules, and all failed:" % len(funcs) + "\n".join(e.description for e in e_list) )
 
+###################
+
+# This should not be here, it should be in Cassandra external access functions
+# all .py rule files import core, external interface imports them and has functions such as these below:
+def activate(subject, role):
+    try:
+        role.canActivate(subject)
+    except CassandraException:
+        print("Error: ", CassandraException.description)
 
 def repl(): # use python's quit() to break out
     while True:

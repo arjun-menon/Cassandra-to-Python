@@ -178,7 +178,7 @@ from datetime import datetime
 
 ####################
 
-rule_set = ('spine', 'pds', 'hospital', 'ra')[1]
+rule_set = ('spine', 'pds', 'hospital', 'ra')[0]
 
 def repl(): # use python's quit() to break out
     while True:
