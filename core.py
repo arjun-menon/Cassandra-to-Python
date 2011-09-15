@@ -18,7 +18,7 @@ class CassandraException(Exception):
     def __str__(self):
         return repr(self.description)
 
-def constraint(constraint_function, constraint_description):
+def condition(constraint_function, constraint_description):
     if not constraint_function():
         raise CassandraException("Constraint [" + constraint_description + "] failed.")
 
