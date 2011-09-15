@@ -16,11 +16,26 @@ class RuleTranslator(object):
     def __repr__(self):
         return repr(self.rule)
 
+def constraint_trans(c):
+    """Translate a Constraint to Python and list the variables it invokes."""
+    print(c)
+    
+    pass
+
+def contraint_trans_combine(constraint_tr):
+    """"Combine multiple Contraint translations to form a single Constrain translation."""
+    pass
+
 class canAc(RuleTranslator):
     def __init__(self, rule):
         super().__init__(rule)
         
     def translate(self):
+        
+        cs = [constraint_trans(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint]
+        
+        hypotheses = [repr(h) + repr(type(h)) for h in self.rule.hypos]
+        
         return lambda number: Template("""
 def canActivate$num(self$params):
 $hypotheses"""
@@ -28,7 +43,7 @@ $hypotheses"""
         (
             num = "" if number==0 else "_" + str(number),
             params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
-            hypotheses = tab("".join("#" + repr(x) + '\n' for x in self.rule.hypos) + 'pass\n')
+            hypotheses = tab("".join("#" + repr(x) + '\n' for x in hypotheses) + 'pass\n')
         )
 
 ####################
@@ -78,7 +93,6 @@ class $name_u(Role):
     def __init__(self$optional_front_comma$params_comma):
         super().__init__('$name', [$params_quote]) $optional_self_assignment_newline_tab$self_assignment$params_comma
 $canAcs_trans$canDcs_trans$isDacs_trans"""
-
         d = {}
         d['name'], params = self.get_signature()        
         d['name_u'] = hyphens_to_underscores(d['name'])
@@ -93,7 +107,6 @@ $canAcs_trans$canDcs_trans$isDacs_trans"""
         d["canAcs_trans"] = self.canAcs_translator()
         d["canDcs_trans"] = tab(''.join(map(trans, self.canDcs)))
         d["isDacs_trans"] = tab(''.join(map(trans, self.isDacs)))
-
         return Template(template).substitute(d)
 
 def extract_roles(rules):
@@ -155,7 +168,7 @@ def extract_roles(rules):
         if rule_name not in three_special_predicates:
             outline.append(rule)
     
-    return outline, roles
+    return outline
 
 
 def trans(obj):
@@ -166,7 +179,7 @@ def trans(obj):
         return "\n" + prefix_lines(repr(obj), "#")
 
 def translate_rules(rules):
-    outline, roles = extract_roles(rules)
+    outline = extract_roles(rules)
 
     translation  = ""
     translation += """from cassandra import *
@@ -178,7 +191,7 @@ from datetime import datetime
 
 ####################
 
-rule_set = ('spine', 'pds', 'hospital', 'ra')[0]
+rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[0]
 
 def repl(): # use python's quit() to break out
     while True:
@@ -200,11 +213,10 @@ def save(rules):
 def get_rules():
     
     def reparse():
-        rules = ehrparse.parse_one("data/%s.txt" % rule_set)
+        rules = ehrparse.parse_all() if rule_set == 'all' else ehrparse.parse_one("data/%s.txt" % rule_set)
         with open("data/parse_tree.pickle", "wb") as f:
             pickle.dump(rules, f)
-
-    reparse()
+    #reparse()
 
     with open("data/parse_tree.pickle", "rb") as f:
         return pickle.load(f)
@@ -217,4 +229,6 @@ print("Translating %d rules..." % len(rules))
 
 tr = translate_rules(rules)
 
-save(rules)
+#print(tr)
+
+#save(rules)

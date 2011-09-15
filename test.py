@@ -1,12 +1,14 @@
+import pickle, ehrparse
 
-import ehrparse
+with open("data/parse_tree.pickle", "rb") as f:
+    rules = pickle.load(f)
 
-r = ehrparse.parse_one("data/spine.txt")
 
-r0 = r[0]
-print(r0)
+def num_constraints(r):
+    return len([h for h in r.hypos if type(h) == ehrparse.Constraint])
 
-x = r0.hypos[0].atom
+#print([num_constraints(r) for r in rules])
 
-print(x)
-print(type(x))
+s = [r for r in rules if num_constraints(r) > 1]
+
+print(len(s))
