@@ -169,7 +169,7 @@ def translate_rules(rules):
     outline, roles = extract_roles(rules)
 
     translation  = ""
-    translation += """from core import *
+    translation += """from cassandra import *
 from datetime import datetime
 """
     translation += "".join( map(trans, outline) )

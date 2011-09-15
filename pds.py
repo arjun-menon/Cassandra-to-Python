@@ -1,4 +1,4 @@
-from core import *
+from cassandra import *
 from datetime import datetime
 
 class PDS_manager(Role): 
