@@ -1,7 +1,6 @@
 
-import ehrparse, pickle, sys
+import ehrparse, pickle
 from string import Template
-
 from helpers import hyphens_to_underscores, prefix_lines, tab
 
 # As a general translation policy, translated segments begin with 

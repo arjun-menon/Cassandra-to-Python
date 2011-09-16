@@ -1,3 +1,4 @@
+from typecheck import *
 from datetime import datetime
 
 hasActivated = set()  # Set of (entity, role) pairs representing current activations.
@@ -42,6 +43,12 @@ def multi_try(*funcs):
             return None # success
      
     raise CassandraException( "Tried %d rules, and all failed:" % len(funcs) + "\n".join(e.description for e in e_list) )
+
+@typecheck
+def current_time_in(start: datetime, end: datetime):
+    time_now = datetime.utcnow()
+    if not (time_now >= start and time_now <= end):
+        raise CassandraException("Current-time() not in [start, end]")
 
 ###################
 
