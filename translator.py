@@ -1,7 +1,6 @@
-
-import ehrparse, pickle
+from helpers import *
 from string import Template
-from helpers import hyphens_to_underscores, prefix_lines, tab
+import pickle, ehrparse
 
 # As a general translation policy, translated segments begin with 
 # an empty line - this is how individual segments are spaced out.
@@ -15,11 +14,32 @@ class RuleTranslator(object):
     def __repr__(self):
         return repr(self.rule)
 
-def constraint_trans(c):
+@typecheck
+def constraint_trans(c: ehrparse.Constraint):
     """Translate a Constraint to Python and list the variables it invokes."""
-    print(c)
     
-    pass
+    @typecheck
+    def is_current_time_in_start_end(c: ehrparse.Constraint) -> bool:
+        if type(c.left) == ehrparse.Function and type(c.right) == ehrparse.Range:
+            if c.left.name == 'Current-time':
+                if type(c.right.start) == ehrparse.Variable and type(c.right.end) == ehrparse.Variable:
+                    if c.right.start.name == 'start' and c.right.end.name == 'end':
+                        return True
+        return False
+    
+    print(is_current_time_in_start_end(c))
+    
+    print(c)
+#    while True:
+#        #print ">",
+#        x = input()
+#        try:
+#            if not len(x):
+#                continue
+#            y = eval(x)
+#            print(y)
+#        except Exception as e:
+#            print(repr(e))
 
 def contraint_trans_combine(constraint_tr):
     """"Combine multiple Contraint translations to form a single Constrain translation."""

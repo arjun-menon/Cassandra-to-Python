@@ -1,4 +1,4 @@
-
+from typecheck import *
 from functools import reduce
 
 ##################
@@ -12,17 +12,17 @@ def uniqify(seq): # order preserving uniqifier
 def identical(seq): # check if all elements in a sequence are identical
     return reduce(lambda a, b: (b, a[0]==b), seq, (seq[0], None))[1]
 
-def str_substitue(s, c_from, c_to):
+@typecheck
+def str_substitue(s: str, char_to_sub: lambda s: len(s)==1, sub_with: str):
     if type(s) != str: raise TypeError("s must be of type str")
-    return "".join(c_to if c == c_from else c for c in s)
+    return "".join(sub_with if c == char_to_sub else c for c in s)
 
 def hyphens_to_underscores(s):
     return str_substitue(s, '-', '_')
 
-def prefix_lines(s, prefix):
-    if type(s) != str: raise TypeError("s must be of type str")
+@typecheck
+def prefix_lines(s: str, prefix: str):
     return "".join( prefix + line + "\n" for line in s.splitlines() )
 
 def tab(s, indentation_level=1):
     return prefix_lines(s, '    '*indentation_level)
-
