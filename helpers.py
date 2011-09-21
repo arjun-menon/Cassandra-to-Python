@@ -5,12 +5,18 @@ from functools import reduce
 # Helper functions
 ##################
 
-def uniqify(seq): # order preserving uniqifier
+def uniq(seq): # order preserving uniqifier
     seen = set()
     return [ x for x in seq if x not in seen and not seen.add(x) ]
 
 def identical(seq): # check if all elements in a sequence are identical
     return reduce(lambda a, b: (b, a[0]==b), seq, (seq[0], None))[1]
+
+def if_any(val, lst):
+    for k in lst:
+        if k == val:
+            return True
+    return False
 
 @typecheck
 def str_substitue(s: str, char_to_sub: lambda s: len(s)==1, sub_with: str):
