@@ -52,6 +52,11 @@ class Range(object):
             raise CassandraException("test failed: %r is not in [%r, %r]" % (val, self.start, self.end))
         return True
 
+###################
+
+def canActivate(subject, role):
+    role.canActivate(subject)
+
 def Current_time():
     return datetime.utcnow()
 

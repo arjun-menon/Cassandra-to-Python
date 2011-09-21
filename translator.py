@@ -66,32 +66,50 @@ class RuleTranslator(object):
     def __repr__(self):
         return repr(self.rule)
     
-    def translate_hypotheses(self):
-        ctr = combine_contraint_translations([translate_constraint(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint])
+    def translate_hypotheses(self):           
+        # non-contraint hypos
+        nc_hypos = [h for h in self.rule.hypos if type(h) != ehrparse.Constraint]
+        constraint = combine_contraint_translations([translate_constraint(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint])
         
-        if ctr != None:
-            print(ctr[0])
-            print(ctr[1])
-            print()
+        def untranslated():
+            return "".join("#" + repr(x) + '\n' for x in nc_hypos) + 'pass\n'
         
-        #canAc pr
+        if constraint == None:
+            # DON'T TRASNLATE
+            #print(repr(constraint[0]) + " <---> " + repr(constraint[1]))
+            return untranslated()
         
-        return tab("".join("#" + repr(x) + '\n' for x in self.rule.hypos) + 'pass\n')
+        
+        for h in nc_hypos:
+            
+            if(type(h) == ehrparse.RemoteAtom):
+                # TODO
+                h = h.atom
+                          
+            if type(h) == ehrparse.Atom:
+                #if h.name == "canActivate":
+                print("--> " + h2u(repr(h)))
+            else:
+                print("!!!!!!!!! - " + h)
+                
+        return untranslated()
 
 
 class canAc(RuleTranslator):
     def __init__(self, rule):
         super().__init__(rule)
-        
-    def translate(self):       
+    
+    @typecheck
+    def translate(self, prms: list_of(ehrparse.Variable)):
+        self_reassign = ", ".join(map(repr, prms)) + " = " + ", ".join("self."+repr(x) for x in prms) + "\n" if len(prms) else ""
         return lambda number: Template("""
 def canActivate$num(self$params):
-$hypotheses"""
+$translation"""
         ).substitute\
         (
             num = "" if number==0 else "_" + str(number),
             params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
-            hypotheses = self.translate_hypotheses()
+            translation = tab( self_reassign + self.translate_hypotheses() )
         )
 
 
@@ -127,13 +145,13 @@ class RoleClass(object):
     def canAcs_translator(self):
         assert len(self.canAcs)
         if len(self.canAcs) == 1:
-            canAc_translation = self.canAcs[0].translate()(0)
+            canAc_translation = self.canAcs[0].translate(self.params)(0)
         else:
             canAc_translation = """
 def canActivate(self, *params):
     multi_try(%s)
 """ % ", ".join("lambda: self.canActivate_%d(*params)" % i for i in list(range(1, len(self.canAcs) + 1))) +\
-        "".join( rule.translate()(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
+        "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
         
         return tab(canAc_translation)
     

@@ -91,7 +91,7 @@ class Rule(object):
         self.hypos.append(hypothesis)
     def __repr__(self):
         x = [repr(i) for i in self.hypos]
-        return repr(self.name)+ '\n' +repr(self.concl)+ ' <-\n\t' + ','.join(x)
+        return repr(self.name)+ '\n' +repr(self.concl)+ ' <-\n\t' + ', '.join(x)
 
 class Atom(object):
     def __init__(self,name,arg):
@@ -101,7 +101,7 @@ class Atom(object):
         self.args.append(arg)
     def __repr__(self):
         x = [repr(i) for i in self.args]
-        return self.name + '(' + ','.join(x) + ')'
+        return self.name + '(' + ', '.join(x) + ')'
 
 class Constant(object):
     def __init__(self,value,number=False):
@@ -127,7 +127,7 @@ class Function(object):
         self.args.append(arg)
     def __repr__(self):
         x = [repr(i) for i in self.args]
-        return (self.name) + '(' + ','.join(x) + ')'    
+        return (self.name) + '(' + ', '.join(x) + ')'    
     def __eq__(self, other):
         return self.args == other.args
 
@@ -139,7 +139,7 @@ class Aggregate(object):
         self.args.append(arg)
     def __repr__(self):
         x = [repr(i) for i in self.args]
-        return self.name + '<' + ','.join(x) + '>'
+        return self.name + '<' + ', '.join(x) + '>'
         
 class Constraint(object):
     def __init__(self,left,op,right):
@@ -164,7 +164,7 @@ class Range(object):
         self.start = start
         self.end = end
     def __repr__(self):
-        return '[' + repr(self.start) + ',' + repr(self.end) + ']'
+        return '[' + repr(self.start) + ', ' + repr(self.end) + ']'
 
 class Tuple(object):
     def __init__(self,first):
