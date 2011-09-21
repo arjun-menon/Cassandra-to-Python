@@ -17,7 +17,7 @@ def str_substitue(s: str, char_to_sub: lambda s: len(s)==1, sub_with: str):
     if type(s) != str: raise TypeError("s must be of type str")
     return "".join(sub_with if c == char_to_sub else c for c in s)
 
-def hyphens_to_underscores(s):
+def h2u(s): # hyphens to underscores
     return str_substitue(s, '-', '_')
 
 @typecheck

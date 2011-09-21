@@ -15,16 +15,33 @@ class RuleTranslator(object):
         return repr(self.rule)
 
 @typecheck
-def translate_constraint(c: ehrparse.Constraint) -> (str, list_of(str)): 
-    """ constraint -> ("translated code", list with names of bound variables) """
+def translate_constraint(c: ehrparse.Constraint): 
+    # """ constraint -> ("translated code", list with names of bound variables) """
     
-    "Current-time() in [start,end]"
-    if type(c.left) == ehrparse.Function and type(c.right) == ehrparse.Range:
-        if c.left.name == 'Current-time':
-            if type(c.right.start) == ehrparse.Variable and type(c.right.end) == ehrparse.Variable:
-                start, end = c.right.start.name, c.right.end.name
-                print('current_time_in(%s, %s, "%s")' % (start, end, ""))
-    return 's',['s']
+    if c.op == 'in':
+        if type(c.right) == ehrparse.Range and type(c.right.start) == ehrparse.Variable and type(c.right.end) == ehrparse.Variable:
+            # it's of the form ___ in [start, end]
+            start, end = c.right.start.name, c.right.end.name
+            
+            if type(c.left) == ehrparse.Function:
+                return '%s in Range(%s, %s)' % (h2u(repr(c.left)), start, end) , [repr(i) for i in c.left.args] + [start, end]
+
+            if type(c.left) == ehrparse.Variable:
+                return '%s in Range(%s, %s)' % (h2u(repr(c.left)), start, end) , [c.left.name, start, end]
+    
+    elif c.op == '=':
+        if type(c.left) == ehrparse.Variable and type(c.right) == ehrparse.Constant:
+            return "%r == %r" % (c.left, c.right) , [c.left.name]
+        elif type(c.left) == ehrparse.Variable and type(c.right) == ehrparse.Variable:
+            return "%r == %r" % (c.left, c.right) , [c.left.name, c.right.name]
+
+    elif c.op == '<':
+        if type(c.left) == ehrparse.Variable and type(c.right) == ehrparse.Constant:
+            return "%r < %r" % (c.left, c.right) , [c.left.name]
+        elif type(c.left) == ehrparse.Variable and type(c.right) == ehrparse.Variable:
+            return "%r == %r" % (c.left, c.right) , [c.left.name, c.right.name]
+    
+    return "-----> " + repr(c)
 
 def contraint_trans_combine(constraint_tr):
     """"Combine multiple Contraint translations to form a single Constrain translation."""
@@ -37,6 +54,9 @@ class canAc(RuleTranslator):
     def translate(self):
         
         cs = [translate_constraint(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint]
+        
+        #canAc pr
+        list(map(print, cs))
         
         hypotheses = [repr(h) + repr(type(h)) for h in self.rule.hypos]
         
@@ -101,7 +121,7 @@ $canAcs_trans$canDcs_trans$isDacs_trans"""
         d = {}
         
         d['name'], params = self.get_signature()        
-        d['name_u'] = hyphens_to_underscores(d['name'])
+        d['name_u'] = h2u(d['name'])
         
         d["optional_front_comma"] = ", " if len(params) else ""        
         d["params_comma"]= ", ".join(map(repr, params))        
