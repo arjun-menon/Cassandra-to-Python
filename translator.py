@@ -46,7 +46,7 @@ def combine_contraint_translations(ctrs):  # ctr is a list of return values gene
     elif len(ctrs) == 1:
         t, v = ctrs[0]
         if v == None:
-            return '# ' + t, v
+            return '# ' + t, None
         else:
             return t, v
     elif len(ctrs) > 1:
@@ -71,14 +71,16 @@ class RuleTranslator(object):
         nc_hypos = [h for h in self.rule.hypos if type(h) != ehrparse.Constraint]
         constraint = combine_contraint_translations([translate_constraint(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint])
         
-        def untranslated():
-            return "".join("#" + repr(x) + '\n' for x in nc_hypos) + 'pass\n'
+        tr = ""
         
         if constraint == None:
-            # DON'T TRASNLATE
-            #print(repr(constraint[0]) + " <---> " + repr(constraint[1]))
-            return untranslated()
-        
+            tr += "# Constraint not translated. TODO\n"
+            tr = tr + "".join("#" + repr(x) + '\n' for x in nc_hypos)
+        elif constraint[1] == None:
+            tr += "# Constraint not translated. TODO\n"
+            tr = tr + constraint[0] + " <---> " + repr(constraint[1])
+        else:
+            tr = "constraint =  lambda: " + constraint[0] + "\n\n"
         
         for h in nc_hypos:
             
@@ -88,11 +90,11 @@ class RuleTranslator(object):
                           
             if type(h) == ehrparse.Atom:
                 #if h.name == "canActivate":
-                print("--> " + h2u(repr(h)))
+                tr = tr + h2u(repr(h)) + '\n'
             else:
-                print("!!!!!!!!! - " + h)
-                
-        return untranslated()
+                tr = "#" + repr(h) + '\n'
+         
+        return tr
 
 
 class canAc(RuleTranslator):
