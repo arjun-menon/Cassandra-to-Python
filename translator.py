@@ -15,31 +15,16 @@ class RuleTranslator(object):
         return repr(self.rule)
 
 @typecheck
-def constraint_trans(c: ehrparse.Constraint):
-    """Translate a Constraint to Python and list the variables it invokes."""
+def translate_constraint(c: ehrparse.Constraint) -> (str, list_of(str)): 
+    """ constraint -> ("translated code", list with names of bound variables) """
     
-    @typecheck
-    def is_current_time_in_start_end(c: ehrparse.Constraint) -> bool:
-        if type(c.left) == ehrparse.Function and type(c.right) == ehrparse.Range:
-            if c.left.name == 'Current-time':
-                if type(c.right.start) == ehrparse.Variable and type(c.right.end) == ehrparse.Variable:
-                    if c.right.start.name == 'start' and c.right.end.name == 'end':
-                        return True
-        return False
-    
-    print(is_current_time_in_start_end(c))
-    
-    print(c)
-#    while True:
-#        #print ">",
-#        x = input()
-#        try:
-#            if not len(x):
-#                continue
-#            y = eval(x)
-#            print(y)
-#        except Exception as e:
-#            print(repr(e))
+    "Current-time() in [start,end]"
+    if type(c.left) == ehrparse.Function and type(c.right) == ehrparse.Range:
+        if c.left.name == 'Current-time':
+            if type(c.right.start) == ehrparse.Variable and type(c.right.end) == ehrparse.Variable:
+                start, end = c.right.start.name, c.right.end.name
+                print('current_time_in(%s, %s, "%s")' % (start, end, ""))
+    return 's',['s']
 
 def contraint_trans_combine(constraint_tr):
     """"Combine multiple Contraint translations to form a single Constrain translation."""
@@ -51,7 +36,7 @@ class canAc(RuleTranslator):
         
     def translate(self):
         
-        cs = [constraint_trans(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint]
+        cs = [translate_constraint(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint]
         
         hypotheses = [repr(h) + repr(type(h)) for h in self.rule.hypos]
         
@@ -107,12 +92,14 @@ def canActivate(self, *params):
         return tab(canAc_translation)
     
     def translate(self):
+        
         template = """
 class $name_u(Role): 
     def __init__(self$optional_front_comma$params_comma):
         super().__init__('$name', [$params_quote]) $optional_self_assignment_newline_tab$self_assignment$params_comma
 $canAcs_trans$canDcs_trans$isDacs_trans"""
         d = {}
+        
         d['name'], params = self.get_signature()        
         d['name_u'] = hyphens_to_underscores(d['name'])
         

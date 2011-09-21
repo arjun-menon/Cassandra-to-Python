@@ -45,10 +45,10 @@ def multi_try(*funcs):
     raise CassandraException( "Tried %d rules, and all failed:" % len(funcs) + "\n".join(e.description for e in e_list) )
 
 @typecheck
-def current_time_in(start: datetime, end: datetime):
+def current_time_in(start: datetime, end: datetime, err_desc: str):
     time_now = datetime.utcnow()
     if not (time_now >= start and time_now <= end):
-        raise CassandraException("Current-time() not in [start, end]")
+        raise CassandraException(err_desc)
 
 ###################
 
