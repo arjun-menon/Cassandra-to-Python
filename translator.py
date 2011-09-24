@@ -1,8 +1,7 @@
-from string import Template
 import pickle, itertools
-
+from string import Template
+from ehrparse import *
 from helpers import *
-import ehrparse
 
 # As a general translation policy, translated segments begin with 
 # an empty line - this is how individual segments are spaced out.
@@ -11,30 +10,30 @@ import ehrparse
 ####################
 
 @typecheck
-def translate_constraint(c: ehrparse.Constraint): 
+def translate_constraint(c: Constraint): 
     # """ constraint -> ("translated code", list with names of bound variables) """
     
     if c.op == 'in':
-        if type(c.right) == ehrparse.Range and type(c.right.start) == ehrparse.Variable and type(c.right.end) == ehrparse.Variable:
+        if type(c.right) == Range and type(c.right.start) == Variable and type(c.right.end) == Variable:
             # it's of the form ___ in [start, end]
             start, end = c.right.start.name, c.right.end.name
             
-            if type(c.left) == ehrparse.Function:
-                return '%s in Range(%s, %s)' % (h2u(repr(c.left)), start, end) , [repr(i) for i in c.left.args] + [start, end]
+            if type(c.left) == Function:
+                return '%s in vRange(%s, %s)' % (h2u(repr(c.left)), start, end) , [repr(i) for i in c.left.args] + [start, end]
 
-            if type(c.left) == ehrparse.Variable:
-                return '%s in Range(%s, %s)' % (h2u(repr(c.left)), start, end) , [c.left.name, start, end]
+            if type(c.left) == Variable:
+                return '%s in vRange(%s, %s)' % (h2u(repr(c.left)), start, end) , [c.left.name, start, end]
     
     elif c.op == '=':
-        if type(c.left) == ehrparse.Variable and type(c.right) == ehrparse.Constant:
+        if type(c.left) == Variable and type(c.right) == Constant:
             return "%r == %r" % (c.left, c.right) , [c.left.name]
-        elif type(c.left) == ehrparse.Variable and type(c.right) == ehrparse.Variable:
+        elif type(c.left) == Variable and type(c.right) == Variable:
             return "%r == %r" % (c.left, c.right) , [c.left.name, c.right.name]
 
     elif c.op == '<':
-        if type(c.left) == ehrparse.Variable and type(c.right) == ehrparse.Constant:
+        if type(c.left) == Variable and type(c.right) == Constant:
             return "%r < %r" % (c.left, c.right) , [c.left.name]
-        elif type(c.left) == ehrparse.Variable and type(c.right) == ehrparse.Variable:
+        elif type(c.left) == Variable and type(c.right) == Variable:
             return "%r == %r" % (c.left, c.right) , [c.left.name, c.right.name]
     
     return repr(c) , None
@@ -74,8 +73,8 @@ class RuleTranslator(object):
         return repr(self.rule)
     
     def translate_hypotheses(self, bound_vars):           
-        nc_hypos = [h for h in self.rule.hypos if type(h) != ehrparse.Constraint]  # non-constraint hypos
-        ctrs = [translate_constraint(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint]
+        nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
+        ctrs = [translate_constraint(h) for h in self.rule.hypos if type(h) == Constraint]
         constraint = combine_contraint_translations(ctrs)
         
         tr = ""
@@ -91,11 +90,11 @@ class RuleTranslator(object):
         
         for h in nc_hypos:
             
-            if(type(h) == ehrparse.RemoteAtom):
+            if(type(h) == RemoteAtom):
                 # TODO
                 h = h.atom
             
-            assert type(h) == ehrparse.Atom
+            assert type(h) == Atom
             if h.name == "hasActivated":
                 tr = tr + translate_hasActivated(h, 0)
             else:
@@ -109,7 +108,7 @@ class canAc(RuleTranslator):
         super().__init__(rule)
     
     @typecheck
-    def translate(self, params: list_of(ehrparse.Variable)):
+    def translate(self, params: list_of(Variable)):
         assert identical([type(p) for p in params])
         self_reassign = ", ".join(map(repr, params)) + " = " + ", ".join("self."+repr(x) for x in params) + "\n" if len(params) else ""
         return lambda number: Template("""
@@ -227,7 +226,7 @@ def extract_roles(rules):
     
     for r in isDac_rules:
         for h in r.hypos:
-            if type(h) == ehrparse.Atom and h.name == special_predicates[5]: # isDeactivated
+            if type(h) == Atom and h.name == special_predicates[5]: # isDeactivated
                 role_name = h.args[1].name
         roles[role_name].isDacs.append(r)
     
@@ -293,7 +292,7 @@ def save(rules):
 def get_rules():
     
     def reparse():
-        rules = ehrparse.parse_all() if rule_set == 'all' else ehrparse.parse_one("data/%s.txt" % rule_set)
+        rules = parse_all() if rule_set == 'all' else parse_one("data/%s.txt" % rule_set)
         with open("data/parse_tree.pickle", "wb") as f:
             pickle.dump(rules, f)
     #reparse()
