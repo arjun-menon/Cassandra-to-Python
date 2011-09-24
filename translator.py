@@ -64,13 +64,13 @@ class RuleTranslator(object):
                 comb_vrs = uniq(list(itertools.chain(*vrs)))
                 return comb_trs, comb_vrs
     
-    def translate_hasActivated(self, h, bound_vars):
-        print(h.args)
-        role = h.args[1]
+    @typecheck
+    def translate_hasActivated(self, hypo_args: [Variable, Function], bound_vars):      
+        subj, role = hypo_args # : [Variable, Function]
         
         
         
-        return h2u(repr(h)) + '\n'
+        return ""#h2u(repr(h)) + '\n'
     
     def translate_hypotheses(self, bound_vars):           
         nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
@@ -96,7 +96,7 @@ class RuleTranslator(object):
             
             assert type(h) == Atom
             if h.name == "hasActivated":
-                tr = tr + self.translate_hasActivated(h, 0)
+                tr = tr + self.translate_hasActivated(h.args, 0)
             else:
                 tr = tr + h2u(repr(h)) + '\n' #tr = "#" + repr(h) + '   <--- TODO\n'
          
