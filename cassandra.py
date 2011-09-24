@@ -44,12 +44,13 @@ def multi_try(*funcs):
      
     raise CassandraException( "Tried %d rules, and all failed:" % len(funcs) + "\n".join(e.description for e in e_list) )
 
-class vRange(object):
+class inRange(object):
     def __init__(self, start, end):
         self.start, self.end = start, end
     def __contains__(self, val):
         if not (val >= self.start and val <= self.end):
-            raise CassandraException("test failed: %r is not in [%r, %r]" % (val, self.start, self.end))
+            #raise CassandraException("test failed: %r is not in [%r, %r]" % (val, self.start, self.end))
+            return False
         return True
 
 ###################
