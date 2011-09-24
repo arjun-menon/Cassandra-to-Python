@@ -59,6 +59,13 @@ def combine_contraint_translations(ctrs):  # ctr is a list of return values gene
             comb_vrs = uniq(list(itertools.chain(*vrs)))
             return comb_trs, comb_vrs
 
+def translate_hasActivated(h, bound_vars):
+    print(h.args)
+    role = h.args[1]
+    
+    
+    
+    return h2u(repr(h)) + '\n'
 
 class RuleTranslator(object):
     def __init__(self, rule):
@@ -66,10 +73,10 @@ class RuleTranslator(object):
     def __repr__(self):
         return repr(self.rule)
     
-    def translate_hypotheses(self):           
-        # non-contraint hypos
-        nc_hypos = [h for h in self.rule.hypos if type(h) != ehrparse.Constraint]
-        constraint = combine_contraint_translations([translate_constraint(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint])
+    def translate_hypotheses(self, bound_vars):           
+        nc_hypos = [h for h in self.rule.hypos if type(h) != ehrparse.Constraint]  # non-constraint hypos
+        ctrs = [translate_constraint(h) for h in self.rule.hypos if type(h) == ehrparse.Constraint]
+        constraint = combine_contraint_translations(ctrs)
         
         tr = ""
         
@@ -80,19 +87,19 @@ class RuleTranslator(object):
             tr += "# Constraint not translated. TODO\n"
             tr = tr + constraint[0] + " <---> " + repr(constraint[1])
         else:
-            tr = "constraint =  lambda: " + constraint[0] + "\n\n"
+            tr = "constraint =  lambda " + ", ".join(constraint[1]) + ": " + constraint[0] + "\n\n"
         
         for h in nc_hypos:
             
             if(type(h) == ehrparse.RemoteAtom):
                 # TODO
                 h = h.atom
-                          
-            if type(h) == ehrparse.Atom:
-                #if h.name == "canActivate":
-                tr = tr + h2u(repr(h)) + '\n'
+            
+            assert type(h) == ehrparse.Atom
+            if h.name == "hasActivated":
+                tr = tr + translate_hasActivated(h, 0)
             else:
-                tr = "#" + repr(h) + '\n'
+                tr = tr + h2u(repr(h)) + '\n' #tr = "#" + repr(h) + '   <--- TODO\n'
          
         return tr
 
@@ -102,8 +109,9 @@ class canAc(RuleTranslator):
         super().__init__(rule)
     
     @typecheck
-    def translate(self, prms: list_of(ehrparse.Variable)):
-        self_reassign = ", ".join(map(repr, prms)) + " = " + ", ".join("self."+repr(x) for x in prms) + "\n" if len(prms) else ""
+    def translate(self, params: list_of(ehrparse.Variable)):
+        assert identical([type(p) for p in params])
+        self_reassign = ", ".join(map(repr, params)) + " = " + ", ".join("self."+repr(x) for x in params) + "\n" if len(params) else ""
         return lambda number: Template("""
 def canActivate$num(self$params):
 $translation"""
@@ -111,7 +119,7 @@ $translation"""
         (
             num = "" if number==0 else "_" + str(number),
             params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
-            translation = tab( self_reassign + self.translate_hypotheses() )
+            translation = tab( self_reassign + self.translate_hypotheses(1) )
         )
 
 

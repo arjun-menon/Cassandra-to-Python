@@ -10,7 +10,9 @@ def uniq(seq): # order preserving uniqifier
     return [ x for x in seq if x not in seen and not seen.add(x) ]
 
 def identical(seq): # check if all elements in a sequence are identical
-    return reduce(lambda a, b: (b, a[0]==b), seq, (seq[0], None))[1]
+    if len(seq) > 1:
+        return reduce(lambda a, b: (b, a[0]==b), seq, (seq[0], None))[1]
+    return True
 
 def if_any(val, lst):
     for k in lst:
