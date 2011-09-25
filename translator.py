@@ -30,17 +30,14 @@ class RuleTranslator(object):
                 if type(c.left) == Variable:
                     return '%s in inRange(%s, %s)' % (h2u(repr(c.left)), start, end) , [c.left.name, start, end]
         
-        elif c.op == '=':
+        elif c.op == '=' or c.op == '<':
+            
+            op = "==" if c.op == '=' else c.op
+            
             if type(c.left) == Variable and type(c.right) == Constant:
-                return "%r == %r" % (c.left, c.right) , [c.left.name]
+                return "%r %s %r" % (c.left, op, c.right) , [c.left.name]
             elif type(c.left) == Variable and type(c.right) == Variable:
-                return "%r == %r" % (c.left, c.right) , [c.left.name, c.right.name]
-    
-        elif c.op == '<':
-            if type(c.left) == Variable and type(c.right) == Constant:
-                return "%r < %r" % (c.left, c.right) , [c.left.name]
-            elif type(c.left) == Variable and type(c.right) == Variable:
-                return "%r == %r" % (c.left, c.right) , [c.left.name, c.right.name]
+                return "%r %s %r" % (c.left, op, c.right) , [c.left.name, c.right.name]
         
         return repr(c) , None
     
