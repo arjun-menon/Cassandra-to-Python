@@ -62,38 +62,44 @@ class RuleTranslator(object):
                 return comb_trs, comb_vrs
     
     @typecheck
-    def translate_hasActivated(self, hypo_args: [Variable, Function], bound_vars):      
-        subj, role = hypo_args # : [Variable, Function]
+    def translate_hasActivated(self, hasAc_args: [Variable, Function], bound_vars):      
+        subj, role = hasAc_args # [Variable, Function]
+        
+        # { (subj ,role) in hasActivated if role.name =  
+        
+        prms = {repr(arg) for arg in role.args}
+        
+        print(subj, role, "-->", prms)
+        
+        t = Template("""bool({(subject, role) for subject, role in hasActivated if role.name == "$role_name"})""")\
+        .substitute(role_name = role.name)
         
         
-        
-        return ""#h2u(repr(h)) + '\n'
+        return t #h2u(repr(h)) + '\n'
     
-    def translate_hypotheses(self, bound_vars):
-        
-        constraints = [self.translate_constraint(h) for h in self.rule.hypos if type(h) == Constraint]
-        
+    
+    def build_constraints(self, constraints):
+        # add actual constraints
+        constraints.extend(self.translate_constraint(h) for h in self.rule.hypos if type(h) == Constraint)
         if if_any(None, constraints):
-            # DON'T TRANSLATE
-            return "".join("#" + repr(x) + '\n' for x in self.rule.hypos)
+            return False
         
-        else:
-            pass
+        # add constraints based on role parameters
+        
+        return True
+    
+    def translate_hypotheses(self):
+        
+        constraints = []
+        if not self.build_constraints(constraints):
+            return "".join("#" + repr(x) + '\n' for x in self.rule.hypos)  # DON'T TRANSLATE
         
         nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
-        ctrs = [self.translate_constraint(h) for h in self.rule.hypos if type(h) == Constraint]
-        constraint = self.combine_contraint_translations(ctrs)
         
-        tr = ""
+        #return ""        
+        #constraint = self.combine_contraint_translations(ctrs)
         
-        if constraint == None:
-            tr += "# Constraint not translated. TODO\n"
-            tr = tr + "".join("#" + repr(x) + '\n' for x in nc_hypos)
-        elif constraint[1] == None:
-            tr += "# Constraint not translated. TODO\n"
-            tr = tr + constraint[0] + " <---> " + repr(constraint[1])
-        else:
-            tr = "constraint =  lambda " + ", ".join(constraint[1]) + ": " + constraint[0] + "\n\n"
+        tr = '\n'
         
         for h in nc_hypos:
             
@@ -102,8 +108,9 @@ class RuleTranslator(object):
                 h = h.atom
             
             assert type(h) == Atom
+            
             if h.name == "hasActivated":
-                tr = tr + self.translate_hasActivated(h.args, 0)
+                tr = tr + self.translate_hasActivated(h.args, 0) + '\n'
             else:
                 tr = tr + h2u(repr(h)) + '\n' #tr = "#" + repr(h) + '   <--- TODO\n'
          
@@ -112,7 +119,7 @@ class RuleTranslator(object):
 
 class canAc(RuleTranslator):
     def __init__(self, rule):
-        super().__init__(rule)
+        super().__init__(rule)      
     
     @typecheck
     def translate(self, params: list_of(Variable)):
@@ -125,7 +132,7 @@ $translation"""
         (
             num = "" if number==0 else "_" + str(number),
             params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
-            translation = tab( self_reassign + self.translate_hypotheses(1) )
+            translation = tab( self_reassign + self.translate_hypotheses() )
         )
 
 
@@ -150,13 +157,10 @@ class RoleClass(object):
     def __repr__(self):
         return "\ncanActivate rules:\n" + repr(self.canAcs) + "\ncanDeactivate rules:\n" + repr(self.canDcs) + ", \nisDeactivated rules:\n" + repr(self.isDacs) + "\n"
     
-    def get_signature(self):
-        if not len(self.canAcs):
-            raise TypeError("No canActivates associated with this role :(")
-        role = self.canAcs[0].rule.concl.args[-1:][0]
-        name = role.name
-        params = role.args
-        return name, params
+    def build_var_constraints(self):
+        # returns a set of constraints which binds parameters to variable names
+        
+        pass
     
     def canAcs_translator(self):
         assert len(self.canAcs)
@@ -178,17 +182,18 @@ class $name_u(Role):
     def __init__(self$optional_front_comma$params_comma):
         super().__init__('$name', [$params_quote]) $optional_self_assignment_newline_tab$self_assignment$params_comma
 $canAcs_trans$canDcs_trans$isDacs_trans"""
+
         d = {}
         
-        d['name'], params = self.get_signature()
-        d['name_u'] = h2u(d['name'])
+        d['name'  ] =     self.name
+        d['name_u'] = h2u(self.name)
         
-        d["optional_front_comma"] = ", " if len(params) else ""        
-        d["params_comma"]= ", ".join(map(repr, params))        
-        d["params_quote"] = ", ".join("'" + repr(p) + "'" for p in params) if len(params) else ""
+        d["optional_front_comma"] = ", " if len(self.params) else ""        
+        d["params_comma"]= ", ".join(map(repr, self.params))        
+        d["params_quote"] = ", ".join("'" + repr(p) + "'" for p in self.params) if len(self.params) else ""
         
-        d["optional_self_assignment_newline_tab"] = "\n        " if len(params) else ""        
-        d["self_assignment"] = ", ".join("self."+repr(s) for s in params) + " = " if len(params) else ""
+        d["optional_self_assignment_newline_tab"] = "\n        " if len(self.params) else ""        
+        d["self_assignment"] = ", ".join("self."+repr(s) for s in self.params) + " = " if len(self.params) else ""
         
         d["canAcs_trans"] = self.canAcs_translator()
         d["canDcs_trans"] = tab(''.join(map(trans, self.canDcs)))
