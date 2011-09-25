@@ -70,9 +70,10 @@ class RuleTranslator(object):
         return ""#h2u(repr(h)) + '\n'
     
     def translate_hypotheses(self, bound_vars):
-        constraints = [(h, self.translate_constraint(h)) for h in self.rule.hypos if type(h) == Constraint]
         
-        if if_any(None, (cr[1] for cr in constraints)):
+        constraints = [self.translate_constraint(h) for h in self.rule.hypos if type(h) == Constraint]
+        
+        if if_any(None, constraints):
             # DON'T TRANSLATE
             return "".join("#" + repr(x) + '\n' for x in self.rule.hypos)
         
