@@ -91,7 +91,7 @@ class HypothesesTranslator(object):
         #print(subj, role, "-->", {repr(arg) for arg in role.args})
         
         t = Template(
-"""{(subject, role) for subject, role in hasActivated if role.name == "$role_name"$if_conds}"""
+"""len({ (subject, role) for subject, role in hasActivated if role.name == "$role_name"$if_conds })"""
         ).substitute\
         (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
 
