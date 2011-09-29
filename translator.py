@@ -137,11 +137,7 @@ class canAc(HypothesesTranslator):
         super().__init__(rule)      
     
     @typecheck
-    def translate(self, params: list_of(Variable)):
-        assert identical([type(p) for p in params])
-        
-        #self_reassign = ", ".join(map(repr, params)) + " = " + ", ".join("self."+repr(x) for x in params) + "\n" if len(params) else ""
-        
+    def translate(self, params: list_of(Variable)):        
         return lambda number: Template("""
 def canActivate$num(self$params): # $rule_name
 $translation"""
