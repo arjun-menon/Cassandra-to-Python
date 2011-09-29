@@ -16,7 +16,7 @@ class RuleTranslator(object):
         return repr(self.rule)
     
     @typecheck
-    def translate_constraint(self, c: Constraint): 
+    def translate_constraint(self, c: Constraint):
         # """ constraint -> ("translated code", list with names of bound variables) or None"""
         """ """
         
@@ -24,24 +24,33 @@ class RuleTranslator(object):
             
             if type(c.right) == Range and type(c.right.start) == Variable and type(c.right.end) == Variable:
                 
-                # it's of the form ___ in [start, end]
-                start, end = c.right.start.name, c.right.end.name
+                # it's of the form "something in [start, end]"
+                start, end = h2u(c.right.start.name), h2u(c.right.end.name)
                 
                 if type(c.left) == Function:
-                    return ('%s in vrange(%s, %s)' % (h2u(repr(c.left)), start, end) , [repr(i) for i in c.left.args] + [start, end])
+                    fname = h2u(repr(c.left))
+                    
+                    if len(c.left.args):
+                        raise NotImplementedError("'in' operator: functions with arguments - %r" % c.left)
+                    
+                    return [start, end], lambda vd = {start:start, end:end}: \
+                        '%s in vrange(%s, %s)' % (fname, vd[start], vd[end])
     
                 if type(c.left) == Variable:
-                    return ('%s in vrange(%s, %s)' % (h2u(repr(c.left)), start, end) , [c.left.name, start, end])
+                    vn = h2u(repr(c.left))
+                    
+                    return [c.left.name, start, end], lambda vd = {vn:vn, start:start, end:end}: \
+                        '%s in vrange(%s, %s)' % (vd[vn], vd[start], vd[end])
         
         elif c.op == '=' or c.op == '<':
             
             op = "==" if c.op == '=' else c.op
             
             if type(c.left) == Variable and type(c.right) == Constant:
-                return ("%r %s %r" % (c.left, op, c.right) , [c.left.name])
+                return [c.left.name], lambda: "%r %s %r" % (c.left, op, c.right)
             
             elif type(c.left) == Variable and type(c.right) == Variable:
-                return ("%r %s %r" % (c.left, op, c.right) , [c.left.name, c.right.name])
+                return [c.left.name, c.right.name], lambda: "%r %s %r" % (c.left, op, c.right)
         
         return None
     
@@ -72,9 +81,20 @@ class RuleTranslator(object):
         
         return True
     
-    def get_role_constraints(self, params):
+    @typecheck
+    def get_role_constraints(self, params: list_of(Variable)):
         # returns a set of constraints which binds parameters to variable names
-        return [("{0} == self.{0}".format(var_name), [repr(var_name)]) for var_name in params]
+        constraints = []
+        
+        for var in params:
+            var_name = str(var)
+            
+            def param_eq_func(vn):
+                return lambda vd = { vn : vn } : "%s == self.%s" % (vd[vn], vn)
+            
+            constraints.append( ([var_name], param_eq_func(var_name)) )
+        return constraints
+    
     
     @typecheck
     def translate_hypotheses(self, constraints: list):
@@ -83,7 +103,11 @@ class RuleTranslator(object):
         
         nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
         
-        print(constraints)
+        print("---")
+        for i in constraints:
+            vars, func = i
+            print(vars, " -->", func())
+        print()
         
         # Now translate:
         tr = '\n'
@@ -265,7 +289,7 @@ from datetime import datetime
 
 ####################
 
-rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[2]
+rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[0]
 
 def repl(): # use python's quit() to break out
     while True:
