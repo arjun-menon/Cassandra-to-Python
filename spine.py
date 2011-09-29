@@ -7,7 +7,7 @@ class Spine_clinician(Role):
         self.ra, self.org, self.spcty = ra, org, spcty
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # S1.1.1
         {(subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty and Current_time() in vrange(role.start, role.end)}
@@ -186,7 +186,7 @@ class Register_agent(Role):
         self.agent, self.pat = agent, pat
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S1.4.9
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
@@ -217,7 +217,7 @@ class Registration_authority(Role):
         super().__init__('Registration-authority', []) 
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # S1.5.1
         {(subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end)}
@@ -235,7 +235,7 @@ class One_off_consent(Role):
         self.pat = pat
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.1.1
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
@@ -265,7 +265,7 @@ class Request_third_party_consent(Role):
         self.x, self.pat, self.id = x, pat, id
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.2.1
         #couldn't build constraints
@@ -337,7 +337,7 @@ class Third_party_consent(Role):
         self.x, self.pat, self.id = x, pat, id
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, x): # S2.2.14
         {(subject, role) for subject, role in hasActivated if role.name == "Third-party"}
@@ -396,7 +396,7 @@ class Consent_to_treatment(Role):
         self.pat, self.org, self.cli, self.spcty = pat, org, cli, spcty
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.3.9
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
@@ -454,7 +454,7 @@ class Consent_to_group_treatment(Role):
         self.pat, self.org, self.group = pat, org, group
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.4.9
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
@@ -505,7 +505,7 @@ class Treating_clinician(Role):
         self.pat, self.org, self.spcty = pat, org, spcty
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, cli): # S3.3.1
         {(subject, role) for subject, role in hasActivated if role.name == "Consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty}
@@ -534,7 +534,7 @@ class Group_treating_clinician(Role):
         self.pat, self.ra, self.org, self.group, self.spcty = pat, ra, org, group, spcty
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # S3.4.1
         {(subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group}
@@ -577,7 +577,7 @@ class Conceal_request(Role):
         self.what, self.who, self.start, self.end = what, who, start, end
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S4.2.1
         #couldn't build constraints
@@ -643,7 +643,7 @@ class Authenticated_express_consent(Role):
         self.pat, self.cli = pat, cli
     
     def canActivate(self, *params):
-        multi_try(self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S4.3.1
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
