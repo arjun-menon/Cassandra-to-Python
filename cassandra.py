@@ -44,7 +44,7 @@ def multi_try(*funcs):
      
     raise CassandraException( "Tried %d rules, and all failed:" % len(funcs) + "\n".join(e.description for e in e_list) )
 
-class inRange(object):
+class vrange(object):
     def __init__(self, start, end):
         self.start, self.end = start, end
     def __contains__(self, val):
