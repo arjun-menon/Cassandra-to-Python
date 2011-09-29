@@ -113,7 +113,7 @@ class HypothesesTranslator(object):
 #            print()
             
             # Now translate:
-            tr = ""
+            tr = []
             for h in nc_hypos:
                 
                 if(type(h) == RemoteAtom):
@@ -123,11 +123,11 @@ class HypothesesTranslator(object):
                 assert type(h) == Atom
                 
                 if h.name == "hasActivated":
-                    tr = tr + self.translate_hasActivated(h.args, constraints) + '\n'
+                    tr.append( self.translate_hasActivated(h.args, constraints) )
                 else:
-                    tr = tr + h2u(repr(h)) + '\n' #tr = "#" + repr(h) + '   <--- TODO\n'
+                    tr.append( h2u(repr(h)) )
                 
-            return tr
+            return "return\\\n" + ' and\\\n'.join(tr)
                 
         except StopTranslating as st:
             return "".join("#" + str(x) + '\n' for x in [st.reason] + self.rule.hypos) + "pass"
