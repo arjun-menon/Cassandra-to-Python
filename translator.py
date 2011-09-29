@@ -9,6 +9,10 @@ from helpers import *
 
 ####################
 
+class StopTranslating(Exception):
+    def __init__(self, reason):
+        self.reason = reason
+
 class RuleTranslator(object):
     def __init__(self, rule):
         self.rule = rule
@@ -31,15 +35,15 @@ class RuleTranslator(object):
                     fname = h2u(repr(c.left))
                     
                     if len(c.left.args):
-                        raise NotImplementedError("'in' operator: functions with arguments - %r" % c.left)
+                        raise StopTranslating("can't handle 'in' operator - function with arguments: %r" % c.left)
                     
-                    return [start, end], lambda vd = {start:start, end:end}: \
+                    return {start, end}, lambda vd = {start:start, end:end}: \
                         '%s in vrange(%s, %s)' % (fname, vd[start], vd[end])
     
                 if type(c.left) == Variable:
                     vn = h2u(repr(c.left))
                     
-                    return [c.left.name, start, end], lambda vd = {vn:vn, start:start, end:end}: \
+                    return {c.left.name, start, end}, lambda vd = {vn:vn, start:start, end:end}: \
                         '%s in vrange(%s, %s)' % (vd[vn], vd[start], vd[end])
         
         elif c.op == '=' or c.op == '<':
@@ -47,22 +51,35 @@ class RuleTranslator(object):
             op = "==" if c.op == '=' else c.op
             
             if type(c.left) == Variable and type(c.right) == Constant:
-                return [c.left.name], lambda: "%r %s %r" % (c.left, op, c.right)
+                return {c.left.name}, lambda: "%r %s %r" % (c.left, op, c.right)
             
             elif type(c.left) == Variable and type(c.right) == Variable:
-                return [c.left.name, c.right.name], lambda: "%r %s %r" % (c.left, op, c.right)
+                return {c.left.name, c.right.name}, lambda: "%r %s %r" % (c.left, op, c.right)
         
         return None
     
     @typecheck
-    def translate_hasActivated(self, hasAc_args: [Variable, Function], bound_vars):      
+    def translate_hasActivated(self, hasAc_args: [Variable, Function], constraints):
         subj, role = hasAc_args
         
-        # { (subj ,role) in hasActivated if role.name =  
+        def build_if_condition(params, constraints):
+            conds = []
+            
+            for cons in constraints:
+                vars, func = cons
+                
+                if params & vars:
+                    if not vars == params & vars:
+                        raise StopTranslating(repr(vars) + " vars in constraint - no match in " + repr(params))
+                    
+                    conds.append( func( {v:'role.'+v for v in vars} ) )
+            
+            return " and ".join(conds)
         
-        prms = {repr(arg) for arg in role.args}
         
-        #print(subj, role, "-->", prms, ':', bound_vars)
+        print(build_if_condition({repr(arg) for arg in role.args}, constraints))
+        
+        print(subj, role, "-->", {repr(arg) for arg in role.args})
         
         t = Template("""bool({(subject, role) for subject, role in hasActivated if role.name == "$role_name"})""")\
         .substitute(role_name = role.name)
@@ -92,40 +109,44 @@ class RuleTranslator(object):
             def param_eq_func(vn):
                 return lambda vd = { vn : vn } : "%s == self.%s" % (vd[vn], vn)
             
-            constraints.append( ([var_name], param_eq_func(var_name)) )
+            constraints.append( ({var_name}, param_eq_func(var_name)) )
         return constraints
     
     
     @typecheck
     def translate_hypotheses(self, constraints: list):
-        if not self.build_constraints(constraints): # DON'T TRANSLATE
-            return "".join("#" + repr(x) + '\n' for x in self.rule.hypos)
-        
-        nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
-        
-        print("---")
-        for i in constraints:
-            vars, func = i
-            print(vars, " -->", func())
-        print()
-        
-        # Now translate:
-        tr = '\n'
-        for h in nc_hypos:
+        try:
+            if not self.build_constraints(constraints):
+                raise StopTranslating("Constraint building didn't go successfully")
             
-            if(type(h) == RemoteAtom):
-                # TODO
-                h = h.atom
+            nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
             
-            assert type(h) == Atom
+            print("---")
+            for i in constraints:
+                vars, func = i
+                print(vars, " -->", func())
+            print()
             
-            if h.name == "hasActivated":
-                tr = tr + self.translate_hasActivated(h.args, 0) + '\n'
-            else:
-                tr = tr + h2u(repr(h)) + '\n' #tr = "#" + repr(h) + '   <--- TODO\n'
-         
-        return tr
-
+            # Now translate:
+            tr = '\n'
+            for h in nc_hypos:
+                
+                if(type(h) == RemoteAtom):
+                    # TODO
+                    h = h.atom
+                
+                assert type(h) == Atom
+                
+                if h.name == "hasActivated":
+                    tr = tr + self.translate_hasActivated(h.args, constraints) + '\n'
+                else:
+                    tr = tr + h2u(repr(h)) + '\n' #tr = "#" + repr(h) + '   <--- TODO\n'
+                
+                                
+            return tr
+                
+        except StopTranslating as st:
+            return "".join("#" + repr(x) + '\n' for x in [st.reason] + self.rule.hypos)
 
 class canAc(RuleTranslator):
     def __init__(self, rule):
