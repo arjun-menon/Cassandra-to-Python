@@ -143,10 +143,11 @@ class canAc(HypothesesTranslator):
         #self_reassign = ", ".join(map(repr, params)) + " = " + ", ".join("self."+repr(x) for x in params) + "\n" if len(params) else ""
         
         return lambda number: Template("""
-def canActivate$num(self$params):
+def canActivate$num(self$params): # $rule_name
 $translation"""
         ).substitute\
         (
+            rule_name = self.rule.name,
             num = "" if number==0 else "_" + str(number),
             params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
             translation = tab( self.translate_hypotheses(self.get_role_constraints(params)) )
