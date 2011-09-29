@@ -3,12 +3,6 @@ from string import Template
 from ehrparse import *
 from helpers import *
 
-# As a general translation policy, translated segments begin with 
-# an empty line - this is how individual segments are spaced out.
-# There are no blank lines at the end of a segment. 
-
-####################
-
 class StopTranslating(Exception):
     def __init__(self, reason):
         self.reason = reason
@@ -136,7 +130,7 @@ class HypothesesTranslator(object):
             return tr
                 
         except StopTranslating as st:
-            return "".join("#" + str(x) + '\n' for x in [st.reason] + self.rule.hypos)
+            return "".join("#" + str(x) + '\n' for x in [st.reason] + self.rule.hypos) + "pass"
 
 class canAc(HypothesesTranslator):
     def __init__(self, rule):

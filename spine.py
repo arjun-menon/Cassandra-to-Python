@@ -296,12 +296,14 @@ class Request_third_party_consent(Role):
         #couldn't build constraints
         #hasActivated(pat, Patient())
         #x in Get-spine-record-third-parties(pat, id)
+        pass
     
     def canActivate_2(self, ag):
         x, pat, id = self.x, self.pat, self.id
         #couldn't build constraints
         #hasActivated(ag, Agent(pat))
         #x in Get-spine-record-third-parties(pat, id)
+        pass
     
     def canActivate_3(self, cli):
         x, pat, id = self.x, self.pat, self.id
@@ -309,6 +311,7 @@ class Request_third_party_consent(Role):
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
         #x in Get-spine-record-third-parties(pat, id)
+        pass
     
     #'S2.2.4'
     #canDeactivate(pat, y, Request-third-party-consent(x, pat, id)) <-
@@ -651,6 +654,7 @@ class Conceal_request(Role):
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
         #n < 100
+        pass
     
     def canActivate_2(self, ag):
         what, who, start, end = self.what, self.who, self.start, self.end
@@ -659,6 +663,7 @@ class Conceal_request(Role):
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
         #n < 100
+        pass
     
     #'S4.2.3'
     #canDeactivate(pat, x, Conceal-request(what, whom, start, end)) <-
