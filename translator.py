@@ -13,11 +13,26 @@ class StopTranslating(Exception):
     def __init__(self, reason):
         self.reason = reason
 
-class RuleTranslator(object):
+class HypothesesTranslator(object):
     def __init__(self, rule):
         self.rule = rule
     def __repr__(self):
         return repr(self.rule)
+    
+    @typecheck
+    def get_role_constraints(self, params: list_of(Variable)):
+        """Returns a set of constraint code generation functions which binds role parameters to external variables"""
+        constraints = []
+        
+        for var in params:
+            var_name = str(var)
+            
+            def param_eq_func(vn):
+                return lambda vd = { vn : vn } : "%s == self.%s" % (vd[vn], vn)
+            
+            constraints.append( ({var_name}, param_eq_func(var_name)) )
+        
+        return constraints
     
     @typecheck
     def translate_constraint(self, c: Constraint):
@@ -77,55 +92,31 @@ class RuleTranslator(object):
             return " and ".join(conds)
         
         
-        print(build_if_condition({repr(arg) for arg in role.args}, constraints))
+        if_conds = build_if_condition({repr(arg) for arg in role.args}, constraints)
         
-        print(subj, role, "-->", {repr(arg) for arg in role.args})
+        #print(subj, role, "-->", {repr(arg) for arg in role.args})
         
-        t = Template("""bool({(subject, role) for subject, role in hasActivated if role.name == "$role_name"})""")\
-        .substitute(role_name = role.name)
-        
-        
-        return t #h2u(repr(h)) + '\n'
-    
-    
-    def build_constraints(self, constraints):
-        # add actual constraints
-        constraints.extend(self.translate_constraint(h) for h in self.rule.hypos if type(h) == Constraint)
-        if if_any(None, constraints):
-            return False
-        
-        # add constraints based on role parameters
-        
-        return True
-    
-    @typecheck
-    def get_role_constraints(self, params: list_of(Variable)):
-        # returns a set of constraints which binds parameters to variable names
-        constraints = []
-        
-        for var in params:
-            var_name = str(var)
-            
-            def param_eq_func(vn):
-                return lambda vd = { vn : vn } : "%s == self.%s" % (vd[vn], vn)
-            
-            constraints.append( ({var_name}, param_eq_func(var_name)) )
-        return constraints
-    
+        t = Template(
+"""{(subject, role) for subject, role in hasActivated if role.name == "$role_name" $if_conds}"""
+        ).substitute\
+        (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
+
+        return t
     
     @typecheck
     def translate_hypotheses(self, constraints: list):
         try:
-            if not self.build_constraints(constraints):
-                raise StopTranslating("Constraint building didn't go successfully")
+            constraints.extend(self.translate_constraint(h) for h in self.rule.hypos if type(h) == Constraint)
+            if any_eq(None, constraints):
+                raise StopTranslating("couldn't build constraints")
             
             nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
             
-            print("---")
-            for i in constraints:
-                vars, func = i
-                print(vars, " -->", func())
-            print()
+#            print("---")
+#            for i in constraints:
+#                vars, func = i
+#                print(vars, " -->", func())
+#            print()
             
             # Now translate:
             tr = '\n'
@@ -142,13 +133,12 @@ class RuleTranslator(object):
                 else:
                     tr = tr + h2u(repr(h)) + '\n' #tr = "#" + repr(h) + '   <--- TODO\n'
                 
-                                
             return tr
                 
         except StopTranslating as st:
-            return "".join("#" + repr(x) + '\n' for x in [st.reason] + self.rule.hypos)
+            return "".join("#" + str(x) + '\n' for x in [st.reason] + self.rule.hypos)
 
-class canAc(RuleTranslator):
+class canAc(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)      
     
@@ -310,7 +300,7 @@ from datetime import datetime
 
 ####################
 
-rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[0]
+rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[1]
 
 def repl(): # use python's quit() to break out
     while True:

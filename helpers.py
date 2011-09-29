@@ -14,7 +14,7 @@ def identical(seq): # check if all elements in a sequence are identical
         return reduce(lambda a, b: (b, a[0]==b), seq, (seq[0], None))[1]
     return True
 
-def if_any(val, seq):
+def any_eq(val, seq):
     for k in seq:
         if k == val:
             return True
