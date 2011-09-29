@@ -10,15 +10,11 @@ class Spine_clinician(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params))
     
     def canActivate_1(self, cli):
-        ra, org, spcty = self.ra, self.org, self.spcty
-        
         {(subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty and Current_time() in vrange(role.start, role.end)}
         canActivate(ra, Registration_authority())
         no_main_role_active(cli)
     
     def canActivate_2(self, cli):
-        ra, org, spcty = self.ra, self.org, self.spcty
-        
         {(subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty and Current_time() in vrange(role.start, role.end)}
         canActivate(ra, Registration_authority())
         no_main_role_active(cli)
@@ -40,7 +36,6 @@ class Spine_admin(Role):
         super().__init__('Spine-admin', []) 
     
     def canActivate(self, adm):
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Register-spine-admin"}
         no_main_role_active(adm)
     
@@ -58,8 +53,6 @@ class Register_spine_admin(Role):
         self.adm2 = adm2
     
     def canActivate(self, adm):
-        adm2 = self.adm2
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-admin"}
         spine_admin_regs(n, adm2)
     
@@ -80,7 +73,6 @@ class Patient(Role):
         super().__init__('Patient', []) 
     
     def canActivate(self, pat):
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Register-patient"}
         no_main_role_active(pat)
         {(subject, role) for subject, role in hasActivated if role.name == "Register-patient"}
@@ -99,8 +91,6 @@ class Register_patient(Role):
         self.pat = pat
     
     def canActivate(self, adm):
-        pat = self.pat
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-admin"}
         patient_regs(n, pat)
     
@@ -162,8 +152,6 @@ class Agent(Role):
         self.pat = pat
     
     def canActivate(self, ag):
-        pat = self.pat
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Register-agent" and role.pat == self.pat}
         {(subject, role) for subject, role in hasActivated if role.name == "Register-patient"}
         no_main_role_active(ag)
@@ -201,14 +189,10 @@ class Register_agent(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params))
     
     def canActivate_1(self, pat):
-        agent, pat = self.agent, self.pat
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
         agent_regs(n, pat)
     
     def canActivate_2(self, cli):
-        agent, pat = self.agent, self.pat
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician"}
         canActivate(cli, General_practitioner(pat))
     
@@ -236,11 +220,9 @@ class Registration_authority(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params))
     
     def canActivate_1(self, ra):
-        
         {(subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end)}
     
     def canActivate_2(self, ra):
-        
         {(subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end)}
 
 #'S1.5.3'
@@ -256,18 +238,12 @@ class One_off_consent(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params), lambda: self.canActivate_3(*params))
     
     def canActivate_1(self, pat):
-        pat = self.pat
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
     
     def canActivate_2(self, ag):
-        pat = self.pat
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat}
     
     def canActivate_3(self, cli):
-        pat = self.pat
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician"}
         canActivate(cli, Treating_clinician(pat, org, spcty))
     
@@ -292,21 +268,18 @@ class Request_third_party_consent(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params), lambda: self.canActivate_3(*params))
     
     def canActivate_1(self, pat):
-        x, pat, id = self.x, self.pat, self.id
         #couldn't build constraints
         #hasActivated(pat, Patient())
         #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_2(self, ag):
-        x, pat, id = self.x, self.pat, self.id
         #couldn't build constraints
         #hasActivated(ag, Agent(pat))
         #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_3(self, cli):
-        x, pat, id = self.x, self.pat, self.id
         #couldn't build constraints
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
@@ -346,7 +319,6 @@ class Third_party(Role):
         super().__init__('Third-party', []) 
     
     def canActivate(self, x):
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent"}
         no_main_role_active(x)
         {(subject, role) for subject, role in hasActivated if role.name == "Register-patient"}
@@ -368,14 +340,10 @@ class Third_party_consent(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params))
     
     def canActivate_1(self, x):
-        x, pat, id = self.x, self.pat, self.id
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Third-party"}
         {(subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id}
     
     def canActivate_2(self, cli):
-        x, pat, id = self.x, self.pat, self.id
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician"}
         canActivate(cli, Treating_clinician(pat, org, spcty))
         {(subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id}
@@ -390,8 +358,6 @@ class Request_consent_to_treatment(Role):
         self.pat, self.org2, self.cli2, self.spcty2 = pat, org2, cli2, spcty2
     
     def canActivate(self, cli1):
-        pat, org2, cli2, spcty2 = self.pat, self.org2, self.cli2, self.spcty2
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician"}
         canActivate(cli2, Spine_clinician(ra2, org2, spcty2))
         canActivate(pat, Patient())
@@ -433,20 +399,14 @@ class Consent_to_treatment(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params), lambda: self.canActivate_3(*params))
     
     def canActivate_1(self, pat):
-        pat, org, cli, spcty = self.pat, self.org, self.cli, self.spcty
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
         {(subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty}
     
     def canActivate_2(self, ag):
-        pat, org, cli, spcty = self.pat, self.org, self.cli, self.spcty
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat}
         {(subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty}
     
     def canActivate_3(self, cli1):
-        pat, org, cli, spcty = self.pat, self.org, self.cli, self.spcty
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org and role.spcty == self.spcty}
         canActivate(cli1, Treating_clinician(pat, org, spcty))
         {(subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty}
@@ -457,8 +417,6 @@ class Request_consent_to_group_treatment(Role):
         self.pat, self.org, self.group = pat, org, group
     
     def canActivate(self, cli):
-        pat, org, group = self.pat, self.org, self.group
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org}
         canActivate(pat, Patient())
     
@@ -499,20 +457,14 @@ class Consent_to_group_treatment(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params), lambda: self.canActivate_3(*params))
     
     def canActivate_1(self, pat):
-        pat, org, group = self.pat, self.org, self.group
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
         {(subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group}
     
     def canActivate_2(self, ag):
-        pat, org, group = self.pat, self.org, self.group
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat}
         {(subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group}
     
     def canActivate_3(self, cli1):
-        pat, org, group = self.pat, self.org, self.group
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org}
         canActivate(cli1, Treating_clinician(pat, org, spcty))
         {(subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group}
@@ -523,8 +475,6 @@ class Referrer(Role):
         self.pat, self.org, self.cli2, self.spcty1 = pat, org, cli2, spcty1
     
     def canActivate(self, cli1):
-        pat, org, cli2, spcty1 = self.pat, self.org, self.cli2, self.spcty1
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org}
         canActivate(cli1, Treating_clinician(pat, org, spcty2))
     
@@ -542,8 +492,6 @@ class Spine_emergency_clinician(Role):
         self.org, self.pat = org, pat
     
     def canActivate(self, cli):
-        org, pat = self.org, self.pat
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org}
         canActivate(pat, Patient())
     
@@ -560,24 +508,16 @@ class Treating_clinician(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params), lambda: self.canActivate_3(*params), lambda: self.canActivate_4(*params))
     
     def canActivate_1(self, cli):
-        pat, org, spcty = self.pat, self.org, self.spcty
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty}
     
     def canActivate_2(self, cli):
-        pat, org, spcty = self.pat, self.org, self.spcty
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-emergency-clinician" and role.pat == self.pat and role.org == self.org}
     
     def canActivate_3(self, cli):
-        pat, org, spcty = self.pat, self.org, self.spcty
-        
         canActivate(cli, Spine_clinician(ra, org, spcty))
         {(subject, role) for subject, role in hasActivated if role.name == "Referrer" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty}
     
     def canActivate_4(self, cli):
-        pat, org, spcty = self.pat, self.org, self.spcty
-        
         canActivate(cli, Group_treating_clinician(pat, ra, org, group, spcty))
 
 class General_practitioner(Role): 
@@ -586,8 +526,6 @@ class General_practitioner(Role):
         self.pat = pat
     
     def canActivate(self, cli):
-        pat = self.pat
-        
         canActivate(cli, Treating_clinician(pat, org, spcty))
 
 class Group_treating_clinician(Role): 
@@ -599,15 +537,11 @@ class Group_treating_clinician(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params))
     
     def canActivate_1(self, cli):
-        pat, ra, org, group, spcty = self.pat, self.ra, self.org, self.group, self.spcty
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group}
         canActivate(cli, Workgroup_member(org, group, spcty))
         canActivate(ra, Registration_authority())
     
     def canActivate_2(self, cli):
-        pat, ra, org, group, spcty = self.pat, self.ra, self.org, self.group, self.spcty
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group}
         canActivate(cli, Workgroup_member(org, group, spcty))
         canActivate(ra, Registration_authority())
@@ -618,8 +552,6 @@ class Concealed_by_spine_clinician(Role):
         self.pat, self.ids, self.start, self.end = pat, ids, start, end
     
     def canActivate(self, cli):
-        pat, ids, start, end = self.pat, self.ids, self.start, self.end
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician"}
         canActivate(cli, Treating_clinician(pat, org, spcty))
     
@@ -648,7 +580,6 @@ class Conceal_request(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params))
     
     def canActivate_1(self, pat):
-        what, who, start, end = self.what, self.who, self.start, self.end
         #couldn't build constraints
         #hasActivated(pat, Patient())
         #count-conceal-requests(n, pat)
@@ -657,7 +588,6 @@ class Conceal_request(Role):
         pass
     
     def canActivate_2(self, ag):
-        what, who, start, end = self.what, self.who, self.start, self.end
         #couldn't build constraints
         #hasActivated(ag, Agent(pat))
         #count-conceal-requests(n, pat)
@@ -691,8 +621,6 @@ class Concealed_by_spine_patient(Role):
         self.what, self.who, self.start, self.end = what, who, start, end
     
     def canActivate(self, cli):
-        what, who, start, end = self.what, self.who, self.start, self.end
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician"}
         canActivate(cli, Treating_clinician(pat, org, spcty))
         {(subject, role) for subject, role in hasActivated if role.name == "Conceal-request" and role.what == self.what and role.who == self.who and role.start == self.start and role.end == self.end}
@@ -718,20 +646,14 @@ class Authenticated_express_consent(Role):
         multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params), lambda: self.canActivate_3(*params))
     
     def canActivate_1(self, pat):
-        pat, cli = self.pat, self.cli
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Patient"}
         count_authenticated_express_consent(n, pat)
     
     def canActivate_2(self, ag):
-        pat, cli = self.pat, self.cli
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat}
         count_authenticated_express_consent(n, pat)
     
     def canActivate_3(self, cli1):
-        pat, cli = self.pat, self.cli
-        
         {(subject, role) for subject, role in hasActivated if role.name == "Spine-clinician"}
         canActivate(cli1, General_practitioner(pat))
     

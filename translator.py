@@ -113,7 +113,7 @@ class HypothesesTranslator(object):
 #            print()
             
             # Now translate:
-            tr = '\n'
+            tr = ""
             for h in nc_hypos:
                 
                 if(type(h) == RemoteAtom):
@@ -140,7 +140,7 @@ class canAc(HypothesesTranslator):
     def translate(self, params: list_of(Variable)):
         assert identical([type(p) for p in params])
         
-        self_reassign = ", ".join(map(repr, params)) + " = " + ", ".join("self."+repr(x) for x in params) + "\n" if len(params) else ""
+        #self_reassign = ", ".join(map(repr, params)) + " = " + ", ".join("self."+repr(x) for x in params) + "\n" if len(params) else ""
         
         return lambda number: Template("""
 def canActivate$num(self$params):
@@ -149,7 +149,7 @@ $translation"""
         (
             num = "" if number==0 else "_" + str(number),
             params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
-            translation = tab( self_reassign + self.translate_hypotheses(self.get_role_constraints(params)) )
+            translation = tab( self.translate_hypotheses(self.get_role_constraints(params)) )
         )
 
 
