@@ -1,7 +1,7 @@
 from cassandra import *
 from datetime import datetime
 
-class Spine_clinician(Role): 
+class Spine_clinician(Role):
     def __init__(self, ra, org, spcty):
         super().__init__('Spine-clinician', ['ra', 'org', 'spcty']) 
         self.ra, self.org, self.spcty = ra, org, spcty
@@ -33,7 +33,7 @@ class Spine_clinician(Role):
 #count-spine-clinician-activations(count<u>, user) <-
 #	hasActivated(u, Spine-clinician(ra, org, spcty)), u = user
 
-class Spine_admin(Role): 
+class Spine_admin(Role):
     def __init__(self):
         super().__init__('Spine-admin', []) 
     
@@ -50,7 +50,7 @@ class Spine_admin(Role):
 #count-spine-admin-activations(count<u>, user) <-
 #	hasActivated(u, Spine-admin()), u = user
 
-class Register_spine_admin(Role): 
+class Register_spine_admin(Role):
     def __init__(self, adm2):
         super().__init__('Register-spine-admin', ['adm2']) 
         self.adm2 = adm2
@@ -72,7 +72,7 @@ class Register_spine_admin(Role):
 #spine-admin-regs(count<x>, adm) <-
 #	hasActivated(x, Register-spine-admin(adm))
 
-class Patient(Role): 
+class Patient(Role):
     def __init__(self):
         super().__init__('Patient', []) 
     
@@ -90,7 +90,7 @@ class Patient(Role):
 #count-patient-activations(count<u>, user) <-
 #	hasActivated(u, Patient()), u = user
 
-class Register_patient(Role): 
+class Register_patient(Role):
     def __init__(self, pat):
         super().__init__('Register-patient', ['pat']) 
         self.pat = pat
@@ -152,7 +152,7 @@ class Register_patient(Role):
 #patient-regs(count<x>, pat) <-
 #	hasActivated(x, Register-patient(pat))
 
-class Agent(Role): 
+class Agent(Role):
     def __init__(self, pat):
         super().__init__('Agent', ['pat']) 
         self.pat = pat
@@ -187,7 +187,7 @@ class Agent(Role):
 #canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
 #	org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority()), Current-time() in [start, end]
 
-class Register_agent(Role): 
+class Register_agent(Role):
     def __init__(self, agent, pat):
         super().__init__('Register-agent', ['agent', 'pat']) 
         self.agent, self.pat = agent, pat
@@ -221,7 +221,7 @@ class Register_agent(Role):
 #agent-regs(count<x>, pat) <-
 #	hasActivated(pat, Register-agent(x, pat))
 
-class Registration_authority(Role): 
+class Registration_authority(Role):
     def __init__(self):
         super().__init__('Registration-authority', []) 
     
@@ -240,7 +240,7 @@ class Registration_authority(Role):
 #no-main-role-active(user) <-
 #	count-agent-activations(n, user), count-spine-clinician-activations(n, user), count-spine-admin-activations(n, user), count-patient-activations(n, user), count-third-party-activations(n, user), n = 0
 
-class One_off_consent(Role): 
+class One_off_consent(Role):
     def __init__(self, pat):
         super().__init__('One-off-consent', ['pat']) 
         self.pat = pat
@@ -273,7 +273,7 @@ class One_off_consent(Role):
     #canDeactivate(cli, x, One-off-consent(pat)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))
 
-class Request_third_party_consent(Role): 
+class Request_third_party_consent(Role):
     def __init__(self, x, pat, id):
         super().__init__('Request-third-party-consent', ['x', 'pat', 'id']) 
         self.x, self.pat, self.id = x, pat, id
@@ -328,7 +328,7 @@ class Request_third_party_consent(Role):
 #other-third-party-consent-requests(count<x>, y, z) <-
 #	hasActivated(x, Request-third-party-consent(z, pat, id)), x != y
 
-class Third_party(Role): 
+class Third_party(Role):
     def __init__(self):
         super().__init__('Third-party', []) 
     
@@ -346,7 +346,7 @@ class Third_party(Role):
 #count-third-party-activations(count<u>, user) <-
 #	hasActivated(u, Third-party()), u = user
 
-class Third_party_consent(Role): 
+class Third_party_consent(Role):
     def __init__(self, x, pat, id):
         super().__init__('Third-party-consent', ['x', 'pat', 'id']) 
         self.x, self.pat, self.id = x, pat, id
@@ -369,7 +369,7 @@ class Third_party_consent(Role):
 #third-party-consent(group<consenter>, pat, id) <-
 #	hasActivated(x, Third-party-consent(consenter, pat, id))
 
-class Request_consent_to_treatment(Role): 
+class Request_consent_to_treatment(Role):
     def __init__(self, pat, org2, cli2, spcty2):
         super().__init__('Request-consent-to-treatment', ['pat', 'org2', 'cli2', 'spcty2']) 
         self.pat, self.org2, self.cli2, self.spcty2 = pat, org2, cli2, spcty2
@@ -408,7 +408,7 @@ class Request_consent_to_treatment(Role):
 #other-consent-to-treatment-requests(count<y>, x, pat, org, cli, spcty) <-
 #	hasActivated(y, Request-consent-to-treatment(pat, org, cli, spcty)), x != y
 
-class Consent_to_treatment(Role): 
+class Consent_to_treatment(Role):
     def __init__(self, pat, org, cli, spcty):
         super().__init__('Consent-to-treatment', ['pat', 'org', 'cli', 'spcty']) 
         self.pat, self.org, self.cli, self.spcty = pat, org, cli, spcty
@@ -432,7 +432,7 @@ class Consent_to_treatment(Role):
         canActivate(cli1, Treating_clinician(pat, org, spcty)) and\
         len({ (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty })
 
-class Request_consent_to_group_treatment(Role): 
+class Request_consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
         super().__init__('Request-consent-to-group-treatment', ['pat', 'org', 'group']) 
         self.pat, self.org, self.group = pat, org, group
@@ -470,7 +470,7 @@ class Request_consent_to_group_treatment(Role):
 #other-consent-to-group-treatment-requests(count<y>, x, pat, org, group) <-
 #	hasActivated(y, Request-consent-to-group-treatment(pat, org, group)), x != y
 
-class Consent_to_group_treatment(Role): 
+class Consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
         super().__init__('Consent-to-group-treatment', ['pat', 'org', 'group']) 
         self.pat, self.org, self.group = pat, org, group
@@ -494,7 +494,7 @@ class Consent_to_group_treatment(Role):
         canActivate(cli1, Treating_clinician(pat, org, spcty)) and\
         len({ (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group })
 
-class Referrer(Role): 
+class Referrer(Role):
     def __init__(self, pat, org, cli2, spcty1):
         super().__init__('Referrer', ['pat', 'org', 'cli2', 'spcty1']) 
         self.pat, self.org, self.cli2, self.spcty1 = pat, org, cli2, spcty1
@@ -512,7 +512,7 @@ class Referrer(Role):
     #canDeactivate(pat, cli1, Referrer(pat, org, cli2, spcty1)) <-
     #	
 
-class Spine_emergency_clinician(Role): 
+class Spine_emergency_clinician(Role):
     def __init__(self, org, pat):
         super().__init__('Spine-emergency-clinician', ['org', 'pat']) 
         self.org, self.pat = org, pat
@@ -526,7 +526,7 @@ class Spine_emergency_clinician(Role):
     #canDeactivate(cli, cli, Spine-emergency-clinician(org, pat)) <-
     #	
 
-class Treating_clinician(Role): 
+class Treating_clinician(Role):
     def __init__(self, pat, org, spcty):
         super().__init__('Treating-clinician', ['pat', 'org', 'spcty']) 
         self.pat, self.org, self.spcty = pat, org, spcty
@@ -551,7 +551,7 @@ class Treating_clinician(Role):
         return\
         canActivate(cli, Group_treating_clinician(pat, ra, org, group, spcty))
 
-class General_practitioner(Role): 
+class General_practitioner(Role):
     def __init__(self, pat):
         super().__init__('General-practitioner', ['pat']) 
         self.pat = pat
@@ -560,7 +560,7 @@ class General_practitioner(Role):
         return\
         canActivate(cli, Treating_clinician(pat, org, spcty))
 
-class Group_treating_clinician(Role): 
+class Group_treating_clinician(Role):
     def __init__(self, pat, ra, org, group, spcty):
         super().__init__('Group-treating-clinician', ['pat', 'ra', 'org', 'group', 'spcty']) 
         self.pat, self.ra, self.org, self.group, self.spcty = pat, ra, org, group, spcty
@@ -580,7 +580,7 @@ class Group_treating_clinician(Role):
         canActivate(cli, Workgroup_member(org, group, spcty)) and\
         canActivate(ra, Registration_authority())
 
-class Concealed_by_spine_clinician(Role): 
+class Concealed_by_spine_clinician(Role):
     def __init__(self, pat, ids, start, end):
         super().__init__('Concealed-by-spine-clinician', ['pat', 'ids', 'start', 'end']) 
         self.pat, self.ids, self.start, self.end = pat, ids, start, end
@@ -606,7 +606,7 @@ class Concealed_by_spine_clinician(Role):
 #count-concealed-by-spine-clinician(count<x>, pat, id) <-
 #	hasActivated(x, Concealed-by-spine-clinician(pat, ids, start, end)), id in ids, Current-time() in [start, end]
 
-class Conceal_request(Role): 
+class Conceal_request(Role):
     def __init__(self, what, who, start, end):
         super().__init__('Conceal-request', ['what', 'who', 'start', 'end']) 
         self.what, self.who, self.start, self.end = what, who, start, end
@@ -650,7 +650,7 @@ class Conceal_request(Role):
 #count-conceal-requests(count<y>, pat) <-
 #	hasActivated(x, Conceal-request(y)), (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)), y = (what,who,start,end)
 
-class Concealed_by_spine_patient(Role): 
+class Concealed_by_spine_patient(Role):
     def __init__(self, what, who, start, end):
         super().__init__('Concealed-by-spine-patient', ['what', 'who', 'start', 'end']) 
         self.what, self.who, self.start, self.end = what, who, start, end
@@ -673,7 +673,7 @@ class Concealed_by_spine_patient(Role):
 #count-concealed-by-spine-patient(count<x>, a, b) <-
 #	hasActivated(x, Concealed-by-spine-patient(what, who, start, end)), a = (pat,id), b = (org,reader,spcty), what = (pat,ids,orgs,authors,subjects,from-time,to-time), whom = (orgs1,readers1,spctys1), Get-spine-record-org(pat, id) in orgs, Get-spine-record-author(pat, id) in authors, sub in Get-spine-record-subjects(pat, id), sub in subjects, Get-spine-record-time(pat, id) in [from-time, to-time], id in ids, org in orgs1, reader in readers1, spcty in spctys1, Current-time() in [start, end], Get-spine-record-third-parties(pat, id) = emptyset, "non-clinical" notin Get-spine-record-subjects(pat, id)
 
-class Authenticated_express_consent(Role): 
+class Authenticated_express_consent(Role):
     def __init__(self, pat, cli):
         super().__init__('Authenticated-express-consent', ['pat', 'cli']) 
         self.pat, self.cli = pat, cli
