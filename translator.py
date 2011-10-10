@@ -7,6 +7,10 @@ class StopTranslating(Exception):
     def __init__(self, reason):
         self.reason = reason
 
+class Wildcard(object):
+    def __eq__(self, other):
+        return True
+
 class HypothesesTranslator(object):
     def __init__(self, rule):
         self.rule = rule
@@ -14,7 +18,7 @@ class HypothesesTranslator(object):
         return repr(self.rule)
 
     @typecheck
-    def get_role_constraints(self, params: list_of(Variable)):
+    def construct_role_param_constraint_generators(self, params: list_of(Variable)) -> list:
         """Returns a set of constraint code generation functions which binds role parameters to external variables"""
         constraints = []
 
@@ -30,7 +34,6 @@ class HypothesesTranslator(object):
 
     @typecheck
     def translate_constraint(self, c: Constraint):
-        # """ constraint -> ("translated code", list with names of bound variables) or None"""
         """ returns a special data structure of the form ({ ..dict.. }, lambda vd: ...)
             The lambda when called returns a string which is translation of the constraint to Python.
             * the first dict is a list of variables names that are bound (or affected) by the constraint 
@@ -80,13 +83,13 @@ class HypothesesTranslator(object):
             conds = []
 
             for cons in constraints:
-                vars, func = cons
+                variables, func = cons
 
-                if params & vars:
-                    if not vars == params & vars:
-                        raise StopTranslating(repr(vars) + " vars in constraint - no match in " + repr(params))
+                if params & variables:
+                    if not variables == params & variables:
+                        raise StopTranslating(repr(variables) + " variables in constraint: no match in " + repr(params))
 
-                    conds.append( func( {v:'role.'+v for v in vars} ) )
+                    conds.append( func( {v:'role.'+v for v in variables} ) )
 
             return " and ".join(conds)
 
@@ -96,11 +99,14 @@ class HypothesesTranslator(object):
         #print(subj, role, "-->", {repr(arg) for arg in role.args})
 
         t = Template(
-"""len({ (subject, role) for subject, role in hasActivated if role.name == "$role_name"$if_conds })"""
+"""{ (subject, role) for subject, role in hasActivated if role.name == "$role_name"$if_conds }"""
         ).substitute\
         (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
 
         return t
+    
+    def translate_canActivate(self):
+        pass
 
     @typecheck
     def translate_hypotheses(self, constraints: list):
@@ -152,12 +158,11 @@ $translation"""
             rule_name = self.rule.name,
             num = "" if number==0 else "_" + str(number),
             params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
-            translation = tab( self.translate_hypotheses(self.get_role_constraints(params)) )
+            translation = tab( self.translate_hypotheses(self.construct_role_param_constraint_generators(params)) )
         )
 
 
 ####################
-
 
 special_predicates = (None,
 'permits',       # 1. permits(e,a) indicates that the entity e is permitted to perform action a.
@@ -215,7 +220,7 @@ $canAcs_trans$canDcs_trans$isDacs_trans"""
         d["isDacs_trans"] = tab(''.join(map(trans, self.isDacs)))
         return Template(template).substitute(d)
 
-def extract_roles(rules):
+def generate_outline(rules):
     """
     Builds a dictionary mapping each unique role to RoleClass objects containing lists
     of 'canActivate' , 'canDeactivate' , 'isDeactivated' rules associated with that role.
@@ -285,7 +290,7 @@ def trans(obj):
         return "\n" + prefix_lines(repr(obj), "#")
 
 def translate_rules(rules):
-    outline = extract_roles(rules)
+    outline = generate_outline(rules)
 
     translation  = ""
     translation += """from cassandra import *
@@ -312,7 +317,7 @@ def repl(): # use python's quit() to break out
             print((e.message))
 
 def save(rules):
-    with open("%s.py" % rule_set, 'w') as f:
+    with open("translation/%s.py" % rule_set, 'w') as f:
         f.write(tr)
     print("Done. Wrote to %s.py" % rule_set)
 

@@ -11,13 +11,13 @@ class Spine_clinician(Role):
     
     def canActivate_1(self, cli): # S1.1.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty and Current_time() in vrange(role.start, role.end) }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty and Current_time() in vrange(role.start, role.end) } and\
         canActivate(ra, Registration_authority()) and\
         no_main_role_active(cli)
     
     def canActivate_2(self, cli): # S1.1.2
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty and Current_time() in vrange(role.start, role.end) }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty and Current_time() in vrange(role.start, role.end) } and\
         canActivate(ra, Registration_authority()) and\
         no_main_role_active(cli)
     
@@ -39,7 +39,7 @@ class Spine_admin(Role):
     
     def canActivate(self, adm): # S1.2.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Register-spine-admin" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-spine-admin" } and\
         no_main_role_active(adm)
     
     #'S1.2.2'
@@ -57,7 +57,7 @@ class Register_spine_admin(Role):
     
     def canActivate(self, adm): # S1.2.5
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-admin" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-admin" } and\
         spine_admin_regs(n, adm2)
     
     #'S1.2.6'
@@ -78,9 +78,9 @@ class Patient(Role):
     
     def canActivate(self, pat): # S1.3.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Register-patient" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
         no_main_role_active(pat) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Register-patient" })
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" }
     
     #'S1.3.2'
     #canDeactivate(pat, pat, Patient()) <-
@@ -97,7 +97,7 @@ class Register_patient(Role):
     
     def canActivate(self, adm): # S1.3.5
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-admin" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-admin" } and\
         patient_regs(n, pat)
     
     #'S1.3.6'
@@ -159,8 +159,8 @@ class Agent(Role):
     
     def canActivate(self, ag): # S1.4.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Register-agent" and role.pat == self.pat }) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Register-patient" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-agent" and role.pat == self.pat } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
         no_main_role_active(ag)
     
     #'S1.4.2'
@@ -197,12 +197,12 @@ class Register_agent(Role):
     
     def canActivate_1(self, pat): # S1.4.9
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Patient" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
         agent_regs(n, pat)
     
     def canActivate_2(self, cli): # S1.4.10
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
         canActivate(cli, General_practitioner(pat))
     
     #'S1.4.11'
@@ -230,11 +230,11 @@ class Registration_authority(Role):
     
     def canActivate_1(self, ra): # S1.5.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) })
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
     
     def canActivate_2(self, ra): # S1.5.2
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) })
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
 
 #'S1.5.3'
 #no-main-role-active(user) <-
@@ -250,15 +250,15 @@ class One_off_consent(Role):
     
     def canActivate_1(self, pat): # S2.1.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Patient" })
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" }
     
     def canActivate_2(self, ag): # S2.1.2
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat })
+        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat }
     
     def canActivate_3(self, cli): # S2.1.3
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
         canActivate(cli, Treating_clinician(pat, org, spcty))
     
     #'S2.1.4'
@@ -334,9 +334,9 @@ class Third_party(Role):
     
     def canActivate(self, x): # S2.2.10
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" } and\
         no_main_role_active(x) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Register-patient" })
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" }
     
     #'S2.2.11'
     #canDeactivate(x, x, Third-party()) <-
@@ -356,14 +356,14 @@ class Third_party_consent(Role):
     
     def canActivate_1(self, x): # S2.2.14
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Third-party" }) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id })
+        { (subject, role) for subject, role in hasActivated if role.name == "Third-party" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
     
     def canActivate_2(self, cli): # S2.2.15
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
         canActivate(cli, Treating_clinician(pat, org, spcty)) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id })
+        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
 
 #'S2.2.17'
 #third-party-consent(group<consenter>, pat, id) <-
@@ -376,7 +376,7 @@ class Request_consent_to_treatment(Role):
     
     def canActivate(self, cli1): # S2.3.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
         canActivate(cli2, Spine_clinician(ra2, org2, spcty2)) and\
         canActivate(pat, Patient())
     
@@ -418,19 +418,19 @@ class Consent_to_treatment(Role):
     
     def canActivate_1(self, pat): # S2.3.9
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Patient" }) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty })
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
     
     def canActivate_2(self, ag): # S2.3.10
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat }) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty })
+        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
     
     def canActivate_3(self, cli1): # S2.3.11
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org and role.spcty == self.spcty }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org and role.spcty == self.spcty } and\
         canActivate(cli1, Treating_clinician(pat, org, spcty)) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty })
+        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty }
 
 class Request_consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
@@ -439,7 +439,7 @@ class Request_consent_to_group_treatment(Role):
     
     def canActivate(self, cli): # S2.4.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org } and\
         canActivate(pat, Patient())
     
     #'S2.4.2'
@@ -480,19 +480,19 @@ class Consent_to_group_treatment(Role):
     
     def canActivate_1(self, pat): # S2.4.9
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Patient" }) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group })
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
     
     def canActivate_2(self, ag): # S2.4.10
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat }) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group })
+        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
     
     def canActivate_3(self, cli1): # S2.4.11
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org } and\
         canActivate(cli1, Treating_clinician(pat, org, spcty)) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group })
+        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
 
 class Referrer(Role):
     def __init__(self, pat, org, cli2, spcty1):
@@ -501,7 +501,7 @@ class Referrer(Role):
     
     def canActivate(self, cli1): # S3.1.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org } and\
         canActivate(cli1, Treating_clinician(pat, org, spcty2))
     
     #'S3.1.2'
@@ -519,7 +519,7 @@ class Spine_emergency_clinician(Role):
     
     def canActivate(self, cli): # S3.2.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org } and\
         canActivate(pat, Patient())
     
     #'S3.2.2'
@@ -536,16 +536,16 @@ class Treating_clinician(Role):
     
     def canActivate_1(self, cli): # S3.3.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty })
+        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty }
     
     def canActivate_2(self, cli): # S3.3.2
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-emergency-clinician" and role.pat == self.pat and role.org == self.org })
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-emergency-clinician" and role.pat == self.pat and role.org == self.org }
     
     def canActivate_3(self, cli): # S3.3.3
         return\
         canActivate(cli, Spine_clinician(ra, org, spcty)) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Referrer" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty })
+        { (subject, role) for subject, role in hasActivated if role.name == "Referrer" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty }
     
     def canActivate_4(self, cli): # S3.3.4
         return\
@@ -570,13 +570,13 @@ class Group_treating_clinician(Role):
     
     def canActivate_1(self, cli): # S3.4.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group } and\
         canActivate(cli, Workgroup_member(org, group, spcty)) and\
         canActivate(ra, Registration_authority())
     
     def canActivate_2(self, cli): # S3.4.2
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group } and\
         canActivate(cli, Workgroup_member(org, group, spcty)) and\
         canActivate(ra, Registration_authority())
 
@@ -587,7 +587,7 @@ class Concealed_by_spine_clinician(Role):
     
     def canActivate(self, cli): # S4.1.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
         canActivate(cli, Treating_clinician(pat, org, spcty))
     
     #'S4.1.2'
@@ -657,9 +657,9 @@ class Concealed_by_spine_patient(Role):
     
     def canActivate(self, cli): # S4.2.8
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
         canActivate(cli, Treating_clinician(pat, org, spcty)) and\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Conceal-request" and role.what == self.what and role.who == self.who and role.start == self.start and role.end == self.end })
+        { (subject, role) for subject, role in hasActivated if role.name == "Conceal-request" and role.what == self.what and role.who == self.who and role.start == self.start and role.end == self.end }
     
     #'S4.2.9'
     #canDeactivate(cli, cli, Concealed-by-spine-patient(what, who, start, end)) <-
@@ -683,17 +683,17 @@ class Authenticated_express_consent(Role):
     
     def canActivate_1(self, pat): # S4.3.1
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Patient" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
         count_authenticated_express_consent(n, pat)
     
     def canActivate_2(self, ag): # S4.3.2
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat } and\
         count_authenticated_express_consent(n, pat)
     
     def canActivate_3(self, cli1): # S4.3.3
         return\
-        len({ (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" }) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
         canActivate(cli1, General_practitioner(pat))
     
     #'S4.3.4'

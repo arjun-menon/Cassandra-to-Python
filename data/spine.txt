@@ -44,6 +44,7 @@ isDeactivated(x, Register-spine-admin(adm))
 count-spine-admin-activations(count<u>, user) <-
 hasActivated(u, Spine-admin()),
 u = user
+
 (S1.2.5)
 
 canActivate(adm, Register-spine-admin(adm2)) <-
