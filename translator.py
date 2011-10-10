@@ -35,7 +35,7 @@ class HypothesesTranslator(object):
             The lambda when called returns a string which is translation of the constraint to Python.
             * the first dict is a list of variables names that are bound (or affected) by the constraint 
             * vd is a dictionary where you can substitute these variable names with other variable names 
-              of your choice (for example substitute "cli" with "self.cli"). The form of the vd is {"cli":"self.cli"}  
+              of your choice (for example substitute "cli" with "self.cli"). The form of the vd is {"cli":"self.cli"}
         """
 
         if c.op == 'in':
