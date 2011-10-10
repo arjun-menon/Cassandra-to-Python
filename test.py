@@ -11,7 +11,7 @@ print(len(s))
 
 def func_hypos():
     """This test shows only 3 special predicates appear in hypos, 
-    and all the ones without them are function calls."""
+    and all other non-constraint predicates are function calls."""
     
     hs = []
     for r in rules:
