@@ -322,15 +322,19 @@ def save(rules):
     print("Done. Wrote to %s.py" % rule_set)
 
 def get_rules():
+    should_parse = True
 
-    def reparse():
+    def ehr_parse():
         rules = parse_all() if rule_set == 'all' else parse_one("data/%s.txt" % rule_set)
         with open("data/parse_tree.pickle", "wb") as f:
             pickle.dump(rules, f)
-    #reparse()
-
-    with open("data/parse_tree.pickle", "rb") as f:
-        return pickle.load(f)
+        return rules
+    
+    if should_parse:
+        return ehr_parse()
+    else:
+        with open("data/parse_tree.pickle", "rb") as f:
+            return pickle.load(f)
 
 rules = get_rules()
 
