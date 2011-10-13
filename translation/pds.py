@@ -1,13 +1,13 @@
 from cassandra import *
 from datetime import datetime
 
-class PDS_manager(Role): 
+class PDS_manager(Role):
     def __init__(self):
         super().__init__('PDS-manager', []) 
     
-    def canActivate(self, adm):
-        
-        bool({(subject, role) for subject, role in hasActivated if role.name == "Register-PDS-manager"})
+    def canActivate(self, adm): # P1.1.1
+        return\
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-PDS-manager" } and\
         no_main_role_active(adm)
     
     #'P1.1.2'
@@ -18,15 +18,14 @@ class PDS_manager(Role):
 #count-PDS-manager-activations(count<u>, user) <-
 #	hasActivated(u, PDS-manager()), u = user
 
-class Register_PDS_manager(Role): 
+class Register_PDS_manager(Role):
     def __init__(self, adm2):
         super().__init__('Register-PDS-manager', ['adm2']) 
         self.adm2 = adm2
     
-    def canActivate(self, adm1):
-        adm2 = self.adm2
-        
-        bool({(subject, role) for subject, role in hasActivated if role.name == "PDS-manager"})
+    def canActivate(self, adm1): # P1.1.5
+        return\
+        { (subject, role) for subject, role in hasActivated if role.name == "PDS-manager" } and\
         pds_admin_regs(n, adm2)
     
     #'P1.1.6'
@@ -41,13 +40,13 @@ class Register_PDS_manager(Role):
 #pds-admin-regs(count<x>, adm) <-
 #	hasActivated(x, Register-PDS-manager(adm))
 
-class Patient(Role): 
+class Patient(Role):
     def __init__(self):
         super().__init__('Patient', []) 
     
-    def canActivate(self, pat):
-        
-        bool({(subject, role) for subject, role in hasActivated if role.name == "Register-patient"})
+    def canActivate(self, pat): # P1.2.1
+        return\
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
         no_main_role_active(pat)
     
     #'P1.2.2'
@@ -58,16 +57,15 @@ class Patient(Role):
 #count-patient-activations(count<u>, user) <-
 #	hasActivated(u, Patient()), u = user
 
-class Agent(Role): 
+class Agent(Role):
     def __init__(self, pat):
         super().__init__('Agent', ['pat']) 
         self.pat = pat
     
-    def canActivate(self, ag):
-        pat = self.pat
-        
-        bool({(subject, role) for subject, role in hasActivated if role.name == "Register-patient"})
-        no_main_role_active(ag)
+    def canActivate(self, ag): # P1.3.1
+        return\
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
+        no_main_role_active(ag) and\
         canActivate(ag, Agent(pat))
     
     #'P1.3.2'
@@ -78,40 +76,36 @@ class Agent(Role):
 #count-agent-activations(count<u>, user) <-
 #	hasActivated(u, Agent(pat)), u = user
 
-class Professional_user(Role): 
+class Professional_user(Role):
     def __init__(self, ra, org):
         super().__init__('Professional-user', ['ra', 'org']) 
         self.ra, self.org = ra, org
     
     def canActivate(self, *params):
-        multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params), lambda: self.canActivate_3(*params), lambda: self.canActivate_4(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
-    def canActivate_1(self, x):
-        ra, org = self.ra, self.org
-        
-        no_main_role_active(cli)
-        bool({(subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert"})
+    def canActivate_1(self, x): # P1.4.1
+        return\
+        no_main_role_active(cli) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
         canActivate(ra, Registration_authority())
     
-    def canActivate_2(self, x):
-        ra, org = self.ra, self.org
-        
-        no_main_role_active(cli)
-        bool({(subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert"})
+    def canActivate_2(self, x): # P1.4.2
+        return\
+        no_main_role_active(cli) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
         canActivate(ra, Registration_authority())
     
-    def canActivate_3(self, x):
-        ra, org = self.ra, self.org
-        
-        no_main_role_active(cg)
-        bool({(subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert"})
+    def canActivate_3(self, x): # P1.4.3
+        return\
+        no_main_role_active(cg) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
         canActivate(ra, Registration_authority())
     
-    def canActivate_4(self, x):
-        ra, org = self.ra, self.org
-        
-        no_main_role_active(cg)
-        bool({(subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert"})
+    def canActivate_4(self, x): # P1.4.4
+        return\
+        no_main_role_active(cg) and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
         canActivate(ra, Registration_authority())
     
     #'P1.4.5'
@@ -126,30 +120,29 @@ class Professional_user(Role):
 #no-main-role-active(user) <-
 #	count-agent-activations(n, user), count-patient-activations(n, user), count-PDS-manager-activations(n, user), count-professional-user-activations(n, user), n = 0
 
-class Registration_authority(Role): 
+class Registration_authority(Role):
     def __init__(self):
         super().__init__('Registration-authority', []) 
     
     def canActivate(self, *params):
-        multi_try(lambda: self.canActivate_1(*params), lambda: self.canActivate_2(*params))
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
     
-    def canActivate_1(self, ra):
-        
-        bool({(subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority"})
+    def canActivate_1(self, ra): # P1.5.2
+        return\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
     
-    def canActivate_2(self, ra):
-        
-        bool({(subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority"})
+    def canActivate_2(self, ra): # P1.5.3
+        return\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
 
-class Register_patient(Role): 
+class Register_patient(Role):
     def __init__(self, pat):
         super().__init__('Register-patient', ['pat']) 
         self.pat = pat
     
-    def canActivate(self, adm):
-        pat = self.pat
-        
-        bool({(subject, role) for subject, role in hasActivated if role.name == "PDS-manager"})
+    def canActivate(self, adm): # P2.1.1
+        return\
+        { (subject, role) for subject, role in hasActivated if role.name == "PDS-manager" } and\
         patient_regs(n, pat)
     
     #'P2.1.2'
