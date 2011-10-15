@@ -282,19 +282,22 @@ class Request_third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.2.1
-        #couldn't build constraints
+        #todo:
+        couldn't build constraints
         #hasActivated(pat, Patient())
         #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_2(self, ag): # S2.2.2
-        #couldn't build constraints
+        #todo:
+        couldn't build constraints
         #hasActivated(ag, Agent(pat))
         #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_3(self, cli): # S2.2.3
-        #couldn't build constraints
+        #todo:
+        couldn't build constraints
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
         #x in Get-spine-record-third-parties(pat, id)
@@ -615,7 +618,8 @@ class Conceal_request(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S4.2.1
-        #couldn't build constraints
+        #todo:
+        couldn't build constraints
         #hasActivated(pat, Patient())
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
@@ -623,7 +627,8 @@ class Conceal_request(Role):
         pass
     
     def canActivate_2(self, ag): # S4.2.2
-        #couldn't build constraints
+        #todo:
+        couldn't build constraints
         #hasActivated(ag, Agent(pat))
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))

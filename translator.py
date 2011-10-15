@@ -6,6 +6,8 @@ from helpers import *
 class StopTranslating(Exception):
     def __init__(self, reason):
         self.reason = reason
+    def __repr__(self):
+        return "todo:\n" + self.reason
 
 class Wildcard(object):
     def __eq__(self, other):
@@ -111,9 +113,16 @@ class HypothesesTranslator(object):
     @typecheck
     def translate_hypotheses(self, constraints: list):
         try:
-            constraints.extend(self.translate_constraint(h) for h in self.rule.hypos if type(h) == Constraint)
+            
+            ctrs, rest = separate( self.rule.hypos, lambda h: type(h) == Constraint )
+            constraints.extend(map(self.translate_constraint, ctrs))
+            
+            #canAcs, rest = separate( rest, lambda h: h.name == "canActivate" )
+            #print(canAcs)
             
             if any_eq(None, constraints):
+                # this means there is a constraint that couldn't be translated.
+                # when a constraint is not translated, None is returned by the translating function
                 raise StopTranslating("couldn't build constraints")
 
             nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
@@ -142,7 +151,7 @@ class HypothesesTranslator(object):
             return "return\\\n" + ' and\\\n'.join(tr)
 
         except StopTranslating as st:
-            return "".join("#" + str(x) + '\n' for x in [st.reason] + self.rule.hypos) + "pass"
+            return "".join("#" + str(x) + '\n' for x in [repr(st)] + self.rule.hypos) + "pass"
 
 class canAc(HypothesesTranslator):
     def __init__(self, rule):
@@ -302,7 +311,7 @@ from datetime import datetime
 
 ####################
 
-rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[0]
+rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[1]
 
 def repl(): # use python's quit() to break out
     while True:
