@@ -7,7 +7,7 @@ class StopTranslating(Exception):
     def __init__(self, reason):
         self.reason = reason
     def __repr__(self):
-        return "todo:\n" + self.reason
+        return "todo: " + self.reason
 
 class Wildcard(object):
     def __eq__(self, other):
@@ -137,11 +137,11 @@ class HypothesesTranslator(object):
             tr = []
             for h in nc_hypos:
 
-                if(type(h) == RemoteAtom):
-                    # TODO
-                    h = h.atom
-
-                assert type(h) == Atom
+#                if(type(h) == RemoteAtom):
+#                    # TODO
+#                    h = h.atom
+#
+#                assert type(h) == Atom
 
                 if h.name == "hasActivated":
                     tr.append( self.translate_hasActivated(h.args, constraints) )
@@ -331,7 +331,7 @@ def save(rules):
     print("Done. Wrote to %s.py" % rule_set)
 
 def get_rules():
-    should_parse = False
+    should_parse = True
 
     def ehr_parse():
         rules = parse_all() if rule_set == 'all' else parse_one("data/%s.txt" % rule_set)

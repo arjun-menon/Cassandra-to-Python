@@ -288,7 +288,7 @@ one_of = OneOfChecker
 class EitherChecker(Checker):
 
     def __init__(self, *args):
-        self._checks = tuple(Checker.create(arg) for arg in args)
+        self._checks = tuple(Checker.create(args) for args in args)
 
     def check(self, value):
         for c in self._checks:

@@ -282,22 +282,19 @@ class Request_third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.2.1
-        #todo:
-        couldn't build constraints
+        #todo: couldn't build constraints
         #hasActivated(pat, Patient())
         #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_2(self, ag): # S2.2.2
-        #todo:
-        couldn't build constraints
+        #todo: couldn't build constraints
         #hasActivated(ag, Agent(pat))
         #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_3(self, cli): # S2.2.3
-        #todo:
-        couldn't build constraints
+        #todo: couldn't build constraints
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
         #x in Get-spine-record-third-parties(pat, id)
@@ -574,13 +571,13 @@ class Group_treating_clinician(Role):
     def canActivate_1(self, cli): # S3.4.1
         return\
         { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group } and\
-        canActivate(cli, Workgroup_member(org, group, spcty)) and\
+        ra.canActivate(cli, Workgroup_member(org, group, spcty)) and\
         canActivate(ra, Registration_authority())
     
     def canActivate_2(self, cli): # S3.4.2
         return\
         { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group } and\
-        canActivate(cli, Workgroup_member(org, group, spcty)) and\
+        ra@ra.canActivate(cli, Workgroup_member(org, group, spcty)) and\
         canActivate(ra, Registration_authority())
 
 class Concealed_by_spine_clinician(Role):
@@ -618,8 +615,7 @@ class Conceal_request(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S4.2.1
-        #todo:
-        couldn't build constraints
+        #todo: couldn't build constraints
         #hasActivated(pat, Patient())
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
@@ -627,8 +623,7 @@ class Conceal_request(Role):
         pass
     
     def canActivate_2(self, ag): # S4.2.2
-        #todo:
-        couldn't build constraints
+        #todo: couldn't build constraints
         #hasActivated(ag, Agent(pat))
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))

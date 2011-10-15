@@ -35,7 +35,5 @@ def prefix_lines(s: str, prefix: str):
 def tab(s, indentation_level=1):
     return prefix_lines(s, '    '*indentation_level)
 
-def separate(l, cond):
+def separate(l, cond): # e.g. print(separate([1,2,3,4], lambda x: x % 2 ==0))
     return [x for x in l if cond(x) == True], [x for x in l if cond(x) == False]
-
-print(separate([1,2,3,4], lambda x: x % 2 ==0))

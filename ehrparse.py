@@ -66,9 +66,9 @@ class EhrParser(tpg.Parser):
           )* rangle;
 
     RemoteAtom/a ->
-        VarConst/iss dot Atom     $ a = RemoteAtom(None, iss, Atom)
+        VarConst/iss dot Atom     $ a = makeRemoteAtom(None, iss, Atom)
       | VarConst/loc at VarConst/iss dot Atom
-                                  $ a = RemoteAtom(loc, iss, Atom)
+                                  $ a = makeRemoteAtom(loc, iss, Atom)
       ;
     VarConst/a ->
         ident                     $ a = Variable(ident)
@@ -94,14 +94,20 @@ class Rule(object):
         return repr(self.name)+ '\n' +repr(self.concl)+ ' <-\n\t' + ', '.join(x)
 
 class Atom(object):
-    def __init__(self,name,arg):
+    def __init__(self,name,args):
         self.name = name
-        self.args = [arg]
+        self.args = [args]
+        self.location = None
+        self.issuer = None
     def addArgument(self,arg):
         self.args.append(arg)
     def __repr__(self):
         x = [repr(i) for i in self.args]
-        return self.name + '(' + ', '.join(x) + ')'
+        atom_repr = self.name + '(' + ', '.join(x) + ')'
+        ret = ""
+        if self.location: ret += repr(self.location) + "@"
+        if self.issuer: return ret + repr(self.issuer) + '.' + atom_repr
+        else: return atom_repr
 
 class Constant(object):
     def __init__(self,value,number=False):
@@ -149,15 +155,10 @@ class Constraint(object):
     def __repr__(self):
         return repr(self.left) + ' ' + self.op + ' ' + repr(self.right)
 
-class RemoteAtom(object):
-    def __init__(self,location,issuer,atom):
-        self.location = location
-        self.issuer = issuer
-        self.atom = atom
-    def __repr__(self):
-        ret = ""
-        if self.location: ret += repr(self.location) + "@"
-        return ret + repr(self.issuer) + '.' + repr(self.atom)
+def makeRemoteAtom(location, issuer, atom):
+    atom.location = location
+    atom.issuer = issuer
+    return atom
 
 class Range(object):
     def __init__(self,start,end):

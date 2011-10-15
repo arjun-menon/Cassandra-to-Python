@@ -1921,15 +1921,15 @@ class TPGParser(tpg.Parser):
             return ", ".join([a.gen_code() for a in self])
 
     class PY_PositionArgument:
-        def __init__(self, arg):
-            self.arg = arg
+        def __init__(self, args):
+            self.arg = args
         def gen_code(self):
             return self.arg.gen_code()
 
     class PY_KeywordArgument:
-        def __init__(self, name, arg):
+        def __init__(self, name, args):
             self.name = name
-            self.arg = arg
+            self.arg = args
         def gen_code(self):
             return "%s=%s"%(self.name, self.arg.gen_code())
 
