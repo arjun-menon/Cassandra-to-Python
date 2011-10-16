@@ -17,8 +17,6 @@ def func_hypos():
     for r in rules:
         for h in r.hypos:
             if type(h) != Constraint:
-                if type(h) == RemoteAtom:
-                    h = h.atom
                 hs.append(h)
     
     print(len(hs))
@@ -36,14 +34,17 @@ def hasActivated_in_hypos():
     for r in rules:
         n = 0
         for h in r.hypos:
-            
             if type(h) != Constraint:
-                if type(h) == RemoteAtom:
-                    h = h.atom
-                
                 if h.name == "hasActivated":
                     n += 1
-        
+
         print(n)
 
-hasActivated_in_hypos()
+#hasActivated_in_hypos()
+
+for r in rules:
+    for h in r.hypos:
+        if type(h) != Constraint:
+                if h.name == "canActivate":
+                    print(r)
+                    break

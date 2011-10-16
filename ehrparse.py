@@ -181,5 +181,5 @@ def parse_one(file_name):
         return EhrParser()( f.read() )
 
 def parse_all():
-    with open("data/spine.txt") as spine, open("data/pds.txt") as pds, open("data/hospital.txt") as hospital, open("data/ra.txt") as ra:
+    with open("ehr/spine.txt") as spine, open("ehr/pds.txt") as pds, open("ehr/hospital.txt") as hospital, open("ehr/ra.txt") as ra:
         return EhrParser()( spine.read() + pds.read() + hospital.read() + ra.read() )

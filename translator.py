@@ -20,23 +20,24 @@ class HypothesesTranslator(object):
         return repr(self.rule)
 
     @typecheck
-    def construct_role_param_constraint_generators(self, params: list_of(Variable)) -> list:
+    def build_param_bindings(self, params: list_of(Variable)) -> list:
         """Returns a set of constraint code generation functions which binds role parameters to external variables"""
         constraints = []
 
         for var in params:
             var_name = str(var)
 
-            def param_eq_func(vn):
+            def param_binding(vn):
                 return lambda vd = { vn : vn } : "%s == self.%s" % (vd[vn], vn)
 
-            constraints.append( ({var_name}, param_eq_func(var_name)) )
+            constraints.append( ({var_name}, param_binding(var_name)) )
 
         return constraints
 
+
     @typecheck
-    def translate_constraint(self, c: Constraint):
-        """ returns a special data structure of the form ({ ..dict.. }, lambda vd: ...)
+    def build_constraint_bindings(self, c: Constraint):
+        """ returns a special data structure of the form ({ set of bound variable names }, lambda vd: ...)
             The lambda when called returns a string which is translation of the constraint to Python.
             * the first dict is a list of variables names that are bound (or affected) by the constraint 
             * vd is a dictionary where you can substitute these variable names with other variable names 
@@ -62,7 +63,7 @@ class HypothesesTranslator(object):
                 if type(c.left) == Variable:
                     vn = h2u(repr(c.left))
 
-                    return {c.left.name, start, end}, lambda vd = {vn:vn, start:start, end:end}: \
+                    return {vn, start, end}, lambda vd = {vn:vn, start:start, end:end}: \
                         '%s in vrange(%s, %s)' % (vd[vn], vd[start], vd[end])
 
         elif c.op == '=' or c.op == '<':
@@ -75,16 +76,27 @@ class HypothesesTranslator(object):
             elif type(c.left) == Variable and type(c.right) == Variable:
                 return {c.left.name, c.right.name}, lambda: "%r %s %r" % (c.left, op, c.right)
 
-        return None
+        raise StopTranslating("could not form bindings for constraint: " + repr(c))
+    
+    
+    def build_canAc_bindings(self, canAc):
+        subj, role = canAc.args
+        
+        bound_vars = [var.name for var in [subj] + role.args]
+        default_vd = {vn : vn for vn in bound_vars} 
+        
+        return set(bound_vars), lambda vd = default_vd: \
+            "canActivate({subj}, {role_name}({role_args}))".format\
+            (role_name = role.name, subj = bound_vars[0], role_args = ", ".join(bound_vars[1:]))
+    
+    
+    def translate_hasActivated(self, hasAc, bindings):
+        subj, role = hasAc.args
 
-    @typecheck
-    def translate_hasActivated(self, hasAc_args: [Variable, Function], constraints):
-        subj, role = hasAc_args
-
-        def build_if_condition(params, constraints):
+        def build_if_condition(params, bindings):
             conds = []
 
-            for cons in constraints:
+            for cons in bindings:
                 variables, func = cons
 
                 if params & variables:
@@ -96,7 +108,7 @@ class HypothesesTranslator(object):
             return " and ".join(conds)
 
 
-        if_conds = build_if_condition({repr(arg) for arg in role.args}, constraints)
+        if_conds = build_if_condition({repr(arg) for arg in role.args}, bindings)
 
         #print(subj, role, "-->", {repr(arg) for arg in role.args})
 
@@ -107,31 +119,33 @@ class HypothesesTranslator(object):
 
         return t
     
-    def translate_canActivate(self):
-        pass
-
+    
     @typecheck
-    def translate_hypotheses(self, constraints: list):
+    def translate_hypotheses(self, bindings: list):
         try:
-            
             ctrs, rest = separate( self.rule.hypos, lambda h: type(h) == Constraint )
-            constraints.extend(map(self.translate_constraint, ctrs))
             
-            #canAcs, rest = separate( rest, lambda h: h.name == "canActivate" )
-            #print(canAcs)
+            bindings.extend(map(self.build_constraint_bindings, ctrs))
             
-            if any_eq(None, constraints):
+            canAcs, rest = separate( rest, lambda h: h.name == "canActivate" )
+            
+            bindings.extend(map(self.build_canAc_bindings, canAcs))
+            
+            
+            if any_eq(None, bindings):
                 # this means there is a constraint that couldn't be translated.
                 # when a constraint is not translated, None is returned by the translating function
-                raise StopTranslating("couldn't build constraints")
+                raise StopTranslating("couldn't build bindings")
 
             nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
 
-#            print("---")
-#            for i in constraints:
-#                vars, func = i
-#                print(vars, " -->", func())
-#            print()
+            def for_testing_print_bindings():
+                print("---")
+                for b in bindings:
+                    vars, func = b
+                    print(vars, " -->", func())
+                print()
+            for_testing_print_bindings()
 
             # Now translate:
             tr = []
@@ -144,7 +158,7 @@ class HypothesesTranslator(object):
 #                assert type(h) == Atom
 
                 if h.name == "hasActivated":
-                    tr.append( self.translate_hasActivated(h.args, constraints) )
+                    tr.append( self.translate_hasActivated(h, bindings) )
                 else:
                     tr.append( h2u(repr(h)) )
 
@@ -167,7 +181,7 @@ $translation"""
             rule_name = self.rule.name,
             num = "" if number==0 else "_" + str(number),
             params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
-            translation = tab( self.translate_hypotheses(self.construct_role_param_constraint_generators(params)) )
+            translation = tab( self.translate_hypotheses(self.build_param_bindings(params)) )
         )
 
 
@@ -326,23 +340,23 @@ def repl(): # use python's quit() to break out
             print((e.message))
 
 def save(rules):
-    with open("translation/%s.py" % rule_set, 'w') as f:
+    with open("ehr/%s.py" % rule_set, 'w') as f:
         f.write(tr)
     print("Done. Wrote to %s.py" % rule_set)
 
 def get_rules():
-    should_parse = True
+    should_parse = False
 
     def ehr_parse():
-        rules = parse_all() if rule_set == 'all' else parse_one("data/%s.txt" % rule_set)
-        with open("data/parse_tree.pickle", "wb") as f:
+        rules = parse_all() if rule_set == 'all' else parse_one("ehr/%s.txt" % rule_set)
+        with open("ehr/parse_tree.pickle", "wb") as f:
             pickle.dump(rules, f)
         return rules
     
     if should_parse:
         return ehr_parse()
     else:
-        with open("data/parse_tree.pickle", "rb") as f:
+        with open("ehr/parse_tree.pickle", "rb") as f:
             return pickle.load(f)
 
 rules = get_rules()
@@ -352,7 +366,5 @@ rules = get_rules()
 print("Translating %d rules..." % len(rules))
 
 tr = translate_rules(rules)
-
-#print(tr)
 
 save(rules)
