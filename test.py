@@ -27,7 +27,7 @@ def func_hypos():
     for i in hy:
         print(i)
 
-#func_hypos()
+func_hypos()
 
 def hasActivated_in_hypos():
     
@@ -42,9 +42,10 @@ def hasActivated_in_hypos():
 
 #hasActivated_in_hypos()
 
-for r in rules:
-    for h in r.hypos:
-        if type(h) != Constraint:
-                if h.name == "canActivate":
-                    print(r)
-                    break
+def which_have_canAc_hypos():
+    for r in rules:
+        for h in r.hypos:
+            if type(h) != Constraint:
+                    if h.name == "canActivate":
+                        print(r)
+                        break

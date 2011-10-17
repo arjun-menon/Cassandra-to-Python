@@ -33,8 +33,8 @@ class HypothesesTranslator(object):
             constraints.append( ({var_name}, param_binding(var_name)) )
 
         return constraints
-
-
+    
+    
     @typecheck
     def build_constraint_bindings(self, c: Constraint):
         """ returns a special data structure of the form ({ set of bound variable names }, lambda vd: ...)
@@ -69,12 +69,14 @@ class HypothesesTranslator(object):
         elif c.op == '=' or c.op == '<':
 
             op = "==" if c.op == '=' else c.op
+            
+            cl, cr = h2u(repr(c.left)), h2u(repr(c.right))
 
             if type(c.left) == Variable and type(c.right) == Constant:
-                return {c.left.name}, lambda: "%r %s %r" % (c.left, op, c.right)
+                return {cl}, lambda vd = {cl:cl}: "%s %s %s" % (cl, op, cr)
 
             elif type(c.left) == Variable and type(c.right) == Variable:
-                return {c.left.name, c.right.name}, lambda: "%r %s %r" % (c.left, op, c.right)
+                return {cl, cr}, lambda vd = {cl:cl, cr:cr}: "%s %s %s" % (cl, op, cr)
 
         raise StopTranslating("could not form bindings for constraint: " + repr(c))
     
