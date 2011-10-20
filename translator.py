@@ -32,13 +32,7 @@ class HypothesesTranslator(object):
         
         substitution_dict.update( { r : p(r) for r in rest } )
         
-        print(code)
-        print(substitution_dict)
-        
         new_format_string = code.format(**substitution_dict)
-        
-        print(rest)
-        print(new_format_string)
         
         return ( set(rest), lambda vd = { r : r for r in rest }: new_format_string.format(**vd) )
     
