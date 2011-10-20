@@ -128,13 +128,10 @@ class HypothesesTranslator(object):
 
         #print(subj, role, "-->", {repr(arg) for arg in role.args})
 
-        t = Template(
-"""{ (subject, role) for subject, role in hasActivated if role.name == "$role_name"$if_conds }"""
+        return Template(
+"""{ (subject, role) for subject, role in hasActivated if role.name == "${role_name}"${if_conds} }"""
         ).substitute\
         (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
-
-        return t
-    
     
     @typecheck
     def translate_hypotheses(self, bindings: list):
@@ -202,8 +199,7 @@ class canAc(HypothesesTranslator):
         
         return lambda number: """
 def canActivate{num}(self, {subject}): # {rule_name}
-{translation}""".format\
-        (
+{translation}""".format(
             rule_name = self.rule.name,
             num = "" if number==0 else "_" + str(number),
             subject = self.subject,
@@ -245,29 +241,25 @@ def canActivate(self, *params):
         return tab(canAc_translation)
 
     def translate(self):
+        return """
+class {name_u}(Role):
+    def __init__(self{optional_front_comma}{params_comma}):
+        super().__init__('{name}', [{params_quote}]) {optional_self_assignment_newline_tab}{self_assignment}{params_comma}
+{canAcs_trans}{canDcs_trans}{isDacs_trans}""".format(
+        name   =     self.name,
+        name_u = h2u(self.name)
 
-        template = """
-class $name_u(Role):
-    def __init__(self$optional_front_comma$params_comma):
-        super().__init__('$name', [$params_quote]) $optional_self_assignment_newline_tab$self_assignment$params_comma
-$canAcs_trans$canDcs_trans$isDacs_trans"""
+        ,optional_front_comma = ", " if len(self.params) else ""
+        ,params_comma= ", ".join(map(repr, self.params))
+        ,params_quote = ", ".join("'" + repr(p) + "'" for p in self.params) if len(self.params) else ""
 
-        d = {}
+        ,optional_self_assignment_newline_tab = "\n        " if len(self.params) else ""
+        ,self_assignment = ", ".join("self."+repr(s) for s in self.params) + " = " if len(self.params) else ""
 
-        d['name'  ] =     self.name
-        d['name_u'] = h2u(self.name)
-
-        d["optional_front_comma"] = ", " if len(self.params) else ""
-        d["params_comma"]= ", ".join(map(repr, self.params))
-        d["params_quote"] = ", ".join("'" + repr(p) + "'" for p in self.params) if len(self.params) else ""
-
-        d["optional_self_assignment_newline_tab"] = "\n        " if len(self.params) else ""
-        d["self_assignment"] = ", ".join("self."+repr(s) for s in self.params) + " = " if len(self.params) else ""
-
-        d["canAcs_trans"] = self.canAcs_translator()
-        d["canDcs_trans"] = tab(''.join(map(trans, self.canDcs)))
-        d["isDacs_trans"] = tab(''.join(map(trans, self.isDacs)))
-        return Template(template).substitute(d)
+        ,canAcs_trans = self.canAcs_translator()
+        ,canDcs_trans = tab(''.join(map(trans, self.canDcs)))
+        ,isDacs_trans = tab(''.join(map(trans, self.isDacs)))
+        )
 
 def generate_outline(rules):
     """
