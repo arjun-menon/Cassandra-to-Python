@@ -16,9 +16,19 @@ class Wildcard(object):
 class HypothesesTranslator(object):
     def __init__(self, rule):
         self.rule = rule
+        self.external_vars = None # will become dict
     def __repr__(self):
         return repr(self.rule)
-
+    
+    @typecheck
+    def substitution_func_gen(self, variables: set, code):
+        """ variables is a list of variables that appear in code.
+        code is a format string on which string.format is invoked """
+        
+        separate(variables, lambda v: v in set(self.external_vars))
+        
+        substitution_dict = dict()
+    
     @typecheck
     def build_param_bindings(self, params: list_of(Variable)) -> list:
         """Returns a set of constraint code generation functions which binds role parameters to external variables"""
@@ -48,8 +58,8 @@ class HypothesesTranslator(object):
 
             if type(c.right) == Range and type(c.right.start) == Variable and type(c.right.end) == Variable:
 
-                # it's of the form "something in [start, end]"
-                start, end = h2u(c.right.start.name), h2u(c.right.end.name)
+                # it's of the form "something in [lower, upper]"
+                lower, upper = h2u(c.right.start.name), h2u(c.right.end.name)
 
                 if type(c.left) == Function:
                     fname = h2u(repr(c.left))
@@ -57,14 +67,14 @@ class HypothesesTranslator(object):
                     if len(c.left.args):
                         raise StopTranslating("can't handle 'in' operator - function with arguments: %r" % c.left)
 
-                    return {start, end}, lambda vd = {start:start, end:end}: \
-                        '%s in vrange(%s, %s)' % (fname, vd[start], vd[end])
+                    return {lower, upper}, lambda vd = {lower:lower, upper:upper}: \
+                        '%s in vrange(%s, %s)' % (fname, vd[lower], vd[upper])
 
                 if type(c.left) == Variable:
                     vn = h2u(repr(c.left))
 
-                    return {vn, start, end}, lambda vd = {vn:vn, start:start, end:end}: \
-                        '%s in vrange(%s, %s)' % (vd[vn], vd[start], vd[end])
+                    return {vn, lower, upper}, lambda vd = {vn:vn, lower:lower, upper:upper}: \
+                        '%s in vrange(%s, %s)' % (vd[vn], vd[lower], vd[upper])
 
         elif c.op == '=' or c.op == '<':
 
@@ -94,12 +104,17 @@ class HypothesesTranslator(object):
     
     def translate_hasActivated(self, hasAc, bindings):
         subj, role = hasAc.args
+        subj = repr(subj)
 
         def build_if_condition(params, bindings):
             conds = []
 
             for b in bindings:
                 variables, func = b
+                
+                if variables == {subj}:
+                    print('yes')
+                    conds.append( func( { subj : 'subject' } ) )                    
                 
                 intersection = params & variables
                 if intersection:
@@ -108,7 +123,6 @@ class HypothesesTranslator(object):
                     conds.append( func( {v:'role.'+v for v in variables} ) )
 
             return " and ".join(conds)
-
 
         if_conds = build_if_condition({repr(arg) for arg in role.args}, bindings)
 
@@ -142,11 +156,11 @@ class HypothesesTranslator(object):
             nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
 
             def print_bindings():
-                print(self.rule.name)
+                print("---")
                 for b in bindings:
                     vars, func = b
                     print(vars, " -->", func())
-                print("---")
+                print(self.rule.name)
                 print()
             print_bindings()
 
@@ -173,17 +187,23 @@ class HypothesesTranslator(object):
 class canAc(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
+        self.args = [repr(s) for s in self.rule.concl.args[:-1]]
 
     @typecheck
-    def translate(self, params: list_of(Variable)):
-        return lambda number: Template("""
-def canActivate$num(self$params): # $rule_name
-$translation"""
-        ).substitute\
+    def translate(self, params: list_of(Variable)):        
+        
+        # build self.external_vars (for HypothesesTranslator)
+        self.external_vars = { repr(p) : 'self.'+repr(p) for p in params }
+        self.external_vars.update( { arg : arg for arg in self.args } )
+        print(self.external_vars)
+        
+        return lambda number: """
+def canActivate{num}(self{args}): # {rule_name}
+{translation}""".format\
         (
             rule_name = self.rule.name,
             num = "" if number==0 else "_" + str(number),
-            params = "".join(", " + repr(s) for s in self.rule.concl.args[:-1]) if len(self.rule.concl.args) else "",
+            args = "".join(", " + arg for arg in self.args) if len(self.rule.concl.args) else "",
             translation = tab( self.translate_hypotheses(self.build_param_bindings(params)) )
         )
 

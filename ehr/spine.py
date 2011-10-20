@@ -197,7 +197,7 @@ class Register_agent(Role):
     
     def canActivate_1(self, pat): # S1.4.9
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
         agent_regs(n, pat)
     
     def canActivate_2(self, cli): # S1.4.10
@@ -250,7 +250,7 @@ class One_off_consent(Role):
     
     def canActivate_1(self, pat): # S2.1.1
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" }
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat }
     
     def canActivate_2(self, ag): # S2.1.2
         return\
@@ -357,7 +357,7 @@ class Third_party_consent(Role):
     
     def canActivate_1(self, x): # S2.2.14
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Third-party" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Third-party" and subject == self.x } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
     
     def canActivate_2(self, cli): # S2.2.15
@@ -420,7 +420,7 @@ class Consent_to_treatment(Role):
     
     def canActivate_1(self, pat): # S2.3.9
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
     
     def canActivate_2(self, ag): # S2.3.10
@@ -483,7 +483,7 @@ class Consent_to_group_treatment(Role):
     
     def canActivate_1(self, pat): # S2.4.9
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
     
     def canActivate_2(self, ag): # S2.4.10
@@ -693,7 +693,7 @@ class Authenticated_express_consent(Role):
     
     def canActivate_1(self, pat): # S4.3.1
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
         count_authenticated_express_consent(n, pat)
     
     def canActivate_2(self, ag): # S4.3.2
