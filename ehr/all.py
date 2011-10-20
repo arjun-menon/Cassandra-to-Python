@@ -11,13 +11,13 @@ class Spine_clinician(Role):
     
     def canActivate_1(self, cli): # S1.1.1
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty and Current_time() in vrange(role.start, role.end) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org and role.spcty == self.spcty } and\
         canActivate(ra, Registration_authority()) and\
         no_main_role_active(cli)
     
     def canActivate_2(self, cli): # S1.1.2
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty and Current_time() in vrange(role.start, role.end) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org and role.spcty == self.spcty } and\
         canActivate(ra, Registration_authority()) and\
         no_main_role_active(cli)
     
@@ -735,7 +735,7 @@ class Consent_to_group_treatment(Role):
     
     def canActivate_3(self, cli1): # S2.4.11
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org and canActivate(cli1, Treating-clinician(self.pat, self.org, role.spcty)) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and canActivate(cli1, Treating-clinician(self.pat, self.org, role.spcty)) and role.org == self.org } and\
         canActivate(cli1, Treating_clinician(pat, org, spcty)) and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
 
@@ -746,7 +746,7 @@ class Referrer(Role):
     
     def canActivate(self, cli1): # S3.1.1
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org and canActivate(cli1, Treating-clinician(self.pat, self.org, role.spcty2)) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and canActivate(cli1, Treating-clinician(self.pat, self.org, role.spcty2)) and role.org == self.org } and\
         canActivate(cli1, Treating_clinician(pat, org, spcty2))
     
     #'S3.1.2'
@@ -1068,25 +1068,25 @@ class Professional_user(Role):
     def canActivate_1(self, x): # P1.4.1
         return\
         no_main_role_active(cli) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
         canActivate(ra, Registration_authority())
     
     def canActivate_2(self, x): # P1.4.2
         return\
         no_main_role_active(cli) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
         canActivate(ra, Registration_authority())
     
     def canActivate_3(self, x): # P1.4.3
         return\
         no_main_role_active(cg) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
         canActivate(ra, Registration_authority())
     
     def canActivate_4(self, x): # P1.4.4
         return\
         no_main_role_active(cg) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
         canActivate(ra, Registration_authority())
     
     #'P1.4.5'
@@ -1694,14 +1694,14 @@ class ADB_treating_clinician(Role):
     def canActivate_1(self, cli): # A3.8.1
         return\
         canActivate(cli, Clinician(spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-member" and role.spcty == self.spcty and self.group == role.team } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-episode" and role.pat == self.pat and self.group == role.team }
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-member" and self.group == role.team and role.spcty == self.spcty } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-episode" and self.group == role.team and role.pat == self.pat }
     
     def canActivate_2(self, cli): # A3.8.2
         return\
         canActivate(cli, Clinician(spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-member" and role.spcty == self.spcty and self.group == role.ward } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-episode" and role.pat == self.pat and self.group == role.ward }
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-member" and self.group == role.ward and role.spcty == self.spcty } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-episode" and self.group == role.ward and role.pat == self.pat }
     
     def canActivate_3(self, cli): # A3.8.3
         return\
@@ -1904,7 +1904,7 @@ class NHS_clinician_cert(Role):
     def canActivate(self, mgr): # R2.1.1
         return\
         { (subject, role) for subject, role in hasActivated if role.name == "RA-manager" } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and role.org == self.org and self.start in vrange(role.start2, role.end2) and self.end in vrange(role.start2, role.end2) }
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and self.start in vrange(role.start2, role.end2) and self.end in vrange(role.start2, role.end2) and role.org == self.org }
     
     #'R2.1.2'
     #canDeactivate(mgr, x, NHS-clinician-cert(org, cli, spcty, start, end)) <-
@@ -1930,7 +1930,7 @@ class NHS_Caldicott_guardian_cert(Role):
     def canActivate(self, mgr): # R2.2.1
         return\
         { (subject, role) for subject, role in hasActivated if role.name == "RA-manager" } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and role.org == self.org and self.start in vrange(role.start2, role.end2) and self.end in vrange(role.start2, role.end2) }
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and self.start in vrange(role.start2, role.end2) and self.end in vrange(role.start2, role.end2) and role.org == self.org }
     
     #'R2.2.2'
     #canDeactivate(mgr, x, NHS-Caldicott-guardian-cert(org, cg, start, end)) <-
@@ -2015,12 +2015,12 @@ class Workgroup_member(Role):
     
     def canActivate_1(self, cli): # R3.1.1
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Register-team-member" and role.group == self.group and role.spcty == self.spcty }
     
     def canActivate_2(self, cli): # R3.1.2
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-member" and role.group == self.group and role.spcty == self.spcty }
 
 #'R3.1.3'

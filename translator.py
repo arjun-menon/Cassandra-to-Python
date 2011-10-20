@@ -37,12 +37,11 @@ class HypothesesTranslator(object):
         return ( set(rest), lambda vd = { r : r for r in rest }: new_format_string.format(**vd) )
     
     @typecheck
-    def build_param_bindings(self, params: list_of(Variable)) -> list:
+    def build_param_bindings(self, params: list_of(str)) -> list:
         """Returns a set of constraint code generation functions which binds role parameters to external variables"""
         constraints = []
 
-        for var in params:
-            var_name = str(var)
+        for var_name in params:
 
             def param_binding(vn):
                 return lambda vd = { vn : vn } : "%s == self.%s" % (vd[vn], vn)
@@ -140,14 +139,17 @@ class HypothesesTranslator(object):
         ).substitute\
         (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
     
-    @typecheck
-    def translate_hypotheses(self, bindings: list):
+    def translate_hypotheses(self):
         try:
             ctrs, canAcs, rest = separate( self.rule.hypos, lambda h: type(h) == Constraint, lambda h: h.name == "canActivate" )
             
+            bindings = []
+                        
             bindings.extend(map(self.build_constraint_bindings, ctrs))
             
             bindings.extend(map(self.build_canAc_bindings, canAcs))
+            
+            bindings.extend(self.build_param_bindings(self.role_params))
             
             if any_eq(None, bindings):
                 # this means there is a constraint that couldn't be translated.
@@ -188,12 +190,12 @@ class canAc(HypothesesTranslator):
         self.subject = repr(self.rule.concl.args[0])
     
     @typecheck
-    def translate(self, params: list_of(Variable)):        
+    def translate(self, params: list_of(Variable)):
+        self.role_params = [repr(p) for p in params]
         
         # build self.external_vars (for HypothesesTranslator)
         self.external_vars = { repr(p) : 'self.'+repr(p) for p in params }
         self.external_vars.update( { self.subject : self.subject } )
-        #print(self.external_vars)
         
         return lambda number: """
 def canActivate{num}(self, {subject}): # {rule_name}
@@ -201,7 +203,7 @@ def canActivate{num}(self, {subject}): # {rule_name}
              rule_name = self.rule.name
             ,num = "" if number==0 else "_" + str(number)
             ,subject = self.subject
-            ,translation = tab( self.translate_hypotheses(self.build_param_bindings(params)) )
+            ,translation = tab(self.translate_hypotheses())
         )
 
 
