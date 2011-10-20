@@ -7,4 +7,3 @@ pass "param bindings" to binding builders, so canActivate (& other) param invoca
 
 For later (Un-important)
 Convert all Template(..) to .. {abc} ...".format(abs = ...)
-merge separate1 & separate. Better comments (put eg.s in str)
