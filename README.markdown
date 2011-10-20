@@ -1,4 +1,3 @@
-
 Cassandra Translator
 ====================
 
@@ -16,7 +15,7 @@ __Improving the Specification and Implementation of EHR Policy Rules__
 
 Arjun G. Menon and Yanhong A. Liu
 
-Trust management policies are essential in decentralized systems in general and health care systems in particular, to preserve privacy of information and control access to resources.  Moritz Becker's dissertation [1] describes a system for distributed role-based access control for the UK's Electronic Health Record (EHR) service. In this system, sensitive user data and resources at every node in the network of hospitals and clinics are protected by certain entities which form a "protective layer" around those resources and controls access to them based on a policy defined using a policy definition language called Cassandra. Cassandra is a high-level logic rule language based on Datalog with constraints. The expressiveness of particular rules in Cassandra can be fine tuned by means of constraints.
+Trust management policies are essential in decentralized systems in general and health care systems in particular, to preserve privacy of information and control access to resources.  Moritz Becker's dissertation [1] describes a system for distributed role-based access control for the UK's Electronic Health Record (EHR) service. In this system, sensitive user data and resources at every node in the network of hospitals and clinics are protected by certain entities which form a “protective layers” around those resources and controls access to them based on a policy defined using a policy definition language called Cassandra. Cassandra is a high-level logic rule language based on Datalog with constraints. The expressiveness of particular rules in Cassandra can be fine tuned by means of constraints.
 
 While this national EHR policy in Cassandra is the largest of its kind that has been formally specified, it has two main aspects that need improvements.  The policy deals with all requirements concerning access control of patient-identifiable data, including legitimate relationships, patients restricting access, authenticated express consent, third-party consent, and workgroup management.  However, with a total of 375 rules in about 2000 lines of Cassandra, the entire policy was written as flat rules, because Cassandra does not support any organizing structure.   Also, all updates are encoded as two predicates that need special processing outside the logic framework, because Cassandra does not support explicit update operations.
 
