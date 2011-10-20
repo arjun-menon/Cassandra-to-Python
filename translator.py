@@ -143,14 +143,11 @@ class HypothesesTranslator(object):
     @typecheck
     def translate_hypotheses(self, bindings: list):
         try:
-            ctrs, rest = separate( self.rule.hypos, lambda h: type(h) == Constraint )
+            ctrs, canAcs, rest = separate( self.rule.hypos, lambda h: type(h) == Constraint, lambda h: h.name == "canActivate" )
             
             bindings.extend(map(self.build_constraint_bindings, ctrs))
             
-            canAcs, rest = separate( rest, lambda h: h.name == "canActivate" )
-            
             bindings.extend(map(self.build_canAc_bindings, canAcs))
-            
             
             if any_eq(None, bindings):
                 # this means there is a constraint that couldn't be translated.
@@ -174,12 +171,6 @@ class HypothesesTranslator(object):
             # Now translate:
             tr = []
             for h in nc_hypos:
-
-#                if(type(h) == RemoteAtom):
-#                    # TODO
-#                    h = h.atom
-#
-#                assert type(h) == Atom
 
                 if h.name == "hasActivated":
                     tr.append( self.translate_hasActivated(h, bindings) )
