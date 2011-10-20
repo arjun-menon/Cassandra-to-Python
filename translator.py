@@ -156,12 +156,15 @@ class HypothesesTranslator(object):
             nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
 
             def print_bindings():
-                print("---")
+                print()
+                print(self.rule.name)
+                print("------")
                 for b in bindings:
                     vars, func = b
                     print(vars, " -->", func())
-                print(self.rule.name)
+                print("=====")
                 print()
+            
             print_bindings()
 
             # Now translate:
@@ -187,23 +190,23 @@ class HypothesesTranslator(object):
 class canAc(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
-        self.args = [repr(s) for s in self.rule.concl.args[:-1]]
-
+        self.subject = repr(self.rule.concl.args[0])
+    
     @typecheck
     def translate(self, params: list_of(Variable)):        
         
         # build self.external_vars (for HypothesesTranslator)
         self.external_vars = { repr(p) : 'self.'+repr(p) for p in params }
-        self.external_vars.update( { arg : arg for arg in self.args } )
-        print(self.external_vars)
+        self.external_vars.update( { self.subject : self.subject } )
+        #print(self.external_vars)
         
         return lambda number: """
-def canActivate{num}(self{args}): # {rule_name}
+def canActivate{num}(self, {subject}): # {rule_name}
 {translation}""".format\
         (
             rule_name = self.rule.name,
             num = "" if number==0 else "_" + str(number),
-            args = "".join(", " + arg for arg in self.args) if len(self.rule.concl.args) else "",
+            subject = self.subject,
             translation = tab( self.translate_hypotheses(self.build_param_bindings(params)) )
         )
 
@@ -348,7 +351,7 @@ from datetime import datetime
 
 ####################
 
-rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[1]
+rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[0]
 
 def repl(): # use python's quit() to break out
     while True:
