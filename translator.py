@@ -20,14 +20,27 @@ class HypothesesTranslator(object):
     def __repr__(self):
         return repr(self.rule)
     
-    @typecheck
-    def substitution_func_gen(self, variables: set, code):
-        """ variables is a list of variables that appear in code.
-        code is a format string on which string.format is invoked """
+    def substitution_func_gen(self, variables, code):
+        """ 'variables' is a list of variables that appear in 'code'.
+        'code' is a format string on which string.format is invoked. """
         
-        separate(variables, lambda v: v in set(self.external_vars))
+        ext, rest = separate(variables, lambda v: v in set(self.external_vars))
         
         substitution_dict = dict()
+        
+        substitution_dict.update( { e : self.external_vars[e] for e in ext } )
+        
+        substitution_dict.update( { r : p(r) for r in rest } )
+        
+        print(code)
+        print(substitution_dict)
+        
+        new_format_string = code.format(**substitution_dict)
+        
+        print(rest)
+        print(new_format_string)
+        
+        return ( set(rest), lambda vd = { r : r for r in rest }: new_format_string.format(**vd) )
     
     @typecheck
     def build_param_bindings(self, params: list_of(Variable)) -> list:
@@ -95,7 +108,11 @@ class HypothesesTranslator(object):
         subj, role = canAc.args
         
         bound_vars = [var.name for var in [subj] + role.args]
-        default_vd = {vn : vn for vn in bound_vars} 
+        default_vd = {vn : vn for vn in bound_vars}
+        
+        return self.substitution_func_gen(bound_vars, "canActivate({}, {}({}))".format(
+            p(bound_vars[0]), role.name, ", ".join(p(v) for v in bound_vars[1:])
+            ) )
         
         return set(bound_vars), lambda vd = default_vd: \
             "canActivate({subj}, {role_name}({role_args}))".format\
@@ -200,10 +217,10 @@ class canAc(HypothesesTranslator):
         return lambda number: """
 def canActivate{num}(self, {subject}): # {rule_name}
 {translation}""".format(
-            rule_name = self.rule.name,
-            num = "" if number==0 else "_" + str(number),
-            subject = self.subject,
-            translation = tab( self.translate_hypotheses(self.build_param_bindings(params)) )
+             rule_name = self.rule.name
+            ,num = "" if number==0 else "_" + str(number)
+            ,subject = self.subject
+            ,translation = tab( self.translate_hypotheses(self.build_param_bindings(params)) )
         )
 
 

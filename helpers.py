@@ -49,3 +49,6 @@ def separate(alist, *conds):
         cats.append(this)
     return tuple(cats+[rest])
 
+def p(s):
+    return '{' + s + '}'
+
