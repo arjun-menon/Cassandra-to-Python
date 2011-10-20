@@ -98,13 +98,13 @@ class HypothesesTranslator(object):
         def build_if_condition(params, bindings):
             conds = []
 
-            for cons in bindings:
-                variables, func = cons
-
-                if params & variables:
-                    if not variables == params & variables:
+            for b in bindings:
+                variables, func = b
+                
+                intersection = params & variables
+                if intersection:
+                    if intersection != variables:
                         raise StopTranslating(repr(variables) + " variables in constraint: no match in " + repr(params))
-
                     conds.append( func( {v:'role.'+v for v in variables} ) )
 
             return " and ".join(conds)
@@ -141,13 +141,14 @@ class HypothesesTranslator(object):
 
             nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
 
-            def for_testing_print_bindings():
-                print("---")
+            def print_bindings():
+                print(self.rule.name)
                 for b in bindings:
                     vars, func = b
                     print(vars, " -->", func())
+                print("---")
                 print()
-            for_testing_print_bindings()
+            print_bindings()
 
             # Now translate:
             tr = []
