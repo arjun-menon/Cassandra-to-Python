@@ -35,5 +35,16 @@ def prefix_lines(s: str, prefix: str):
 def tab(s, indentation_level=1):
     return prefix_lines(s, '    '*indentation_level)
 
-def separate(l, cond): # e.g. print(separate([1,2,3,4], lambda x: x % 2 ==0))
+def separate1(l, cond): # e.g. print(separate([1,2,3,4], lambda x: x % 2 ==0)) -> ([2, 4], [1, 3])
     return [x for x in l if cond(x) == True], [x for x in l if cond(x) == False]
+
+def separate(alist, *conds):
+    # >  print( separate(range(1,16), lambda x: x % 2 ==0, lambda x: x % 3 ==0) )
+    # >  ([2, 4, 6, 8, 10, 12, 14], [3, 9, 15], [1, 5, 7, 11, 13])
+    cats = []
+    rest = alist
+    for cond in conds:
+        this, rest = separate1(rest, cond)
+        cats.append(this)
+    return tuple(cats+[rest])
+
