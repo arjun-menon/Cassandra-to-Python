@@ -30,14 +30,13 @@ def func_hypos():
 func_hypos()
 
 def hasActivated_in_hypos():
-    
+    "Count and print number of hasActivated in each rule."
     for r in rules:
         n = 0
         for h in r.hypos:
             if type(h) != Constraint:
                 if h.name == "hasActivated":
                     n += 1
-
         print(n)
 
 #hasActivated_in_hypos()
