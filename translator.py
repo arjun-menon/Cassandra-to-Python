@@ -67,21 +67,21 @@ class HypothesesTranslator(object):
 
                 # it's of the form "something in [lower, upper]"
                 lower, upper = h2u(c.right.start.name), h2u(c.right.end.name)
-
+                
+                # Current-time() in [lower, upper]
                 if type(c.left) == Function:
-                    fname = h2u(repr(c.left))
+                    func_name = h2u(repr(c.left))
 
                     if len(c.left.args):
                         raise StopTranslating("can't handle 'in' operator - function with arguments: %r" % c.left)
-
-                    return {lower, upper}, lambda vd = {lower:lower, upper:upper}: \
-                        '%s in vrange(%s, %s)' % (fname, vd[lower], vd[upper])
-
+                    
+                    return self.substitution_func_gen([lower, upper],"%s in vrange({%s}, {%s})" % (func_name, lower, upper))
+                
+                # var in [lower, upper]
                 if type(c.left) == Variable:
                     vn = h2u(repr(c.left))
-
-                    return {vn, lower, upper}, lambda vd = {vn:vn, lower:lower, upper:upper}: \
-                        '%s in vrange(%s, %s)' % (vd[vn], vd[lower], vd[upper])
+                    
+                    return self.substitution_func_gen([vn, lower, upper], "{%s} in vrange({%s}, {%s})" % (vn, lower, upper))
 
         elif c.op == '=' or c.op == '<':
 
@@ -90,11 +90,11 @@ class HypothesesTranslator(object):
             cl, cr = h2u(repr(c.left)), h2u(repr(c.right))
 
             if type(c.left) == Variable and type(c.right) == Constant:
-                return {cl}, lambda vd = {cl:cl}: "%s %s %s" % (cl, op, cr)
+                return self.substitution_func_gen([cl], p(cl) + ' ' + op + ' ' + cr)
 
             elif type(c.left) == Variable and type(c.right) == Variable:
-                return {cl, cr}, lambda vd = {cl:cl, cr:cr}: "%s %s %s" % (cl, op, cr)
-
+                return self.substitution_func_gen([cl, cr], p(cl) + ' ' + op + ' ' + p(cr))
+            
         raise StopTranslating("could not form bindings for constraint: " + repr(c))
     
     
@@ -107,10 +107,6 @@ class HypothesesTranslator(object):
         return self.substitution_func_gen(bound_vars, "canActivate({}, {}({}))".format(
             p(bound_vars[0]), role.name, ", ".join(p(v) for v in bound_vars[1:])
             ) )
-        
-        return set(bound_vars), lambda vd = default_vd: \
-            "canActivate({subj}, {role_name}({role_args}))".format\
-            (role_name = role.name, subj = bound_vars[0], role_args = ", ".join(bound_vars[1:]))
     
     
     def translate_hasActivated(self, hasAc, bindings):
