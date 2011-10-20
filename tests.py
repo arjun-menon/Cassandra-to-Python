@@ -1,14 +1,5 @@
 from translator import *
 
-def num_constraints(r):
-    return len([h for h in r.hypos if type(h) == Constraint])
-
-#print([num_constraints(r) for r in rules])
-
-s = [r for r in rules if num_constraints(r) > 1]
-
-print(len(s))
-
 def func_hypos():
     """This test shows only 3 special predicates appear in hypos, 
     and all other non-constraint predicates are function calls."""
