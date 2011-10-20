@@ -262,10 +262,11 @@ class Agent(Role):
         no_main_role_active(ag)
     
     def canActivate_2(self, ag): # P1.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        no_main_role_active(ag) and\
-        canActivate(ag, Agent(pat))
+        #todo: {'pat', 'ag'} variables in constraint: no match in {'ag'}
+        #hasActivated(x, Register-patient(ag))
+        #no-main-role-active(ag)
+        #"Spine"@"Spine".canActivate(ag, Agent(pat))
+        pass
     
     def canActivate_3(self, agent): # A1.6.1
         return\
@@ -274,11 +275,12 @@ class Agent(Role):
         no_main_role_active(agent)
     
     def canActivate_4(self, agent): # A1.6.2
-        return\
-        canActivate(pat, Patient()) and\
-        no_main_role_active(agent) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        canActivate(agent, Agent(pat))
+        #todo: {'pat', 'agent'} variables in constraint: no match in {'agent'}
+        #canActivate(pat, Patient())
+        #no-main-role-active(agent)
+        #"PDS"@"PDS".hasActivated(x, Register-patient(agent))
+        #"Spine"@"Spine".canActivate(agent, Agent(pat))
+        pass
     
     #'S1.4.2'
     #canDeactivate(ag, ag, Agent(pat)) <-
@@ -318,7 +320,7 @@ class Register_agent(Role):
     
     def canActivate_1(self, pat): # S1.4.9
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
         agent_regs(n, pat)
     
     def canActivate_2(self, cli): # S1.4.10
@@ -328,7 +330,7 @@ class Register_agent(Role):
     
     def canActivate_3(self, pat): # A1.6.5
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" }
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat }
     
     def canActivate_4(self, cg): # A1.6.6
         return\
@@ -416,16 +418,17 @@ class One_off_consent(Role):
     
     def canActivate_1(self, pat): # S2.1.1
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" }
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat }
     
     def canActivate_2(self, ag): # S2.1.2
         return\
         { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat }
     
     def canActivate_3(self, cli): # S2.1.3
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
-        canActivate(cli, Treating_clinician(pat, org, spcty))
+        #todo: {'spcty', 'org', 'pat', 'cli'} variables in constraint: no match in {'spcty', 'org', 'ra'}
+        #hasActivated(cli, Spine-clinician(ra, org, spcty))
+        #canActivate(cli, Treating-clinician(pat, org, spcty))
+        pass
     
     #'S2.1.4'
     #canDeactivate(pat, x, One-off-consent(pat)) <-
@@ -448,44 +451,44 @@ class Request_third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params) or self.canActivate_5(*params) or self.canActivate_6(*params) or self.canActivate_7(*params)
     
     def canActivate_1(self, pat): # S2.2.1
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: x in Get-spine-record-third-parties(pat, id)
         #hasActivated(pat, Patient())
         #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_2(self, ag): # S2.2.2
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: x in Get-spine-record-third-parties(pat, id)
         #hasActivated(ag, Agent(pat))
         #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_3(self, cli): # S2.2.3
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: x in Get-spine-record-third-parties(pat, id)
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
         #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_4(self, pat): # A2.3.1
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
         #hasActivated(pat, Patient())
         #x in Get-record-third-parties(pat, id)
         pass
     
     def canActivate_5(self, ag): # A2.3.2
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
         #hasActivated(ag, Agent(pat))
         #x in Get-record-third-parties(pat, id)
         pass
     
     def canActivate_6(self, cli): # A2.3.3
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
         #hasActivated(cli, Clinician(spcty))
         #x in Get-record-third-parties(pat, id)
         pass
     
     def canActivate_7(self, cg): # A2.3.4
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
         #hasActivated(cg, Caldicott-guardian())
         #x in Get-record-third-parties(pat, id)
         pass
@@ -583,18 +586,19 @@ class Third_party_consent(Role):
     
     def canActivate_1(self, x): # S2.2.14
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Third-party" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Third-party" and subject == self.x } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
     
     def canActivate_2(self, cli): # S2.2.15
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
-        canActivate(cli, Treating_clinician(pat, org, spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
+        #todo: {'spcty', 'org', 'pat', 'cli'} variables in constraint: no match in {'spcty', 'org', 'ra'}
+        #hasActivated(cli, Spine-clinician(ra, org, spcty))
+        #canActivate(cli, Treating-clinician(pat, org, spcty))
+        #hasActivated(y, Request-third-party-consent(x, pat, id))
+        pass
     
     def canActivate_3(self, x): # A2.3.16
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Third-party" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Third-party" and subject == self.x } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
     
     def canActivate_4(self, cg): # A2.3.17
@@ -663,7 +667,7 @@ class Consent_to_treatment(Role):
     
     def canActivate_1(self, pat): # S2.3.9
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
     
     def canActivate_2(self, ag): # S2.3.10
@@ -672,10 +676,11 @@ class Consent_to_treatment(Role):
         { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
     
     def canActivate_3(self, cli1): # S2.3.11
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org and role.spcty == self.spcty } and\
-        canActivate(cli1, Treating_clinician(pat, org, spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty }
+        #todo: {'spcty', 'org', 'pat', 'cli1'} variables in constraint: no match in {'spcty', 'org', 'ra'}
+        #hasActivated(cli1, Spine-clinician(ra, org, spcty))
+        #canActivate(cli1, Treating-clinician(pat, org, spcty))
+        #hasActivated(x, Request-consent-to-treatment(pat, org, cli2, spcty))
+        pass
 
 class Request_consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
@@ -725,7 +730,7 @@ class Consent_to_group_treatment(Role):
     
     def canActivate_1(self, pat): # S2.4.9
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
     
     def canActivate_2(self, ag): # S2.4.10
@@ -734,10 +739,11 @@ class Consent_to_group_treatment(Role):
         { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
     
     def canActivate_3(self, cli1): # S2.4.11
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org } and\
-        canActivate(cli1, Treating_clinician(pat, org, spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
+        #todo: {'spcty', 'org', 'pat', 'cli1'} variables in constraint: no match in {'spcty', 'org', 'ra'}
+        #hasActivated(cli1, Spine-clinician(ra, org, spcty))
+        #canActivate(cli1, Treating-clinician(pat, org, spcty))
+        #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
+        pass
 
 class Referrer(Role):
     def __init__(self, pat, org, cli2, spcty1):
@@ -745,9 +751,10 @@ class Referrer(Role):
         self.pat, self.org, self.cli2, self.spcty1 = pat, org, cli2, spcty1
     
     def canActivate(self, cli1): # S3.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org } and\
-        canActivate(cli1, Treating_clinician(pat, org, spcty2))
+        #todo: {'org', 'spcty2', 'pat', 'cli1'} variables in constraint: no match in {'org', 'spcty2', 'ra'}
+        #hasActivated(cli1, Spine-clinician(ra, org, spcty2))
+        #canActivate(cli1, Treating-clinician(pat, org, spcty2))
+        pass
     
     #'S3.1.2'
     #canDeactivate(cli1, cli1, Referrer(pat, org, cli2, spcty1)) <-
@@ -788,9 +795,10 @@ class Treating_clinician(Role):
         { (subject, role) for subject, role in hasActivated if role.name == "Spine-emergency-clinician" and role.pat == self.pat and role.org == self.org }
     
     def canActivate_3(self, cli): # S3.3.3
-        return\
-        canActivate(cli, Spine_clinician(ra, org, spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Referrer" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty }
+        #todo: {'spcty', 'org', 'cli', 'ra'} variables in constraint: no match in {'spcty', 'org', 'pat', 'cli'}
+        #canActivate(cli, Spine-clinician(ra, org, spcty))
+        #hasActivated(x, Referrer(pat, org, cli, spcty))
+        pass
     
     def canActivate_4(self, cli): # S3.3.4
         return\
@@ -814,16 +822,18 @@ class Group_treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # S3.4.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group } and\
-        canActivate(cli, Workgroup_member(org, group, spcty)) and\
-        canActivate(ra, Registration_authority())
+        #todo: {'spcty', 'org', 'group', 'cli'} variables in constraint: no match in {'org', 'pat', 'group'}
+        #hasActivated(x, Consent-to-group-treatment(pat, org, group))
+        #ra.canActivate(cli, Workgroup-member(org, group, spcty))
+        #canActivate(ra, Registration-authority())
+        pass
     
     def canActivate_2(self, cli): # S3.4.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group } and\
-        canActivate(cli, Workgroup_member(org, group, spcty)) and\
-        canActivate(ra, Registration_authority())
+        #todo: {'spcty', 'org', 'group', 'cli'} variables in constraint: no match in {'org', 'pat', 'group'}
+        #hasActivated(x, Consent-to-group-treatment(pat, org, group))
+        #ra@ra.canActivate(cli, Workgroup-member(org, group, spcty))
+        #canActivate(ra, Registration-authority())
+        pass
 
 class Concealed_by_spine_clinician(Role):
     def __init__(self, pat, ids, start, end):
@@ -831,9 +841,10 @@ class Concealed_by_spine_clinician(Role):
         self.pat, self.ids, self.start, self.end = pat, ids, start, end
     
     def canActivate(self, cli): # S4.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
-        canActivate(cli, Treating_clinician(pat, org, spcty))
+        #todo: {'spcty', 'org', 'pat', 'cli'} variables in constraint: no match in {'spcty', 'org', 'ra'}
+        #hasActivated(cli, Spine-clinician(ra, org, spcty))
+        #canActivate(cli, Treating-clinician(pat, org, spcty))
+        pass
     
     #'S4.1.2'
     #canDeactivate(cli, cli, Concealed-by-spine-clinician(pat, ids, start, end)) <-
@@ -860,7 +871,7 @@ class Conceal_request(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S4.2.1
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
         #hasActivated(pat, Patient())
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
@@ -868,7 +879,7 @@ class Conceal_request(Role):
         pass
     
     def canActivate_2(self, ag): # S4.2.2
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
         #hasActivated(ag, Agent(pat))
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
@@ -901,10 +912,11 @@ class Concealed_by_spine_patient(Role):
         self.what, self.who, self.start, self.end = what, who, start, end
     
     def canActivate(self, cli): # S4.2.8
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
-        canActivate(cli, Treating_clinician(pat, org, spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Conceal-request" and role.what == self.what and role.who == self.who and role.start == self.start and role.end == self.end }
+        #todo: {'spcty', 'org', 'pat', 'cli'} variables in constraint: no match in {'spcty', 'org', 'ra'}
+        #hasActivated(cli, Spine-clinician(ra, org, spcty))
+        #canActivate(cli, Treating-clinician(pat, org, spcty))
+        #hasActivated(x, Conceal-request(what, who, start, end))
+        pass
     
     #'S4.2.9'
     #canDeactivate(cli, cli, Concealed-by-spine-patient(what, who, start, end)) <-
@@ -928,7 +940,7 @@ class Authenticated_express_consent(Role):
     
     def canActivate_1(self, pat): # S4.3.1
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
         count_authenticated_express_consent(n, pat)
     
     def canActivate_2(self, ag): # S4.3.2
@@ -1330,9 +1342,10 @@ class Request_consent_to_referral(Role):
         self.pat, self.ra, self.org, self.cli2, self.spcty2 = pat, ra, org, cli2, spcty2
     
     def canActivate(self, cli1): # A2.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Clinician" } and\
-        canActivate(cli1, ADB_treating_clinician(pat, team, spcty1))
+        #todo: {'spcty1', 'team', 'pat', 'cli1'} variables in constraint: no match in {'spcty1'}
+        #hasActivated(cli1, Clinician(spcty1))
+        #canActivate(cli1, ADB-treating-clinician(pat, team, spcty1))
+        pass
     
     #'A2.1.2'
     #canDeactivate(cli, cli, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
@@ -1368,12 +1381,12 @@ class Consent_to_referral(Role):
     
     def canActivate_1(self, pat): # A2.1.8
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
     
     def canActivate_2(self, pat): # A2.1.9
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and subject == self.pat and role.pat == self.pat } and\
         { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
     
     def canActivate_3(self, cg): # A2.1.10
@@ -1399,14 +1412,14 @@ class Ext_treating_clinician(Role):
     
     def canActivate_1(self, cli): # A2.2.1
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.spcty == self.spcty } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.spcty == self.spcty and canActivate(ra, Registration-authority()) } and\
         no_main_role_active(cli) and\
         { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty } and\
         canActivate(ra, Registration_authority())
     
     def canActivate_2(self, cli): # A2.2.2
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.spcty == self.spcty } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.spcty == self.spcty and canActivate(ra, Registration-authority()) } and\
         no_main_role_active(cli) and\
         { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty } and\
         canActivate(ra, Registration_authority())
@@ -1597,7 +1610,7 @@ class Register_ward_member(Role):
     
     def canActivate_2(self, hd): # A3.5.2
         return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Clinician" } and\
+        { (subject, role) for subject, role in hasActivated if role.name == "Clinician" and subject == self.cli } and\
         canActivate(hd, Head_of_ward(ward)) and\
         canActivate(cli, Clinician(spcty)) and\
         ward_member_regs(n, cli, ward, spcty)
@@ -1690,7 +1703,7 @@ class ADB_treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, cli): # A3.8.1
-        #{'group', 'team'} variables in constraint: no match in {'spcty', 'cli', 'team'}
+        #todo: {'group', 'team'} variables in constraint: no match in {'spcty', 'cli', 'team'}
         #canActivate(cli, Clinician(spcty))
         #hasActivated(x, Register-team-member(cli, team, spcty))
         #hasActivated(y, Register-team-episode(pat, team))
@@ -1698,7 +1711,7 @@ class ADB_treating_clinician(Role):
         pass
     
     def canActivate_2(self, cli): # A3.8.2
-        #{'ward', 'group'} variables in constraint: no match in {'spcty', 'ward', 'cli'}
+        #todo: {'ward', 'group'} variables in constraint: no match in {'spcty', 'ward', 'cli'}
         #canActivate(cli, Clinician(spcty))
         #hasActivated(x, Register-ward-member(cli, ward, spcty))
         #hasActivated(x, Register-ward-episode(pat, ward))
@@ -1715,9 +1728,10 @@ class Concealed_by_clinician(Role):
         self.pat, self.id, self.start, self.end = pat, id, start, end
     
     def canActivate(self, cli): # A4.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Clinician" } and\
-        canActivate(cli, ADB_treating_clinician(pat, group, spcty))
+        #todo: {'spcty', 'group', 'pat', 'cli'} variables in constraint: no match in {'spcty'}
+        #hasActivated(cli, Clinician(spcty))
+        #canActivate(cli, ADB-treating-clinician(pat, group, spcty))
+        pass
     
     #'A4.1.2'
     #canDeactivate(cli, cli, Concealed-by-clinician(pat, id, start, end)) <-
@@ -1744,7 +1758,7 @@ class Concealed_by_patient(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # A4.2.1
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
         #hasActivated(pat, Patient())
         #count-concealed-by-patient(n, pat)
         #what = (pat,ids,authors,groups,subjects,from-time,to-time)
@@ -1753,7 +1767,7 @@ class Concealed_by_patient(Role):
         pass
     
     def canActivate_2(self, ag): # A4.2.2
-        #couldn't build constraints
+        #todo: could not form bindings for constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
         #hasActivated(ag, Agent(pat))
         #count-concealed-by-patient(n, pat)
         #what = (pat,ids,authors,groups,subjects,from-time,to-time)
@@ -1903,7 +1917,7 @@ class NHS_clinician_cert(Role):
         self.org, self.cli, self.spcty, self.start, self.end = org, cli, spcty, start, end
     
     def canActivate(self, mgr): # R2.1.1
-        #{'start2', 'start', 'end2'} variables in constraint: no match in {'start2', 'org', 'end2'}
+        #todo: {'start2', 'start', 'end2'} variables in constraint: no match in {'start2', 'org', 'end2'}
         #hasActivated(mgr, RA-manager())
         #hasActivated(y, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
@@ -1933,7 +1947,7 @@ class NHS_Caldicott_guardian_cert(Role):
         self.org, self.cg, self.start, self.end = org, cg, start, end
     
     def canActivate(self, mgr): # R2.2.1
-        #{'start2', 'start', 'end2'} variables in constraint: no match in {'start2', 'org', 'end2'}
+        #todo: {'start2', 'start', 'end2'} variables in constraint: no match in {'start2', 'org', 'end2'}
         #hasActivated(mgr, RA-manager())
         #hasActivated(x, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
