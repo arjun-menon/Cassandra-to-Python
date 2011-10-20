@@ -30,7 +30,7 @@ def func_hypos():
 func_hypos()
 
 def hasActivated_in_hypos():
-    "Count and print number of hasActivated in each rule."
+    "Count and print number of hasActivated hypotheses in each rule."
     for r in rules:
         n = 0
         for h in r.hypos:
@@ -42,9 +42,12 @@ def hasActivated_in_hypos():
 #hasActivated_in_hypos()
 
 def which_have_canAc_hypos():
+    "Print rules that have a canActivate hypo"
     for r in rules:
         for h in r.hypos:
             if type(h) != Constraint:
                     if h.name == "canActivate":
                         print(r)
                         break
+
+#which_have_canAc_hypos()
