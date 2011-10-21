@@ -155,9 +155,9 @@ class HypothesesTranslator(object):
                 # this means there is a constraint that couldn't be translated.
                 # when a constraint is not translated, None is returned by the translating function
                 raise StopTranslating("couldn't build bindings")
-
+            
             nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
-
+            
             def print_bindings():
                 print()
                 print(self.rule.name)
@@ -169,18 +169,18 @@ class HypothesesTranslator(object):
                 print()
             
             print_bindings()
-
+            
             # Now translate:
             tr = []
             for h in nc_hypos:
-
+                
                 if h.name == "hasActivated":
                     tr.append( self.translate_hasActivated(h, bindings) )
                 else:
                     tr.append( h2u(repr(h)) )
-
+            
             return "return\\\n" + ' and\\\n'.join(tr)
-
+        
         except StopTranslating as st:
             return "".join("#" + str(x) + '\n' for x in [repr(st)] + self.rule.hypos) + "pass"
 
