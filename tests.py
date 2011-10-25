@@ -18,7 +18,7 @@ def func_hypos():
     for i in hy:
         print(i)
 
-func_hypos()
+#func_hypos()
 
 def hasActivated_in_hypos():
     "Count and print number of hasActivated hypotheses in each rule."
@@ -42,3 +42,10 @@ def which_have_canAc_hypos():
                         break
 
 #which_have_canAc_hypos()
+
+def print_special_pred():
+    for i in (r for r in rules if r.concl.name not in special_predicates):
+        print(i)
+        
+#print_special_pred()
+
