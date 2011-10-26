@@ -145,18 +145,44 @@ class HypothesesTranslator(object):
     
     def translate_hypotheses(self):
         try:
-            ctrs, canAcs, hasAcs, rest = separate(self.rule.hypos, 
+            ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
                                                   lambda h: type(h) == Constraint, 
                                                   lambda h: h.name == "canActivate",
                                                   lambda h: h.name == "hasActivated")           
             
             # translate hasActivated:
             
+            conditionals = []
+            
             if len(hasAcs) == 1:
-                print(hasAcs[0])
+                #print(hasAcs[0])
+                hasAc = hasAcs[0]
+                role = hasAc.args[1]
+                hasAc_subj = repr(hasAc.args[0])
+                role_name = role.name
+                role_params = [repr(param) for param in role.args]
+                
+                # turn role_params into a set
+                if len(role_params) != len(set(role_params)):
+                    raise StopTranslating("duplicate role params in %s" + repr(role_params))
+                else:
+                    role_params = set(role_params)
+                
+                conditionals.append( 'role.name == "%s"' % role_name )
+                
+                # find which role params already exist in external_vars
+                existing_role_params = role_params & set(self.external_vars)
+                
+                # create conditionals for existing role params
+                conditionals.extend([ "role."+param + " == " + self.external_vars[param] for param in existing_role_params ])
+                
+                role_param_mapping = { rp : "role."+rp for rp in role_params }
+                self.external_vars.update( role_param_mapping )
             
             else:
                 raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
+            
+            print(self.rule.name + repr(list(map(lambda k: repr(k[0]) + " " + k[1](), list(map(self.build_canAc_bindings, canAcs))))))
             
             return "pass"
             
@@ -360,7 +386,7 @@ from datetime import datetime
 
 ####################
 
-rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[0]
+rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[1]
 
 def repl(): # use python's quit() to break out
     while True:
