@@ -6,9 +6,7 @@ class PDS_manager(Role):
         super().__init__('PDS-manager', []) 
     
     def canActivate(self, adm): # P1.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-PDS-manager" } and\
-        no_main_role_active(adm)
+        pass
     
     #'P1.1.2'
     #canDeactivate(adm, adm, PDS-manager()) <-
@@ -24,9 +22,7 @@ class Register_PDS_manager(Role):
         self.adm2 = adm2
     
     def canActivate(self, adm1): # P1.1.5
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "PDS-manager" } and\
-        pds_admin_regs(n, adm2)
+        pass
     
     #'P1.1.6'
     #canDeactivate(adm1, x, Register-PDS-manager(adm2)) <-
@@ -45,9 +41,7 @@ class Patient(Role):
         super().__init__('Patient', []) 
     
     def canActivate(self, pat): # P1.2.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        no_main_role_active(pat)
+        pass
     
     #'P1.2.2'
     #canDeactivate(pat, pat, Patient()) <-
@@ -63,10 +57,7 @@ class Agent(Role):
         self.pat = pat
     
     def canActivate(self, ag): # P1.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        no_main_role_active(ag) and\
-        canActivate(ag, Agent(pat))
+        pass
     
     #'P1.3.2'
     #canDeactivate(ag, ag, Agent(pat)) <-
@@ -85,28 +76,16 @@ class Professional_user(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, x): # P1.4.1
-        return\
-        no_main_role_active(cli) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
-        canActivate(ra, Registration_authority())
+        pass
     
     def canActivate_2(self, x): # P1.4.2
-        return\
-        no_main_role_active(cli) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
-        canActivate(ra, Registration_authority())
+        pass
     
     def canActivate_3(self, x): # P1.4.3
-        return\
-        no_main_role_active(cg) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
-        canActivate(ra, Registration_authority())
+        pass
     
     def canActivate_4(self, x): # P1.4.4
-        return\
-        no_main_role_active(cg) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
-        canActivate(ra, Registration_authority())
+        pass
     
     #'P1.4.5'
     #canDeactivate(x, x, Professional-user(ra, org)) <-
@@ -128,12 +107,10 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # P1.5.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
     
     def canActivate_2(self, ra): # P1.5.3
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
 
 class Register_patient(Role):
     def __init__(self, pat):
@@ -141,9 +118,7 @@ class Register_patient(Role):
         self.pat = pat
     
     def canActivate(self, adm): # P2.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "PDS-manager" } and\
-        patient_regs(n, pat)
+        pass
     
     #'P2.1.2'
     #canDeactivate(adm, x, Register-patient(pat)) <-

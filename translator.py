@@ -374,6 +374,7 @@ def trans(obj):
         return "\n" + prefix_lines(repr(obj), "#")
 
 def translate_rules(rules):
+    print("Translating %d rules..." % len(rules))
     outline = generate_outline(rules)
 
     translation  = ""
@@ -386,7 +387,33 @@ from datetime import datetime
 
 ####################
 
-rule_set = ('all', 'spine', 'pds', 'hospital', 'ra')[1]
+rule_sets = ['spine', 'pds', 'hospital', 'ra']
+rules_collections = None
+
+def parse_rules():
+    global rules_collections, rule_sets
+    rules_collections = [ ( rule_set, parse_one("ehr/%s.txt" % rule_set) ) for rule_set in rule_sets ]
+    with open("ehr/parse_tree.pickle", "wb") as f:
+        pickle.dump(rules_collections, f)
+
+def unpickle_rules():
+    global rules_collections
+    with open("ehr/parse_tree.pickle", "rb") as f:
+        rules_collections = pickle.load(f)
+
+def translate():
+    global rules_collections
+    
+    def write(tr, rule_set):
+        with open("ehr/%s.py" % rule_set, 'w') as f:
+            f.write(tr)
+        print("Done. Wrote to %s.py\n" % rule_set)
+        
+    for (rule_set, rules) in rules_collections:
+        tr = translate_rules(rules)
+        write(tr, rule_set)
+
+####################
 
 def repl(): # use python's quit() to break out
     while True:
@@ -400,32 +427,6 @@ def repl(): # use python's quit() to break out
         except Exception as e:
             print((e.message))
 
-def save(rules):
-    with open("ehr/%s.py" % rule_set, 'w') as f:
-        f.write(tr)
-    print("Done. Wrote to %s.py" % rule_set)
-
-def get_rules():
-    should_parse = False
-
-    def ehr_parse():
-        rules = parse_all() if rule_set == 'all' else parse_one("ehr/%s.txt" % rule_set)
-        with open("ehr/parse_tree.pickle", "wb") as f:
-            pickle.dump(rules, f)
-        return rules
-    
-    if should_parse:
-        return ehr_parse()
-    else:
-        with open("ehr/parse_tree.pickle", "rb") as f:
-            return pickle.load(f)
-
-rules = get_rules()
-
-####################
-
-print("Translating %d rules..." % len(rules))
-
-tr = translate_rules(rules)
-
-save(rules)
+#parse_rules()
+unpickle_rules()
+translate()

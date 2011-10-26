@@ -7,9 +7,7 @@ class Register_RA_manager(Role):
         self.mgr2 = mgr2
     
     def canActivate(self, mgr): # R1.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "RA-manager" } and\
-        RA_manager_regs(n, mgr2)
+        pass
     
     #'R1.1.2'
     #canDeactivate(mgr, x, Register-RA-manager(mgr2)) <-
@@ -28,8 +26,7 @@ class RA_manager(Role):
         super().__init__('RA-manager', []) 
     
     def canActivate(self, mgr): # R1.1.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-RA-manager" }
+        pass
     
     #'R1.1.5'
     #canDeactivate(mgr, mgr, RA-manager()) <-
@@ -47,11 +44,14 @@ class NHS_service(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, srv): # R1.2.2
-        return\
-        canActivate(srv, Registration_authority())
+        #todo: Not implemented: 0 hasAcs in a rule.
+        #canActivate(srv, Registration-authority())
+        pass
     
     def canActivate_2(self, srv): # R1.2.3
-        return\
+        #todo: Not implemented: 0 hasAcs in a rule.
+        #srv = "Spine"
+        pass
 
 class Registration_authority(Role):
     def __init__(self):
@@ -61,12 +61,10 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # R1.2.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
     
     def canActivate_2(self, ra): # R1.2.5
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
 
 class NHS_clinician_cert(Role):
     def __init__(self, org, cli, spcty, start, end):
@@ -74,7 +72,7 @@ class NHS_clinician_cert(Role):
         self.org, self.cli, self.spcty, self.start, self.end = org, cli, spcty, start, end
     
     def canActivate(self, mgr): # R2.1.1
-        #{'start2', 'start', 'end2'} variables in constraint: no match in {'start2', 'org', 'end2'}
+        #todo: Not implemented: 2 hasAcs in a rule.
         #hasActivated(mgr, RA-manager())
         #hasActivated(y, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
@@ -104,7 +102,7 @@ class NHS_Caldicott_guardian_cert(Role):
         self.org, self.cg, self.start, self.end = org, cg, start, end
     
     def canActivate(self, mgr): # R2.2.1
-        #{'start2', 'start', 'end2'} variables in constraint: no match in {'start2', 'org', 'end2'}
+        #todo: Not implemented: 2 hasAcs in a rule.
         #hasActivated(mgr, RA-manager())
         #hasActivated(x, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
@@ -134,8 +132,7 @@ class NHS_health_org_cert(Role):
         self.org, self.start, self.end = org, start, end
     
     def canActivate(self, mgr): # R2.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "RA-manager" }
+        pass
     
     #'R2.3.2'
     #canDeactivate(mgr, x, NHS-health-org-cert(org, start, end)) <-
@@ -194,14 +191,18 @@ class Workgroup_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # R3.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-member" and role.group == self.group and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, NHS-health-org-cert(org, start, end))
+        #org@org.hasActivated(x, Register-team-member(cli, group, spcty))
+        #Current-time() in [start, end]
+        pass
     
     def canActivate_2(self, cli): # R3.1.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and role.org == self.org and Current_time() in vrange(role.start, role.end) } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-member" and role.group == self.group and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, NHS-health-org-cert(org, start, end))
+        #org@org.hasActivated(x, Register-ward-member(cli, group, spcty))
+        #Current-time() in [start, end]
+        pass
 
 #'R3.1.3'
 #canReqCred(spine, "RA-ADB".canActivate(cli, Workgroup-member(org, group, spcty))) <-
