@@ -10,10 +10,10 @@ class Spine_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # S1.1.1
-        pass
+        pass#S1.1.1
     
     def canActivate_2(self, cli): # S1.1.2
-        pass
+        pass#S1.1.2
     
     #'S1.1.3'
     #canDeactivate(cli, cli, Spine-clinician(ra, org, spcty)) <-
@@ -32,7 +32,7 @@ class Spine_admin(Role):
         super().__init__('Spine-admin', []) 
     
     def canActivate(self, adm): # S1.2.1
-        pass
+        pass#S1.2.1
     
     #'S1.2.2'
     #canDeactivate(adm, adm, Spine-admin()) <-
@@ -48,7 +48,7 @@ class Register_spine_admin(Role):
         self.adm2 = adm2
     
     def canActivate(self, adm): # S1.2.5
-        pass
+        pass#S1.2.5
     
     #'S1.2.6'
     #canDeactivate(adm, x, Register-spine-admin(adm2)) <-
@@ -77,7 +77,7 @@ class Patient(Role):
         pass
     
     def canActivate_2(self, pat): # P1.2.1
-        pass
+        pass#P1.2.1
     
     def canActivate_3(self, pat): # A1.5.4
         #todo: Not implemented: 2 hasAcs in a rule.
@@ -111,13 +111,13 @@ class Register_patient(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, adm): # S1.3.5
-        pass
+        pass#S1.3.5
     
     def canActivate_2(self, adm): # P2.1.1
-        pass
+        pass#P2.1.1
     
     def canActivate_3(self, rec): # A1.5.1
-        pass
+        pass#A1.5.1
     
     #'S1.3.6'
     #canDeactivate(adm, x, Register-patient(pat)) <-
@@ -247,7 +247,7 @@ class Agent(Role):
         pass
     
     def canActivate_2(self, ag): # P1.3.1
-        pass
+        pass#P1.3.1
     
     def canActivate_3(self, agent): # A1.6.1
         #todo: Not implemented: 2 hasAcs in a rule.
@@ -257,7 +257,7 @@ class Agent(Role):
         pass
     
     def canActivate_4(self, agent): # A1.6.2
-        pass
+        pass#A1.6.2
     
     #'S1.4.2'
     #canDeactivate(ag, ag, Agent(pat)) <-
@@ -296,16 +296,16 @@ class Register_agent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, pat): # S1.4.9
-        pass
+        pass#S1.4.9
     
     def canActivate_2(self, cli): # S1.4.10
-        pass
+        pass#S1.4.10
     
     def canActivate_3(self, pat): # A1.6.5
-        pass
+        pass#A1.6.5
     
     def canActivate_4(self, cg): # A1.6.6
-        pass
+        pass#A1.6.6
     
     #'S1.4.11'
     #canDeactivate(pat, pat, Register-agent(agent, pat)) <-
@@ -343,28 +343,28 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params) or self.canActivate_5(*params) or self.canActivate_6(*params) or self.canActivate_7(*params) or self.canActivate_8(*params)
     
     def canActivate_1(self, ra): # S1.5.1
-        pass
+        pass#S1.5.1
     
     def canActivate_2(self, ra): # S1.5.2
-        pass
+        pass#S1.5.2
     
     def canActivate_3(self, ra): # P1.5.2
-        pass
+        pass#P1.5.2
     
     def canActivate_4(self, ra): # P1.5.3
-        pass
+        pass#P1.5.3
     
     def canActivate_5(self, ra): # A1.7.2
-        pass
+        pass#A1.7.2
     
     def canActivate_6(self, ra): # A1.7.3
-        pass
+        pass#A1.7.3
     
     def canActivate_7(self, ra): # R1.2.4
-        pass
+        pass#R1.2.4
     
     def canActivate_8(self, ra): # R1.2.5
-        pass
+        pass#R1.2.5
 
 #'S1.5.3'
 #no-main-role-active(user) <-
@@ -379,13 +379,13 @@ class One_off_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.1.1
-        pass
+        pass#S2.1.1
     
     def canActivate_2(self, ag): # S2.1.2
-        pass
+        pass#S2.1.2
     
     def canActivate_3(self, cli): # S2.1.3
-        pass
+        pass#S2.1.3
     
     #'S2.1.4'
     #canDeactivate(pat, x, One-off-consent(pat)) <-
@@ -408,25 +408,25 @@ class Request_third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params) or self.canActivate_5(*params) or self.canActivate_6(*params) or self.canActivate_7(*params)
     
     def canActivate_1(self, pat): # S2.2.1
-        pass
+        pass#S2.2.1
     
     def canActivate_2(self, ag): # S2.2.2
-        pass
+        pass#S2.2.2
     
     def canActivate_3(self, cli): # S2.2.3
-        pass
+        pass#S2.2.3
     
     def canActivate_4(self, pat): # A2.3.1
-        pass
+        pass#A2.3.1
     
     def canActivate_5(self, ag): # A2.3.2
-        pass
+        pass#A2.3.2
     
     def canActivate_6(self, cli): # A2.3.3
-        pass
+        pass#A2.3.3
     
     def canActivate_7(self, cg): # A2.3.4
-        pass
+        pass#A2.3.4
     
     #'S2.2.4'
     #canDeactivate(pat, y, Request-third-party-consent(x, pat, id)) <-
@@ -564,7 +564,7 @@ class Request_consent_to_treatment(Role):
         self.pat, self.org2, self.cli2, self.spcty2 = pat, org2, cli2, spcty2
     
     def canActivate(self, cli1): # S2.3.1
-        pass
+        pass#S2.3.1
     
     #'S2.3.2'
     #canDeactivate(cli1, cli1, Request-consent-to-treatment(pat, org2, cli2, spcty2)) <-
@@ -627,7 +627,7 @@ class Request_consent_to_group_treatment(Role):
         self.pat, self.org, self.group = pat, org, group
     
     def canActivate(self, cli): # S2.4.1
-        pass
+        pass#S2.4.1
     
     #'S2.4.2'
     #canDeactivate(cli, cli, Request-consent-to-group-treatment(pat, org, group)) <-
@@ -690,7 +690,7 @@ class Referrer(Role):
         self.pat, self.org, self.cli2, self.spcty1 = pat, org, cli2, spcty1
     
     def canActivate(self, cli1): # S3.1.1
-        pass
+        pass#S3.1.1
     
     #'S3.1.2'
     #canDeactivate(cli1, cli1, Referrer(pat, org, cli2, spcty1)) <-
@@ -706,7 +706,7 @@ class Spine_emergency_clinician(Role):
         self.org, self.pat = org, pat
     
     def canActivate(self, cli): # S3.2.1
-        pass
+        pass#S3.2.1
     
     #'S3.2.2'
     #canDeactivate(cli, cli, Spine-emergency-clinician(org, pat)) <-
@@ -721,13 +721,13 @@ class Treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, cli): # S3.3.1
-        pass
+        pass#S3.3.1
     
     def canActivate_2(self, cli): # S3.3.2
-        pass
+        pass#S3.3.2
     
     def canActivate_3(self, cli): # S3.3.3
-        pass
+        pass#S3.3.3
     
     def canActivate_4(self, cli): # S3.3.4
         #todo: Not implemented: 0 hasAcs in a rule.
@@ -754,10 +754,10 @@ class Group_treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # S3.4.1
-        pass
+        pass#S3.4.1
     
     def canActivate_2(self, cli): # S3.4.2
-        pass
+        pass#S3.4.2
 
 class Concealed_by_spine_clinician(Role):
     def __init__(self, pat, ids, start, end):
@@ -765,7 +765,7 @@ class Concealed_by_spine_clinician(Role):
         self.pat, self.ids, self.start, self.end = pat, ids, start, end
     
     def canActivate(self, cli): # S4.1.1
-        pass
+        pass#S4.1.1
     
     #'S4.1.2'
     #canDeactivate(cli, cli, Concealed-by-spine-clinician(pat, ids, start, end)) <-
@@ -792,10 +792,10 @@ class Conceal_request(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S4.2.1
-        pass
+        pass#S4.2.1
     
     def canActivate_2(self, ag): # S4.2.2
-        pass
+        pass#S4.2.2
     
     #'S4.2.3'
     #canDeactivate(pat, x, Conceal-request(what, whom, start, end)) <-
@@ -850,13 +850,13 @@ class Authenticated_express_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S4.3.1
-        pass
+        pass#S4.3.1
     
     def canActivate_2(self, ag): # S4.3.2
-        pass
+        pass#S4.3.2
     
     def canActivate_3(self, cli1): # S4.3.3
-        pass
+        pass#S4.3.3
     
     #'S4.3.4'
     #canDeactivate(pat, x, Authenticated-express-consent(pat, cli)) <-
@@ -931,7 +931,7 @@ class PDS_manager(Role):
         super().__init__('PDS-manager', []) 
     
     def canActivate(self, adm): # P1.1.1
-        pass
+        pass#P1.1.1
     
     #'P1.1.2'
     #canDeactivate(adm, adm, PDS-manager()) <-
@@ -947,7 +947,7 @@ class Register_PDS_manager(Role):
         self.adm2 = adm2
     
     def canActivate(self, adm1): # P1.1.5
-        pass
+        pass#P1.1.5
     
     #'P1.1.6'
     #canDeactivate(adm1, x, Register-PDS-manager(adm2)) <-
@@ -978,16 +978,16 @@ class Professional_user(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, x): # P1.4.1
-        pass
+        pass#P1.4.1
     
     def canActivate_2(self, x): # P1.4.2
-        pass
+        pass#P1.4.2
     
     def canActivate_3(self, x): # P1.4.3
-        pass
+        pass#P1.4.3
     
     def canActivate_4(self, x): # P1.4.4
-        pass
+        pass#P1.4.4
     
     #'P1.4.5'
     #canDeactivate(x, x, Professional-user(ra, org)) <-
@@ -1039,7 +1039,7 @@ class Register_clinician(Role):
         self.cli, self.spcty = cli, spcty
     
     def canActivate(self, mgr): # A1.1.1
-        pass
+        pass#A1.1.1
     
     #'A1.1.2'
     #canDeactivate(mgr, x, Register-clinician(cli, spcty)) <-
@@ -1067,7 +1067,7 @@ class Clinician(Role):
         self.spcty = spcty
     
     def canActivate(self, cli): # A1.1.4
-        pass
+        pass#A1.1.4
     
     #'A1.1.5'
     #canDeactivate(cli, cli, Clinician(spcty)) <-
@@ -1087,7 +1087,7 @@ class Register_Caldicott_guardian(Role):
         self.cg = cg
     
     def canActivate(self, mgr): # A1.2.1
-        pass
+        pass#A1.2.1
     
     #'A1.2.2'
     #canDeactivate(mgr, x, Register-Caldicott-guardian(cg)) <-
@@ -1106,7 +1106,7 @@ class Caldicott_guardian(Role):
         super().__init__('Caldicott-guardian', []) 
     
     def canActivate(self, cg): # A1.2.4
-        pass
+        pass#A1.2.4
     
     #'A1.2.5'
     #canDeactivate(cg, cg, Caldicott-guardian()) <-
@@ -1122,7 +1122,7 @@ class Register_HR_mgr(Role):
         self.mgr2 = mgr2
     
     def canActivate(self, mgr): # A1.3.1
-        pass
+        pass#A1.3.1
     
     #'A1.3.2'
     #canDeactivate(mgr, x, Register-HR-mgr(mgr2)) <-
@@ -1141,7 +1141,7 @@ class HR_mgr(Role):
         super().__init__('HR-mgr', []) 
     
     def canActivate(self, mgr): # A1.3.4
-        pass
+        pass#A1.3.4
     
     #'A1.3.5'
     #canDeactivate(mgr, mgr, HR-mgr()) <-
@@ -1157,7 +1157,7 @@ class Register_receptionist(Role):
         self.rec = rec
     
     def canActivate(self, mgr): # A1.4.1
-        pass
+        pass#A1.4.1
     
     #'A1.4.2'
     #canDeactivate(mgr, x, Register-receptionist(rec)) <-
@@ -1176,7 +1176,7 @@ class Receptionist(Role):
         super().__init__('Receptionist', []) 
     
     def canActivate(self, rec): # A1.4.4
-        pass
+        pass#A1.4.4
     
     #'A1.4.5'
     #canDeactivate(rec, rec, Receptionist()) <-
@@ -1216,7 +1216,7 @@ class Request_consent_to_referral(Role):
         self.pat, self.ra, self.org, self.cli2, self.spcty2 = pat, ra, org, cli2, spcty2
     
     def canActivate(self, cli1): # A2.1.1
-        pass
+        pass#A2.1.1
     
     #'A2.1.2'
     #canDeactivate(cli, cli, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
@@ -1326,7 +1326,7 @@ class Head_of_team(Role):
         self.team = team
     
     def canActivate(self, hd): # A3.1.1
-        pass
+        pass#A3.1.1
     
     #'A3.1.2'
     #canDeactivate(hd, hd, Head-of-team(team)) <-
@@ -1366,10 +1366,10 @@ class Register_team_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, mgr): # A3.2.1
-        pass
+        pass#A3.2.1
     
     def canActivate_2(self, hd): # A3.2.2
-        pass
+        pass#A3.2.2
     
     #'A3.2.3'
     #canDeactivate(mgr, x, Register-team-member(mem, team, spcty)) <-
@@ -1400,7 +1400,7 @@ class Register_team_episode(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, rec): # A3.3.1
-        pass
+        pass#A3.3.1
     
     def canActivate_2(self, cli): # A3.3.2
         #todo: Not implemented: 2 hasAcs in a rule.
@@ -1433,7 +1433,7 @@ class Head_of_ward(Role):
         self.ward = ward
     
     def canActivate(self, cli): # A3.4.1
-        pass
+        pass#A3.4.1
     
     #'A3.4.2'
     #canDeactivate(cli, cli, Head-of-ward(ward)) <-
@@ -1473,10 +1473,10 @@ class Register_ward_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, mgr): # A3.5.1
-        pass
+        pass#A3.5.1
     
     def canActivate_2(self, hd): # A3.5.2
-        pass
+        pass#A3.5.2
     
     #'A3.5.3'
     #canDeactivate(mgr, x, Register-ward-member(cli, ward, spcty)) <-
@@ -1507,10 +1507,10 @@ class Register_ward_episode(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, rec): # A3.6.1
-        pass
+        pass#A3.6.1
     
     def canActivate_2(self, hd): # A3.6.2
-        pass
+        pass#A3.6.2
     
     #'A3.6.3'
     #canDeactivate(cg, x, Register-ward-episode(pat, ward)) <-
@@ -1534,7 +1534,7 @@ class Emergency_clinician(Role):
         self.pat = pat
     
     def canActivate(self, cli): # A3.7.1
-        pass
+        pass#A3.7.1
     
     #'A3.7.2'
     #canDeactivate(cli, cli, Emergency-clinician(pat)) <-
@@ -1573,7 +1573,7 @@ class ADB_treating_clinician(Role):
         pass
     
     def canActivate_3(self, cli): # A3.8.3
-        pass
+        pass#A3.8.3
 
 class Concealed_by_clinician(Role):
     def __init__(self, pat, id, start, end):
@@ -1581,7 +1581,7 @@ class Concealed_by_clinician(Role):
         self.pat, self.id, self.start, self.end = pat, id, start, end
     
     def canActivate(self, cli): # A4.1.1
-        pass
+        pass#A4.1.1
     
     #'A4.1.2'
     #canDeactivate(cli, cli, Concealed-by-clinician(pat, id, start, end)) <-
@@ -1608,10 +1608,10 @@ class Concealed_by_patient(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # A4.2.1
-        pass
+        pass#A4.2.1
     
     def canActivate_2(self, ag): # A4.2.2
-        pass
+        pass#A4.2.2
     
     #'A4.2.3'
     #canDeactivate(pat, x, Concealed-by-patient(what, whom, start, end)) <-
@@ -1703,7 +1703,7 @@ class Register_RA_manager(Role):
         self.mgr2 = mgr2
     
     def canActivate(self, mgr): # R1.1.1
-        pass
+        pass#R1.1.1
     
     #'R1.1.2'
     #canDeactivate(mgr, x, Register-RA-manager(mgr2)) <-
@@ -1722,7 +1722,7 @@ class RA_manager(Role):
         super().__init__('RA-manager', []) 
     
     def canActivate(self, mgr): # R1.1.4
-        pass
+        pass#R1.1.4
     
     #'R1.1.5'
     #canDeactivate(mgr, mgr, RA-manager()) <-
@@ -1815,7 +1815,7 @@ class NHS_health_org_cert(Role):
         self.org, self.start, self.end = org, start, end
     
     def canActivate(self, mgr): # R2.3.1
-        pass
+        pass#R2.3.1
     
     #'R2.3.2'
     #canDeactivate(mgr, x, NHS-health-org-cert(org, start, end)) <-
