@@ -119,7 +119,7 @@ class HypothesesTranslator(object):
                 variables, func = b
                 
                 if variables == {subj}:
-                    print('yes')
+                    #print('yes')
                     conds.append( func( { subj : 'subject' } ) )                    
                 
                 intersection = params & variables
@@ -139,12 +139,23 @@ class HypothesesTranslator(object):
         ).substitute\
         (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
     
+    def analyze_hasAcs(self, hasAcs):
+        print(hasAcs)
+        pass
+    
     def translate_hypotheses(self):
         try:
-            ctrs, canAcs, rest = separate( self.rule.hypos, lambda h: type(h) == Constraint, lambda h: h.name == "canActivate" )
+            ctrs, canAcs, hasAcs, rest = separate(self.rule.hypos, 
+                                                  lambda h: type(h) == Constraint, 
+                                                  lambda h: h.name == "canActivate",
+                                                  lambda h: h.name == "hasActivated")
+            if hasAcs:
+                self.analyze_hasAcs(hasAcs)
+            else:
+                print(self.rule.name + "----------------")
             
             bindings = []
-                        
+            
             bindings.extend(map(self.build_constraint_bindings, ctrs))
             
             bindings.extend(map(self.build_canAc_bindings, canAcs))
@@ -168,7 +179,7 @@ class HypothesesTranslator(object):
                 print("=====")
                 print()
             
-            print_bindings()
+            #print_bindings()
             
             # Now translate:
             tr = []
@@ -190,11 +201,11 @@ class canAc(HypothesesTranslator):
         self.subject = repr(self.rule.concl.args[0])
     
     @typecheck
-    def translate(self, params: list_of(Variable)):
-        self.role_params = [repr(p) for p in params]
+    def translate(self, role_params: list_of(Variable)):
+        self.role_params = [repr(p) for p in role_params]
         
         # build self.external_vars (for HypothesesTranslator)
-        self.external_vars = { repr(p) : 'self.'+repr(p) for p in params }
+        self.external_vars = { repr(p) : 'self.'+repr(p) for p in role_params }
         self.external_vars.update( { self.subject : self.subject } )
         
         return lambda number: """
@@ -237,7 +248,7 @@ def canActivate(self, *params):
     return %s
 """ % " or ".join("self.canActivate_%d(*params)" % i for i in list(range(1, len(self.canAcs) + 1))) +\
         "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
-
+        
         return tab(canAc_translation)
 
     def translate(self):
