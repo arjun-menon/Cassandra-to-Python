@@ -10,16 +10,10 @@ class Spine_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # S1.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org and role.spcty == self.spcty } and\
-        canActivate(ra, Registration_authority()) and\
-        no_main_role_active(cli)
+        pass
     
     def canActivate_2(self, cli): # S1.1.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org and role.spcty == self.spcty } and\
-        canActivate(ra, Registration_authority()) and\
-        no_main_role_active(cli)
+        pass
     
     #'S1.1.3'
     #canDeactivate(cli, cli, Spine-clinician(ra, org, spcty)) <-
@@ -38,9 +32,7 @@ class Spine_admin(Role):
         super().__init__('Spine-admin', []) 
     
     def canActivate(self, adm): # S1.2.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-spine-admin" } and\
-        no_main_role_active(adm)
+        pass
     
     #'S1.2.2'
     #canDeactivate(adm, adm, Spine-admin()) <-
@@ -56,9 +48,7 @@ class Register_spine_admin(Role):
         self.adm2 = adm2
     
     def canActivate(self, adm): # S1.2.5
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-admin" } and\
-        spine_admin_regs(n, adm2)
+        pass
     
     #'S1.2.6'
     #canDeactivate(adm, x, Register-spine-admin(adm2)) <-
@@ -80,21 +70,21 @@ class Patient(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S1.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        no_main_role_active(pat) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, Register-patient(pat))
+        #no-main-role-active(pat)
+        #"PDS"@"PDS".hasActivated(y, Register-patient(pat))
+        pass
     
     def canActivate_2(self, pat): # P1.2.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        no_main_role_active(pat)
+        pass
     
     def canActivate_3(self, pat): # A1.5.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        no_main_role_active(pat) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, Register-patient(pat))
+        #no-main-role-active(pat)
+        #"PDS"@"PDS".hasActivated(y, Register-patient(pat))
+        pass
     
     #'S1.3.2'
     #canDeactivate(pat, pat, Patient()) <-
@@ -121,19 +111,13 @@ class Register_patient(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, adm): # S1.3.5
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-admin" } and\
-        patient_regs(n, pat)
+        pass
     
     def canActivate_2(self, adm): # P2.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "PDS-manager" } and\
-        patient_regs(n, pat)
+        pass
     
     def canActivate_3(self, rec): # A1.5.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Receptionist" } and\
-        patient_regs(n, pat)
+        pass
     
     #'S1.3.6'
     #canDeactivate(adm, x, Register-patient(pat)) <-
@@ -256,29 +240,24 @@ class Agent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, ag): # S1.4.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-agent" and role.pat == self.pat } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        no_main_role_active(ag)
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, Register-agent(ag, pat))
+        #"PDS"@"PDS".hasActivated(y, Register-patient(ag))
+        #no-main-role-active(ag)
+        pass
     
     def canActivate_2(self, ag): # P1.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        no_main_role_active(ag) and\
-        "Spine"@"Spine".canActivate(ag, Agent(pat))
+        pass
     
     def canActivate_3(self, agent): # A1.6.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-agent" and role.pat == self.pat } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        no_main_role_active(agent)
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, Register-agent(agent, pat))
+        #"PDS"@"PDS".hasActivated(x, Register-patient(agent))
+        #no-main-role-active(agent)
+        pass
     
     def canActivate_4(self, agent): # A1.6.2
-        return\
-        canActivate(pat, Patient()) and\
-        no_main_role_active(agent) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" } and\
-        "Spine"@"Spine".canActivate(agent, Agent(pat))
+        pass
     
     #'S1.4.2'
     #canDeactivate(ag, ag, Agent(pat)) <-
@@ -317,23 +296,16 @@ class Register_agent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, pat): # S1.4.9
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
-        agent_regs(n, pat)
+        pass
     
     def canActivate_2(self, cli): # S1.4.10
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
-        canActivate(cli, General_practitioner(pat))
+        pass
     
     def canActivate_3(self, pat): # A1.6.5
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat }
+        pass
     
     def canActivate_4(self, cg): # A1.6.6
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Caldicott-guardian" } and\
-        canActivate(pat, Patient())
+        pass
     
     #'S1.4.11'
     #canDeactivate(pat, pat, Register-agent(agent, pat)) <-
@@ -371,36 +343,28 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params) or self.canActivate_5(*params) or self.canActivate_6(*params) or self.canActivate_7(*params) or self.canActivate_8(*params)
     
     def canActivate_1(self, ra): # S1.5.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
     
     def canActivate_2(self, ra): # S1.5.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
     
     def canActivate_3(self, ra): # P1.5.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
     
     def canActivate_4(self, ra): # P1.5.3
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
     
     def canActivate_5(self, ra): # A1.7.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
     
     def canActivate_6(self, ra): # A1.7.3
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
     
     def canActivate_7(self, ra): # R1.2.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
     
     def canActivate_8(self, ra): # R1.2.5
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-registration-authority" and Current_time() in vrange(role.start, role.end) }
+        pass
 
 #'S1.5.3'
 #no-main-role-active(user) <-
@@ -415,17 +379,13 @@ class One_off_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat }
+        pass
     
     def canActivate_2(self, ag): # S2.1.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat }
+        pass
     
     def canActivate_3(self, cli): # S2.1.3
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and canActivate(cli, Treating-clinician(self.pat, role.org, role.spcty)) } and\
-        canActivate(cli, Treating_clinician(pat, org, spcty))
+        pass
     
     #'S2.1.4'
     #canDeactivate(pat, x, One-off-consent(pat)) <-
@@ -448,46 +408,24 @@ class Request_third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params) or self.canActivate_5(*params) or self.canActivate_6(*params) or self.canActivate_7(*params)
     
     def canActivate_1(self, pat): # S2.2.1
-        #todo: could not form bindings for constraint: x in Get-spine-record-third-parties(pat, id)
-        #hasActivated(pat, Patient())
-        #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_2(self, ag): # S2.2.2
-        #todo: could not form bindings for constraint: x in Get-spine-record-third-parties(pat, id)
-        #hasActivated(ag, Agent(pat))
-        #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_3(self, cli): # S2.2.3
-        #todo: could not form bindings for constraint: x in Get-spine-record-third-parties(pat, id)
-        #hasActivated(cli, Spine-clinician(ra, org, spcty))
-        #canActivate(cli, Treating-clinician(pat, org, spcty))
-        #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_4(self, pat): # A2.3.1
-        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
-        #hasActivated(pat, Patient())
-        #x in Get-record-third-parties(pat, id)
         pass
     
     def canActivate_5(self, ag): # A2.3.2
-        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
-        #hasActivated(ag, Agent(pat))
-        #x in Get-record-third-parties(pat, id)
         pass
     
     def canActivate_6(self, cli): # A2.3.3
-        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
-        #hasActivated(cli, Clinician(spcty))
-        #x in Get-record-third-parties(pat, id)
         pass
     
     def canActivate_7(self, cg): # A2.3.4
-        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
-        #hasActivated(cg, Caldicott-guardian())
-        #x in Get-record-third-parties(pat, id)
         pass
     
     #'S2.2.4'
@@ -550,16 +488,18 @@ class Third_party(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, x): # S2.2.10
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" } and\
-        no_main_role_active(x) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(y, Request-third-party-consent(x, pat, id))
+        #no-main-role-active(x)
+        #"PDS"@"PDS".hasActivated(z, Register-patient(x))
+        pass
     
     def canActivate_2(self, x): # A2.3.12
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" } and\
-        no_main_role_active(x) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-patient" }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(y, Request-third-party-consent(x, pat, id))
+        #no-main-role-active(x)
+        #"PDS"@"PDS".hasActivated(z, Register-patient(x))
+        pass
     
     #'S2.2.11'
     #canDeactivate(x, x, Third-party()) <-
@@ -582,25 +522,29 @@ class Third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, x): # S2.2.14
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Third-party" and subject == self.x } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, Third-party())
+        #hasActivated(y, Request-third-party-consent(x, pat, id))
+        pass
     
     def canActivate_2(self, cli): # S2.2.15
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and canActivate(cli, Treating-clinician(self.pat, role.org, role.spcty)) } and\
-        canActivate(cli, Treating_clinician(pat, org, spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(cli, Spine-clinician(ra, org, spcty))
+        #canActivate(cli, Treating-clinician(pat, org, spcty))
+        #hasActivated(y, Request-third-party-consent(x, pat, id))
+        pass
     
     def canActivate_3(self, x): # A2.3.16
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Third-party" and subject == self.x } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, Third-party())
+        #hasActivated(y, Request-third-party-consent(x, pat, id))
+        pass
     
     def canActivate_4(self, cg): # A2.3.17
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Caldicott-guardian" } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-third-party-consent" and role.x == self.x and role.pat == self.pat and role.id == self.id }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(cg, Caldicott-guardian())
+        #hasActivated(y, Request-third-party-consent(x, pat, id))
+        pass
     
     #'A2.3.18'
     #canDeactivate(x, x, Third-party-consent(x, pat, id)) <-
@@ -620,10 +564,7 @@ class Request_consent_to_treatment(Role):
         self.pat, self.org2, self.cli2, self.spcty2 = pat, org2, cli2, spcty2
     
     def canActivate(self, cli1): # S2.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
-        canActivate(cli2, Spine_clinician(ra2, org2, spcty2)) and\
-        canActivate(pat, Patient())
+        pass
     
     #'S2.3.2'
     #canDeactivate(cli1, cli1, Request-consent-to-treatment(pat, org2, cli2, spcty2)) <-
@@ -662,20 +603,23 @@ class Consent_to_treatment(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.3.9
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(pat, Patient())
+        #hasActivated(x, Request-consent-to-treatment(pat, org, cli, spcty))
+        pass
     
     def canActivate_2(self, ag): # S2.3.10
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(ag, Agent(pat))
+        #hasActivated(x, Request-consent-to-treatment(pat, org, cli, spcty))
+        pass
     
     def canActivate_3(self, cli1): # S2.3.11
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org and role.spcty == self.spcty } and\
-        canActivate(cli1, Treating_clinician(pat, org, spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(cli1, Spine-clinician(ra, org, spcty))
+        #canActivate(cli1, Treating-clinician(pat, org, spcty))
+        #hasActivated(x, Request-consent-to-treatment(pat, org, cli2, spcty))
+        pass
 
 class Request_consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
@@ -683,9 +627,7 @@ class Request_consent_to_group_treatment(Role):
         self.pat, self.org, self.group = pat, org, group
     
     def canActivate(self, cli): # S2.4.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org } and\
-        canActivate(pat, Patient())
+        pass
     
     #'S2.4.2'
     #canDeactivate(cli, cli, Request-consent-to-group-treatment(pat, org, group)) <-
@@ -724,20 +666,23 @@ class Consent_to_group_treatment(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.4.9
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(pat, Patient())
+        #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
+        pass
     
     def canActivate_2(self, ag): # S2.4.10
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(ag, Agent(pat))
+        #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
+        pass
     
     def canActivate_3(self, cli1): # S2.4.11
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and canActivate(cli1, Treating-clinician(self.pat, self.org, role.spcty)) and role.org == self.org } and\
-        canActivate(cli1, Treating_clinician(pat, org, spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(cli1, Spine-clinician(ra, org, spcty))
+        #canActivate(cli1, Treating-clinician(pat, org, spcty))
+        #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
+        pass
 
 class Referrer(Role):
     def __init__(self, pat, org, cli2, spcty1):
@@ -745,9 +690,7 @@ class Referrer(Role):
         self.pat, self.org, self.cli2, self.spcty1 = pat, org, cli2, spcty1
     
     def canActivate(self, cli1): # S3.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and canActivate(cli1, Treating-clinician(self.pat, self.org, role.spcty2)) and role.org == self.org } and\
-        canActivate(cli1, Treating_clinician(pat, org, spcty2))
+        pass
     
     #'S3.1.2'
     #canDeactivate(cli1, cli1, Referrer(pat, org, cli2, spcty1)) <-
@@ -763,9 +706,7 @@ class Spine_emergency_clinician(Role):
         self.org, self.pat = org, pat
     
     def canActivate(self, cli): # S3.2.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and role.org == self.org } and\
-        canActivate(pat, Patient())
+        pass
     
     #'S3.2.2'
     #canDeactivate(cli, cli, Spine-emergency-clinician(org, pat)) <-
@@ -780,21 +721,18 @@ class Treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, cli): # S3.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-treatment" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty }
+        pass
     
     def canActivate_2(self, cli): # S3.3.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-emergency-clinician" and role.pat == self.pat and role.org == self.org }
+        pass
     
     def canActivate_3(self, cli): # S3.3.3
-        return\
-        canActivate(cli, Spine_clinician(ra, org, spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Referrer" and role.pat == self.pat and role.org == self.org and role.spcty == self.spcty }
+        pass
     
     def canActivate_4(self, cli): # S3.3.4
-        return\
-        canActivate(cli, Group_treating_clinician(pat, ra, org, group, spcty))
+        #todo: Not implemented: 0 hasAcs in a rule.
+        #canActivate(cli, Group-treating-clinician(pat, ra, org, group, spcty))
+        pass
 
 class General_practitioner(Role):
     def __init__(self, pat):
@@ -802,8 +740,10 @@ class General_practitioner(Role):
         self.pat = pat
     
     def canActivate(self, cli): # S3.3.5
-        return\
-        canActivate(cli, Treating_clinician(pat, org, spcty))
+        #todo: Not implemented: 0 hasAcs in a rule.
+        #canActivate(cli, Treating-clinician(pat, org, spcty))
+        #spcty = "GP"
+        pass
 
 class Group_treating_clinician(Role):
     def __init__(self, pat, ra, org, group, spcty):
@@ -814,16 +754,10 @@ class Group_treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # S3.4.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group } and\
-        ra.canActivate(cli, Workgroup_member(org, group, spcty)) and\
-        canActivate(ra, Registration_authority())
+        pass
     
     def canActivate_2(self, cli): # S3.4.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-group-treatment" and role.pat == self.pat and role.org == self.org and role.group == self.group } and\
-        ra@ra.canActivate(cli, Workgroup_member(org, group, spcty)) and\
-        canActivate(ra, Registration_authority())
+        pass
 
 class Concealed_by_spine_clinician(Role):
     def __init__(self, pat, ids, start, end):
@@ -831,9 +765,7 @@ class Concealed_by_spine_clinician(Role):
         self.pat, self.ids, self.start, self.end = pat, ids, start, end
     
     def canActivate(self, cli): # S4.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" and canActivate(cli, Treating-clinician(self.pat, role.org, role.spcty)) } and\
-        canActivate(cli, Treating_clinician(pat, org, spcty))
+        pass
     
     #'S4.1.2'
     #canDeactivate(cli, cli, Concealed-by-spine-clinician(pat, ids, start, end)) <-
@@ -860,19 +792,9 @@ class Conceal_request(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S4.2.1
-        #todo: could not form bindings for constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
-        #hasActivated(pat, Patient())
-        #count-conceal-requests(n, pat)
-        #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
-        #n < 100
         pass
     
     def canActivate_2(self, ag): # S4.2.2
-        #todo: could not form bindings for constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
-        #hasActivated(ag, Agent(pat))
-        #count-conceal-requests(n, pat)
-        #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
-        #n < 100
         pass
     
     #'S4.2.3'
@@ -901,7 +823,7 @@ class Concealed_by_spine_patient(Role):
         self.what, self.who, self.start, self.end = what, who, start, end
     
     def canActivate(self, cli): # S4.2.8
-        #todo: {'spcty', 'org', 'pat'} variables in constraint: no match in {'spcty', 'org', 'ra'}
+        #todo: Not implemented: 2 hasAcs in a rule.
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
         #hasActivated(x, Conceal-request(what, who, start, end))
@@ -928,19 +850,13 @@ class Authenticated_express_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S4.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
-        count_authenticated_express_consent(n, pat)
+        pass
     
     def canActivate_2(self, ag): # S4.3.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and role.pat == self.pat } and\
-        count_authenticated_express_consent(n, pat)
+        pass
     
     def canActivate_3(self, cli1): # S4.3.3
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Spine-clinician" } and\
-        canActivate(cli1, General_practitioner(pat))
+        pass
     
     #'S4.3.4'
     #canDeactivate(pat, x, Authenticated-express-consent(pat, cli)) <-
@@ -1015,9 +931,7 @@ class PDS_manager(Role):
         super().__init__('PDS-manager', []) 
     
     def canActivate(self, adm): # P1.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-PDS-manager" } and\
-        no_main_role_active(adm)
+        pass
     
     #'P1.1.2'
     #canDeactivate(adm, adm, PDS-manager()) <-
@@ -1033,9 +947,7 @@ class Register_PDS_manager(Role):
         self.adm2 = adm2
     
     def canActivate(self, adm1): # P1.1.5
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "PDS-manager" } and\
-        pds_admin_regs(n, adm2)
+        pass
     
     #'P1.1.6'
     #canDeactivate(adm1, x, Register-PDS-manager(adm2)) <-
@@ -1066,28 +978,16 @@ class Professional_user(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, x): # P1.4.1
-        return\
-        no_main_role_active(cli) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
-        canActivate(ra, Registration_authority())
+        pass
     
     def canActivate_2(self, x): # P1.4.2
-        return\
-        no_main_role_active(cli) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
-        canActivate(ra, Registration_authority())
+        pass
     
     def canActivate_3(self, x): # P1.4.3
-        return\
-        no_main_role_active(cg) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
-        canActivate(ra, Registration_authority())
+        pass
     
     def canActivate_4(self, x): # P1.4.4
-        return\
-        no_main_role_active(cg) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-Caldicott-guardian-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
-        canActivate(ra, Registration_authority())
+        pass
     
     #'P1.4.5'
     #canDeactivate(x, x, Professional-user(ra, org)) <-
@@ -1139,9 +1039,7 @@ class Register_clinician(Role):
         self.cli, self.spcty = cli, spcty
     
     def canActivate(self, mgr): # A1.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "HR-mgr" } and\
-        clinician_regs(n, cli, spcty)
+        pass
     
     #'A1.1.2'
     #canDeactivate(mgr, x, Register-clinician(cli, spcty)) <-
@@ -1169,9 +1067,7 @@ class Clinician(Role):
         self.spcty = spcty
     
     def canActivate(self, cli): # A1.1.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-clinician" and role.spcty == self.spcty } and\
-        no_main_role_active(cli)
+        pass
     
     #'A1.1.5'
     #canDeactivate(cli, cli, Clinician(spcty)) <-
@@ -1191,9 +1087,7 @@ class Register_Caldicott_guardian(Role):
         self.cg = cg
     
     def canActivate(self, mgr): # A1.2.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "HR-mgr" } and\
-        cg_regs(n, cg)
+        pass
     
     #'A1.2.2'
     #canDeactivate(mgr, x, Register-Caldicott-guardian(cg)) <-
@@ -1212,9 +1106,7 @@ class Caldicott_guardian(Role):
         super().__init__('Caldicott-guardian', []) 
     
     def canActivate(self, cg): # A1.2.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-Caldicott-guardian" } and\
-        no_main_role_active(cg)
+        pass
     
     #'A1.2.5'
     #canDeactivate(cg, cg, Caldicott-guardian()) <-
@@ -1230,9 +1122,7 @@ class Register_HR_mgr(Role):
         self.mgr2 = mgr2
     
     def canActivate(self, mgr): # A1.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "HR-mgr" } and\
-        hr_manager_regs(n, mgr)
+        pass
     
     #'A1.3.2'
     #canDeactivate(mgr, x, Register-HR-mgr(mgr2)) <-
@@ -1251,9 +1141,7 @@ class HR_mgr(Role):
         super().__init__('HR-mgr', []) 
     
     def canActivate(self, mgr): # A1.3.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-HR-mgr" } and\
-        no_main_role_active(mgr)
+        pass
     
     #'A1.3.5'
     #canDeactivate(mgr, mgr, HR-mgr()) <-
@@ -1269,9 +1157,7 @@ class Register_receptionist(Role):
         self.rec = rec
     
     def canActivate(self, mgr): # A1.4.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "HR-mgr" } and\
-        receptionist_regs(n, rec)
+        pass
     
     #'A1.4.2'
     #canDeactivate(mgr, x, Register-receptionist(rec)) <-
@@ -1290,8 +1176,7 @@ class Receptionist(Role):
         super().__init__('Receptionist', []) 
     
     def canActivate(self, rec): # A1.4.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-receptionist" }
+        pass
     
     #'A1.4.5'
     #canDeactivate(rec, rec, Receptionist()) <-
@@ -1331,9 +1216,6 @@ class Request_consent_to_referral(Role):
         self.pat, self.ra, self.org, self.cli2, self.spcty2 = pat, ra, org, cli2, spcty2
     
     def canActivate(self, cli1): # A2.1.1
-        #todo: {'spcty1', 'team'} variables in constraint: no match in {'spcty1'}
-        #hasActivated(cli1, Clinician(spcty1))
-        #canActivate(cli1, ADB-treating-clinician(pat, team, spcty1))
         pass
     
     #'A2.1.2'
@@ -1369,19 +1251,22 @@ class Consent_to_referral(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # A2.1.8
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Patient" and subject == self.pat } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(pat, Patient())
+        #hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
+        pass
     
     def canActivate_2(self, pat): # A2.1.9
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Agent" and subject == self.pat and role.pat == self.pat } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(pat, Agent(pat))
+        #hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
+        pass
     
     def canActivate_3(self, cg): # A2.1.10
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Caldicott-guardian" } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Request-consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.cli == self.cli and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(cg, Caldicott-guardian())
+        #hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
+        pass
     
     #'A2.2.4'
     #isDeactivated(cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
@@ -1400,18 +1285,20 @@ class Ext_treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # A2.2.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.spcty == self.spcty } and\
-        no_main_role_active(cli) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty } and\
-        canActivate(ra, Registration_authority())
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, Consent-to-referral(pat, ra, org, cli, spcty))
+        #no-main-role-active(cli)
+        #ra.hasActivated(y, NHS-clinician-cert(org, cli, spcty, start, end))
+        #canActivate(ra, Registration-authority())
+        pass
     
     def canActivate_2(self, cli): # A2.2.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Consent-to-referral" and role.pat == self.pat and role.ra == self.ra and role.org == self.org and role.spcty == self.spcty } and\
-        no_main_role_active(cli) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-clinician-cert" and role.org == self.org and role.spcty == self.spcty } and\
-        canActivate(ra, Registration_authority())
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(ref, Consent-to-referral(pat, ra, org, cli, spcty))
+        #no-main-role-active(cli)
+        #ra@ra.hasActivated(y, NHS-clinician-cert(org, cli, spcty, start, end))
+        #canActivate(ra, Registration-authority())
+        pass
     
     #'A2.2.3'
     #canDeactivate(cli, cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
@@ -1439,8 +1326,7 @@ class Head_of_team(Role):
         self.team = team
     
     def canActivate(self, hd): # A3.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-head-of-team" and role.team == self.team }
+        pass
     
     #'A3.1.2'
     #canDeactivate(hd, hd, Head-of-team(team)) <-
@@ -1452,10 +1338,12 @@ class Register_head_of_team(Role):
         self.hd, self.team = hd, team
     
     def canActivate(self, mgr): # A3.1.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "HR-mgr" } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-member" and role.hd == self.hd and role.team == self.team } and\
-        head_of_team_regs(n, hd, team)
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(mgr, HR-mgr())
+        #hasActivated(x, Register-team-member(hd, team, spcty))
+        #head-of-team-regs(n, hd, team)
+        #n = 0
+        pass
     
     #'A3.1.5'
     #canDeactivate(mgr, x, Register-head-of-team(hd, team)) <-
@@ -1478,17 +1366,10 @@ class Register_team_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, mgr): # A3.2.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "HR-mgr" } and\
-        canActivate(mem, Clinician(spcty)) and\
-        team_member_regs(n, mem, team, spcty)
+        pass
     
     def canActivate_2(self, hd): # A3.2.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Clinician" } and\
-        canActivate(hd, Head_of_team(team)) and\
-        canActivate(mem, Clinician(spcty)) and\
-        team_member_regs(n, mem, team, spcty)
+        pass
     
     #'A3.2.3'
     #canDeactivate(mgr, x, Register-team-member(mem, team, spcty)) <-
@@ -1519,17 +1400,16 @@ class Register_team_episode(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, rec): # A3.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Receptionist" } and\
-        canActivate(pat, Patient()) and\
-        team_episode_regs(n, pat, team)
+        pass
     
     def canActivate_2(self, cli): # A3.3.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Clinician" } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-member" and role.team == self.team } and\
-        canActivate(pat, Patient()) and\
-        team_episode_regs(n, pat, team)
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(cli, Clinician(spcty))
+        #hasActivated(x, Register-team-member(cli, team, spcty))
+        #canActivate(pat, Patient())
+        #team-episode-regs(n, pat, team)
+        #n = 0
+        pass
     
     #'A3.3.3'
     #canDeactivate(cg, x, Register-team-episode(pat, team)) <-
@@ -1553,8 +1433,7 @@ class Head_of_ward(Role):
         self.ward = ward
     
     def canActivate(self, cli): # A3.4.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-head-of-ward" and role.ward == self.ward }
+        pass
     
     #'A3.4.2'
     #canDeactivate(cli, cli, Head-of-ward(ward)) <-
@@ -1566,10 +1445,12 @@ class Register_head_of_ward(Role):
         self.cli, self.ward = cli, ward
     
     def canActivate(self, mgr): # A3.4.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "HR-mgr" } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-member" and role.cli == self.cli and role.ward == self.ward } and\
-        head_of_ward_regs(n, cli, ward)
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(mgr, HR-mgr())
+        #hasActivated(x, Register-ward-member(cli, ward, spcty))
+        #head-of-ward-regs(n, cli, ward)
+        #n = 0
+        pass
     
     #'A3.4.5'
     #canDeactivate(mgr, x, Register-head-of-ward(cli, ward)) <-
@@ -1592,17 +1473,10 @@ class Register_ward_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, mgr): # A3.5.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "HR-mgr" } and\
-        canActivate(cli, Clinician(spcty)) and\
-        ward_member_regs(n, cli, ward, spcty)
+        pass
     
     def canActivate_2(self, hd): # A3.5.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Clinician" and subject == self.cli } and\
-        canActivate(hd, Head_of_ward(ward)) and\
-        canActivate(cli, Clinician(spcty)) and\
-        ward_member_regs(n, cli, ward, spcty)
+        pass
     
     #'A3.5.3'
     #canDeactivate(mgr, x, Register-ward-member(cli, ward, spcty)) <-
@@ -1633,17 +1507,10 @@ class Register_ward_episode(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, rec): # A3.6.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Receptionist" } and\
-        canActivate(pat, Patient()) and\
-        ward_episode_regs(n, pat, ward)
+        pass
     
     def canActivate_2(self, hd): # A3.6.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Clinician" } and\
-        canActivate(hd, Head_of_ward(ward)) and\
-        canActivate(pat, Patient()) and\
-        ward_episode_regs(n, pat, ward)
+        pass
     
     #'A3.6.3'
     #canDeactivate(cg, x, Register-ward-episode(pat, ward)) <-
@@ -1667,9 +1534,7 @@ class Emergency_clinician(Role):
         self.pat = pat
     
     def canActivate(self, cli): # A3.7.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Clinician" } and\
-        canActivate(pat, Patient())
+        pass
     
     #'A3.7.2'
     #canDeactivate(cli, cli, Emergency-clinician(pat)) <-
@@ -1692,20 +1557,23 @@ class ADB_treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, cli): # A3.8.1
-        return\
-        canActivate(cli, Clinician(spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-member" and self.group == role.team and role.spcty == self.spcty } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-episode" and self.group == role.team and role.pat == self.pat }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #canActivate(cli, Clinician(spcty))
+        #hasActivated(x, Register-team-member(cli, team, spcty))
+        #hasActivated(y, Register-team-episode(pat, team))
+        #group = team
+        pass
     
     def canActivate_2(self, cli): # A3.8.2
-        return\
-        canActivate(cli, Clinician(spcty)) and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-member" and self.group == role.ward and role.spcty == self.spcty } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-episode" and self.group == role.ward and role.pat == self.pat }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #canActivate(cli, Clinician(spcty))
+        #hasActivated(x, Register-ward-member(cli, ward, spcty))
+        #hasActivated(x, Register-ward-episode(pat, ward))
+        #group = ward
+        pass
     
     def canActivate_3(self, cli): # A3.8.3
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Emergency-clinician" and role.pat == self.pat }
+        pass
 
 class Concealed_by_clinician(Role):
     def __init__(self, pat, id, start, end):
@@ -1713,9 +1581,6 @@ class Concealed_by_clinician(Role):
         self.pat, self.id, self.start, self.end = pat, id, start, end
     
     def canActivate(self, cli): # A4.1.1
-        #todo: {'spcty', 'group'} variables in constraint: no match in {'spcty'}
-        #hasActivated(cli, Clinician(spcty))
-        #canActivate(cli, ADB-treating-clinician(pat, group, spcty))
         pass
     
     #'A4.1.2'
@@ -1743,21 +1608,9 @@ class Concealed_by_patient(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # A4.2.1
-        #todo: could not form bindings for constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
-        #hasActivated(pat, Patient())
-        #count-concealed-by-patient(n, pat)
-        #what = (pat,ids,authors,groups,subjects,from-time,to-time)
-        #who = (orgs1,readers1,groups1,spctys1)
-        #n < 100
         pass
     
     def canActivate_2(self, ag): # A4.2.2
-        #todo: could not form bindings for constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
-        #hasActivated(ag, Agent(pat))
-        #count-concealed-by-patient(n, pat)
-        #what = (pat,ids,authors,groups,subjects,from-time,to-time)
-        #who = (orgs1,readers1,groups1,spctys1)
-        #n < 100
         pass
     
     #'A4.2.3'
@@ -1850,9 +1703,7 @@ class Register_RA_manager(Role):
         self.mgr2 = mgr2
     
     def canActivate(self, mgr): # R1.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "RA-manager" } and\
-        RA_manager_regs(n, mgr2)
+        pass
     
     #'R1.1.2'
     #canDeactivate(mgr, x, Register-RA-manager(mgr2)) <-
@@ -1871,8 +1722,7 @@ class RA_manager(Role):
         super().__init__('RA-manager', []) 
     
     def canActivate(self, mgr): # R1.1.4
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-RA-manager" }
+        pass
     
     #'R1.1.5'
     #canDeactivate(mgr, mgr, RA-manager()) <-
@@ -1890,11 +1740,14 @@ class NHS_service(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, srv): # R1.2.2
-        return\
-        canActivate(srv, Registration_authority())
+        #todo: Not implemented: 0 hasAcs in a rule.
+        #canActivate(srv, Registration-authority())
+        pass
     
     def canActivate_2(self, srv): # R1.2.3
-        return\
+        #todo: Not implemented: 0 hasAcs in a rule.
+        #srv = "Spine"
+        pass
 
 class NHS_clinician_cert(Role):
     def __init__(self, org, cli, spcty, start, end):
@@ -1902,9 +1755,13 @@ class NHS_clinician_cert(Role):
         self.org, self.cli, self.spcty, self.start, self.end = org, cli, spcty, start, end
     
     def canActivate(self, mgr): # R2.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "RA-manager" } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and self.start in vrange(role.start2, role.end2) and self.end in vrange(role.start2, role.end2) and role.org == self.org }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(mgr, RA-manager())
+        #hasActivated(y, NHS-health-org-cert(org, start2, end2))
+        #start in [start2, end2]
+        #end in [start2, end2]
+        #start < end
+        pass
     
     #'R2.1.2'
     #canDeactivate(mgr, x, NHS-clinician-cert(org, cli, spcty, start, end)) <-
@@ -1928,9 +1785,13 @@ class NHS_Caldicott_guardian_cert(Role):
         self.org, self.cg, self.start, self.end = org, cg, start, end
     
     def canActivate(self, mgr): # R2.2.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "RA-manager" } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and self.start in vrange(role.start2, role.end2) and self.end in vrange(role.start2, role.end2) and role.org == self.org }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(mgr, RA-manager())
+        #hasActivated(x, NHS-health-org-cert(org, start2, end2))
+        #start in [start2, end2]
+        #end in [start2, end2]
+        #start < end
+        pass
     
     #'R2.2.2'
     #canDeactivate(mgr, x, NHS-Caldicott-guardian-cert(org, cg, start, end)) <-
@@ -1954,8 +1815,7 @@ class NHS_health_org_cert(Role):
         self.org, self.start, self.end = org, start, end
     
     def canActivate(self, mgr): # R2.3.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "RA-manager" }
+        pass
     
     #'R2.3.2'
     #canDeactivate(mgr, x, NHS-health-org-cert(org, start, end)) <-
@@ -2014,14 +1874,18 @@ class Workgroup_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # R3.1.1
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-team-member" and role.group == self.group and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, NHS-health-org-cert(org, start, end))
+        #org@org.hasActivated(x, Register-team-member(cli, group, spcty))
+        #Current-time() in [start, end]
+        pass
     
     def canActivate_2(self, cli): # R3.1.2
-        return\
-        { (subject, role) for subject, role in hasActivated if role.name == "NHS-health-org-cert" and Current_time() in vrange(role.start, role.end) and role.org == self.org } and\
-        { (subject, role) for subject, role in hasActivated if role.name == "Register-ward-member" and role.group == self.group and role.spcty == self.spcty }
+        #todo: Not implemented: 2 hasAcs in a rule.
+        #hasActivated(x, NHS-health-org-cert(org, start, end))
+        #org@org.hasActivated(x, Register-ward-member(cli, group, spcty))
+        #Current-time() in [start, end]
+        pass
 
 #'R3.1.3'
 #canReqCred(spine, "RA-ADB".canActivate(cli, Workgroup-member(org, group, spcty))) <-

@@ -81,7 +81,7 @@ class HypothesesTranslator(object):
                     vn = h2u(repr(c.left))
                     
                     return self.substitution_func_gen([vn, lower, upper], "{%s} in vrange({%s}, {%s})" % (vn, lower, upper))
-
+        
         elif c.op == '=' or c.op == '<':
 
             op = "==" if c.op == '=' else c.op
@@ -93,7 +93,7 @@ class HypothesesTranslator(object):
 
             elif type(c.left) == Variable and type(c.right) == Variable:
                 return self.substitution_func_gen([cl, cr], p(cl) + ' ' + op + ' ' + p(cr))
-            
+        
         raise StopTranslating("could not form bindings for constraint: " + repr(c))
     
     
@@ -140,57 +140,63 @@ class HypothesesTranslator(object):
         (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
     
     def analyze_hasAcs(self, hasAcs):
-        print(hasAcs)
         pass
+
     
     def translate_hypotheses(self):
         try:
             ctrs, canAcs, hasAcs, rest = separate(self.rule.hypos, 
                                                   lambda h: type(h) == Constraint, 
                                                   lambda h: h.name == "canActivate",
-                                                  lambda h: h.name == "hasActivated")
-            if hasAcs:
-                self.analyze_hasAcs(hasAcs)
+                                                  lambda h: h.name == "hasActivated")           
+            
+            # translate hasActivated:
+            
+            if len(hasAcs) == 1:
+                print(hasAcs[0])
+            
             else:
-                print(self.rule.name + "----------------")
+                raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
             
-            bindings = []
+            return "pass"
             
-            bindings.extend(map(self.build_constraint_bindings, ctrs))
+            #bindings = []
             
-            bindings.extend(map(self.build_canAc_bindings, canAcs))
+            #bindings.extend(map(self.build_constraint_bindings, ctrs))
             
-            bindings.extend(self.build_param_bindings(self.role_params))
+            #bindings.extend(map(self.build_canAc_bindings, canAcs))
             
-            if any_eq(None, bindings):
-                # this means there is a constraint that couldn't be translated.
-                # when a constraint is not translated, None is returned by the translating function
-                raise StopTranslating("couldn't build bindings")
+            #bindings.extend(self.build_param_bindings(self.role_params))
             
-            nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
-            
-            def print_bindings():
-                print()
-                print(self.rule.name)
-                print("------")
-                for b in bindings:
-                    vars, func = b
-                    print(vars, " -->", func())
-                print("=====")
-                print()
-            
-            #print_bindings()
-            
-            # Now translate:
-            tr = []
-            for h in nc_hypos:
-                
-                if h.name == "hasActivated":
-                    tr.append( self.translate_hasActivated(h, bindings) )
-                else:
-                    tr.append( h2u(repr(h)) )
-            
-            return "return\\\n" + ' and\\\n'.join(tr)
+#            if any_eq(None, bindings):
+#                # this means there is a constraint that couldn't be translated.
+#                # when a constraint is not translated, None is returned by the translating function
+#                raise StopTranslating("couldn't build bindings")
+#            
+#            nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
+#            
+#            def print_bindings():
+#                print()
+#                print(self.rule.name)
+#                print("------")
+#                for b in bindings:
+#                    vars, func = b
+#                    print(vars, " -->", func())
+#                print("=====")
+#                print()
+#            
+#            #print_bindings()
+#            
+#            # Now translate:
+#            tr = []
+#            for h in nc_hypos:
+#                
+#                if h.name == "hasActivated":
+#                    tr.append( self.translate_hasActivated(h, bindings) )
+#                else:
+#                    tr.append( h2u(repr(h)) )
+#            
+#            return "return\\\n" + ' and\\\n'.join(tr)
         
         except StopTranslating as st:
             return "".join("#" + str(x) + '\n' for x in [repr(st)] + self.rule.hypos) + "pass"
