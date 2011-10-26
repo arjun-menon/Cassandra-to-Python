@@ -45,7 +45,7 @@ def separate(alist, *conds):
     cats = []
     rest = alist
     for cond in conds:
-        this, rest = [x for x in rest if cond(x) == True], [x for x in rest if cond(x) == False] #separate1(rest, cond)
+        this, rest = [x for x in rest if cond(x) == True], [x for x in rest if cond(x) == False]
         cats.append(this)
     return tuple(cats+[rest])
 

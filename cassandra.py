@@ -53,6 +53,10 @@ class vrange(object):
             return False
         return True
 
+class Wildcard(object):
+    def __eq__(self, other):
+        return True
+
 ###################
 
 def canActivate(subject, role):

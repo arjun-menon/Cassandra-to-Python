@@ -262,12 +262,22 @@ class Request_third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.2.1
+        #todo: could not form bindings for constraint: x in Get-spine-record-third-parties(pat, id)
+        #hasActivated(pat, Patient())
+        #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_2(self, ag): # S2.2.2
+        #todo: could not form bindings for constraint: x in Get-spine-record-third-parties(pat, id)
+        #hasActivated(ag, Agent(pat))
+        #x in Get-spine-record-third-parties(pat, id)
         pass
     
     def canActivate_3(self, cli): # S2.2.3
+        #todo: could not form bindings for constraint: x in Get-spine-record-third-parties(pat, id)
+        #hasActivated(cli, Spine-clinician(ra, org, spcty))
+        #canActivate(cli, Treating-clinician(pat, org, spcty))
+        #x in Get-spine-record-third-parties(pat, id)
         pass
     
     #'S2.2.4'
@@ -576,9 +586,19 @@ class Conceal_request(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S4.2.1
+        #todo: could not form bindings for constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+        #hasActivated(pat, Patient())
+        #count-conceal-requests(n, pat)
+        #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+        #n < 100
         pass
     
     def canActivate_2(self, ag): # S4.2.2
+        #todo: could not form bindings for constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+        #hasActivated(ag, Agent(pat))
+        #count-conceal-requests(n, pat)
+        #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+        #n < 100
         pass
     
     #'S4.2.3'

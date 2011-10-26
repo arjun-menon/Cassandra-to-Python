@@ -9,10 +9,6 @@ class StopTranslating(Exception):
     def __repr__(self):
         return "todo: " + self.reason
 
-class Wildcard(object):
-    def __eq__(self, other):
-        return True
-
 class HypothesesTranslator(object):
     def __init__(self, rule):
         self.rule = rule
@@ -182,7 +178,23 @@ class HypothesesTranslator(object):
             else:
                 raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
             
-            print(self.rule.name + repr(list(map(lambda k: repr(k[0]) + " " + k[1](), list(map(self.build_canAc_bindings, canAcs))))))
+                        
+            # handle canActivated:
+                        
+            for (canAc_vars, canAc_cond_func) in map(self.build_canAc_bindings, canAcs):
+                if(len(canAc_vars)):
+                    print("check "+self.rule.name+" whether wildcards in canActivate are okay")
+                
+                vd = { canAc_var : "Wildcard()" for canAc_var in canAc_vars }
+                conditionals.append( canAc_cond_func(vd) )
+            
+            # translate constraints:
+            
+            for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
+                if(len(ctr_vars)):
+                    print("check "+self.rule.name)
+            
+            #print(conditionals)
             
             return "pass"
             
@@ -225,6 +237,7 @@ class HypothesesTranslator(object):
 #            return "return\\\n" + ' and\\\n'.join(tr)
         
         except StopTranslating as st:
+            #print(self.rule.name + " was not translated.")
             return "".join("#" + str(x) + '\n' for x in [repr(st)] + self.rule.hypos) + "pass"
 
 class canAc(HypothesesTranslator):
@@ -373,8 +386,8 @@ def trans(obj):
     else: # comment out the repr
         return "\n" + prefix_lines(repr(obj), "#")
 
-def translate_rules(rules):
-    print("Translating %d rules..." % len(rules))
+def translate_rules(rules, rule_set):
+    print("Translating %d rules in %s..." % (len(rules), rule_set) )
     outline = generate_outline(rules)
 
     translation  = ""
@@ -410,10 +423,8 @@ def translate():
         print("Done. Wrote to %s.py\n" % rule_set)
         
     for (rule_set, rules) in rules_collections:
-        tr = translate_rules(rules)
+        tr = translate_rules(rules, rule_set)
         write(tr, rule_set)
-
-####################
 
 #parse_rules()
 unpickle_rules()
