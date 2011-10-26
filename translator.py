@@ -415,18 +415,6 @@ def translate():
 
 ####################
 
-def repl(): # use python's quit() to break out
-    while True:
-        #print ">",
-        x = input()
-        if not len(x):
-            continue
-        try:
-            y = eval(x)
-            print(y)
-        except Exception as e:
-            print((e.message))
-
 #parse_rules()
 unpickle_rules()
 translate()
