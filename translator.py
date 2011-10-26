@@ -100,7 +100,7 @@ class HypothesesTranslator(object):
         default_vd = {vn : vn for vn in bound_vars}
         
         return self.substitution_func_gen(bound_vars, "canActivate({}, {}({}))".format(
-            p(bound_vars[0]), role.name, ", ".join(p(v) for v in bound_vars[1:])
+            p(bound_vars[0]), h2u(role.name), ", ".join(p(v) for v in bound_vars[1:])
             ) )
     
     
@@ -144,11 +144,12 @@ class HypothesesTranslator(object):
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
                                                   lambda h: type(h) == Constraint, 
                                                   lambda h: h.name == "canActivate",
-                                                  lambda h: h.name == "hasActivated")           
-            
-            # translate hasActivated:
+                                                  lambda h: h.name == "hasActivated")
             
             conditionals = []
+            
+            # translate hasActivated:
+            tr = ""
             
             if len(hasAcs) == 1:
                 #print(hasAcs[0])
@@ -174,6 +175,13 @@ class HypothesesTranslator(object):
                 
                 role_param_mapping = { rp : "role."+rp for rp in role_params }
                 self.external_vars.update( role_param_mapping )
+                
+                if hasAc_subj not in set(self.external_vars):
+                    self.external_vars.update({ hasAc_subj:hasAc_subj })
+                 
+                tr = "return {\n\t" + \
+                    '({subj}, role) for {subj}, role in hasActivated if \n\t'\
+                    .format(subj = hasAc_subj, role_name = role_name)
             
             else:
                 raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
@@ -192,11 +200,17 @@ class HypothesesTranslator(object):
             
             for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
                 if(len(ctr_vars)):
-                    print("check "+self.rule.name)
+                    #print("check "+self.rule.name)
+                    pass
+                pass
             
             #print(conditionals)
             
-            return "pass"
+            if len(conditionals):
+                #tr += " and "
+                tr += " and \n\t".join(conditionals)
+            
+            return tr + "\n}"
             
             #bindings = []
             

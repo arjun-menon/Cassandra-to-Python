@@ -6,7 +6,11 @@ class PDS_manager(Role):
         super().__init__('PDS-manager', []) 
     
     def canActivate(self, adm): # P1.1.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-PDS-manager" and 
+        	role.adm == adm
+        }
     
     #'P1.1.2'
     #canDeactivate(adm, adm, PDS-manager()) <-
@@ -22,7 +26,10 @@ class Register_PDS_manager(Role):
         self.adm2 = adm2
     
     def canActivate(self, adm1): # P1.1.5
-        pass
+        return {
+        	(adm1, role) for adm1, role in hasActivated if 
+        	role.name == "PDS-manager"
+        }
     
     #'P1.1.6'
     #canDeactivate(adm1, x, Register-PDS-manager(adm2)) <-
@@ -41,7 +48,11 @@ class Patient(Role):
         super().__init__('Patient', []) 
     
     def canActivate(self, pat): # P1.2.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-patient" and 
+        	role.pat == pat
+        }
     
     #'P1.2.2'
     #canDeactivate(pat, pat, Patient()) <-
@@ -57,7 +68,12 @@ class Agent(Role):
         self.pat = pat
     
     def canActivate(self, ag): # P1.3.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-patient" and 
+        	role.ag == ag and 
+        	canActivate(role.ag, Agent(self.pat))
+        }
     
     #'P1.3.2'
     #canDeactivate(ag, ag, Agent(pat)) <-
@@ -76,16 +92,36 @@ class Professional_user(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, x): # P1.4.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-clinician-cert" and 
+        	role.org == self.org and 
+        	canActivate(self.ra, Registration_authority())
+        }
     
     def canActivate_2(self, x): # P1.4.2
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-clinician-cert" and 
+        	role.org == self.org and 
+        	canActivate(self.ra, Registration_authority())
+        }
     
     def canActivate_3(self, x): # P1.4.3
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-Caldicott-guardian-cert" and 
+        	role.org == self.org and 
+        	canActivate(self.ra, Registration_authority())
+        }
     
     def canActivate_4(self, x): # P1.4.4
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-Caldicott-guardian-cert" and 
+        	role.org == self.org and 
+        	canActivate(self.ra, Registration_authority())
+        }
     
     #'P1.4.5'
     #canDeactivate(x, x, Professional-user(ra, org)) <-
@@ -107,10 +143,18 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # P1.5.2
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-registration-authority" and 
+        	role.ra == ra
+        }
     
     def canActivate_2(self, ra): # P1.5.3
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-registration-authority" and 
+        	role.ra == ra
+        }
 
 class Register_patient(Role):
     def __init__(self, pat):
@@ -118,7 +162,10 @@ class Register_patient(Role):
         self.pat = pat
     
     def canActivate(self, adm): # P2.1.1
-        pass
+        return {
+        	(adm, role) for adm, role in hasActivated if 
+        	role.name == "PDS-manager"
+        }
     
     #'P2.1.2'
     #canDeactivate(adm, x, Register-patient(pat)) <-

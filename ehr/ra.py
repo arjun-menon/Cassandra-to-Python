@@ -7,7 +7,10 @@ class Register_RA_manager(Role):
         self.mgr2 = mgr2
     
     def canActivate(self, mgr): # R1.1.1
-        pass
+        return {
+        	(mgr, role) for mgr, role in hasActivated if 
+        	role.name == "RA-manager"
+        }
     
     #'R1.1.2'
     #canDeactivate(mgr, x, Register-RA-manager(mgr2)) <-
@@ -26,7 +29,11 @@ class RA_manager(Role):
         super().__init__('RA-manager', []) 
     
     def canActivate(self, mgr): # R1.1.4
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-RA-manager" and 
+        	role.mgr == mgr
+        }
     
     #'R1.1.5'
     #canDeactivate(mgr, mgr, RA-manager()) <-
@@ -61,10 +68,18 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # R1.2.4
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-registration-authority" and 
+        	role.ra == ra
+        }
     
     def canActivate_2(self, ra): # R1.2.5
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-registration-authority" and 
+        	role.ra == ra
+        }
 
 class NHS_clinician_cert(Role):
     def __init__(self, org, cli, spcty, start, end):
@@ -132,7 +147,10 @@ class NHS_health_org_cert(Role):
         self.org, self.start, self.end = org, start, end
     
     def canActivate(self, mgr): # R2.3.1
-        pass
+        return {
+        	(mgr, role) for mgr, role in hasActivated if 
+        	role.name == "RA-manager"
+        }
     
     #'R2.3.2'
     #canDeactivate(mgr, x, NHS-health-org-cert(org, start, end)) <-

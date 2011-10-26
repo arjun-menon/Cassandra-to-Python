@@ -10,10 +10,24 @@ class Spine_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # S1.1.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-clinician-cert" and 
+        	role.spcty == self.spcty and 
+        	role.org == self.org and 
+        	role.cli == cli and 
+        	canActivate(self.ra, Registration_authority())
+        }
     
     def canActivate_2(self, cli): # S1.1.2
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-clinician-cert" and 
+        	role.spcty == self.spcty and 
+        	role.org == self.org and 
+        	role.cli == cli and 
+        	canActivate(self.ra, Registration_authority())
+        }
     
     #'S1.1.3'
     #canDeactivate(cli, cli, Spine-clinician(ra, org, spcty)) <-
@@ -32,7 +46,11 @@ class Spine_admin(Role):
         super().__init__('Spine-admin', []) 
     
     def canActivate(self, adm): # S1.2.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-spine-admin" and 
+        	role.adm == adm
+        }
     
     #'S1.2.2'
     #canDeactivate(adm, adm, Spine-admin()) <-
@@ -48,7 +66,10 @@ class Register_spine_admin(Role):
         self.adm2 = adm2
     
     def canActivate(self, adm): # S1.2.5
-        pass
+        return {
+        	(adm, role) for adm, role in hasActivated if 
+        	role.name == "Spine-admin"
+        }
     
     #'S1.2.6'
     #canDeactivate(adm, x, Register-spine-admin(adm2)) <-
@@ -87,7 +108,10 @@ class Register_patient(Role):
         self.pat = pat
     
     def canActivate(self, adm): # S1.3.5
-        pass
+        return {
+        	(adm, role) for adm, role in hasActivated if 
+        	role.name == "Spine-admin"
+        }
     
     #'S1.3.6'
     #canDeactivate(adm, x, Register-patient(pat)) <-
@@ -186,10 +210,17 @@ class Register_agent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S1.4.9
-        pass
+        return {
+        	(pat, role) for pat, role in hasActivated if 
+        	role.name == "Patient"
+        }
     
     def canActivate_2(self, cli): # S1.4.10
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	canActivate(cli, General_practitioner(self.pat))
+        }
     
     #'S1.4.11'
     #canDeactivate(pat, pat, Register-agent(agent, pat)) <-
@@ -215,10 +246,18 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # S1.5.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-registration-authority" and 
+        	role.ra == ra
+        }
     
     def canActivate_2(self, ra): # S1.5.2
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-registration-authority" and 
+        	role.ra == ra
+        }
 
 #'S1.5.3'
 #no-main-role-active(user) <-
@@ -233,13 +272,24 @@ class One_off_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.1.1
-        pass
+        return {
+        	(pat, role) for pat, role in hasActivated if 
+        	role.name == "Patient"
+        }
     
     def canActivate_2(self, ag): # S2.1.2
-        pass
+        return {
+        	(ag, role) for ag, role in hasActivated if 
+        	role.name == "Agent" and 
+        	role.pat == self.pat
+        }
     
     def canActivate_3(self, cli): # S2.1.3
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	canActivate(cli, Treating_clinician(self.pat, role.org, role.spcty))
+        }
     
     #'S2.1.4'
     #canDeactivate(pat, x, One-off-consent(pat)) <-
@@ -358,7 +408,12 @@ class Request_consent_to_treatment(Role):
         self.pat, self.org2, self.cli2, self.spcty2 = pat, org2, cli2, spcty2
     
     def canActivate(self, cli1): # S2.3.1
-        pass
+        return {
+        	(cli1, role) for cli1, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	canActivate(self.cli2, Spine_clinician(Wildcard(), self.org2, self.spcty2)) and 
+        	canActivate(self.pat, Patient())
+        }
     
     #'S2.3.2'
     #canDeactivate(cli1, cli1, Request-consent-to-treatment(pat, org2, cli2, spcty2)) <-
@@ -421,7 +476,12 @@ class Request_consent_to_group_treatment(Role):
         self.pat, self.org, self.group = pat, org, group
     
     def canActivate(self, cli): # S2.4.1
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	role.org == self.org and 
+        	canActivate(self.pat, Patient())
+        }
     
     #'S2.4.2'
     #canDeactivate(cli, cli, Request-consent-to-group-treatment(pat, org, group)) <-
@@ -484,7 +544,12 @@ class Referrer(Role):
         self.pat, self.org, self.cli2, self.spcty1 = pat, org, cli2, spcty1
     
     def canActivate(self, cli1): # S3.1.1
-        pass
+        return {
+        	(cli1, role) for cli1, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	role.org == self.org and 
+        	canActivate(cli1, Treating_clinician(self.pat, role.org, role.spcty2))
+        }
     
     #'S3.1.2'
     #canDeactivate(cli1, cli1, Referrer(pat, org, cli2, spcty1)) <-
@@ -500,7 +565,12 @@ class Spine_emergency_clinician(Role):
         self.org, self.pat = org, pat
     
     def canActivate(self, cli): # S3.2.1
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	role.org == self.org and 
+        	canActivate(self.pat, Patient())
+        }
     
     #'S3.2.2'
     #canDeactivate(cli, cli, Spine-emergency-clinician(org, pat)) <-
@@ -515,13 +585,33 @@ class Treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, cli): # S3.3.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Consent-to-treatment" and 
+        	role.spcty == self.spcty and 
+        	role.org == self.org and 
+        	role.pat == self.pat and 
+        	role.cli == cli
+        }
     
     def canActivate_2(self, cli): # S3.3.2
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Spine-emergency-clinician" and 
+        	role.org == self.org and 
+        	role.pat == self.pat
+        }
     
     def canActivate_3(self, cli): # S3.3.3
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Referrer" and 
+        	role.spcty == self.spcty and 
+        	role.org == self.org and 
+        	role.pat == self.pat and 
+        	role.cli == cli and 
+        	canActivate(role.cli, Spine_clinician(Wildcard(), role.org, role.spcty))
+        }
     
     def canActivate_4(self, cli): # S3.3.4
         #todo: Not implemented: 0 hasAcs in a rule.
@@ -548,10 +638,26 @@ class Group_treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # S3.4.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Consent-to-group-treatment" and 
+        	role.org == self.org and 
+        	role.pat == self.pat and 
+        	role.group == self.group and 
+        	canActivate(cli, Workgroup_member(role.org, role.group, self.spcty)) and 
+        	canActivate(self.ra, Registration_authority())
+        }
     
     def canActivate_2(self, cli): # S3.4.2
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Consent-to-group-treatment" and 
+        	role.org == self.org and 
+        	role.pat == self.pat and 
+        	role.group == self.group and 
+        	canActivate(cli, Workgroup_member(role.org, role.group, self.spcty)) and 
+        	canActivate(self.ra, Registration_authority())
+        }
 
 class Concealed_by_spine_clinician(Role):
     def __init__(self, pat, ids, start, end):
@@ -559,7 +665,11 @@ class Concealed_by_spine_clinician(Role):
         self.pat, self.ids, self.start, self.end = pat, ids, start, end
     
     def canActivate(self, cli): # S4.1.1
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	canActivate(cli, Treating_clinician(self.pat, role.org, role.spcty))
+        }
     
     #'S4.1.2'
     #canDeactivate(cli, cli, Concealed-by-spine-clinician(pat, ids, start, end)) <-
@@ -654,13 +764,24 @@ class Authenticated_express_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S4.3.1
-        pass
+        return {
+        	(pat, role) for pat, role in hasActivated if 
+        	role.name == "Patient"
+        }
     
     def canActivate_2(self, ag): # S4.3.2
-        pass
+        return {
+        	(ag, role) for ag, role in hasActivated if 
+        	role.name == "Agent" and 
+        	role.pat == self.pat
+        }
     
     def canActivate_3(self, cli1): # S4.3.3
-        pass
+        return {
+        	(cli1, role) for cli1, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	canActivate(cli1, General_practitioner(self.pat))
+        }
     
     #'S4.3.4'
     #canDeactivate(pat, x, Authenticated-express-consent(pat, cli)) <-

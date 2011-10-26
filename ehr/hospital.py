@@ -7,7 +7,10 @@ class Register_clinician(Role):
         self.cli, self.spcty = cli, spcty
     
     def canActivate(self, mgr): # A1.1.1
-        pass
+        return {
+        	(mgr, role) for mgr, role in hasActivated if 
+        	role.name == "HR-mgr"
+        }
     
     #'A1.1.2'
     #canDeactivate(mgr, x, Register-clinician(cli, spcty)) <-
@@ -35,7 +38,12 @@ class Clinician(Role):
         self.spcty = spcty
     
     def canActivate(self, cli): # A1.1.4
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-clinician" and 
+        	role.spcty == self.spcty and 
+        	role.cli == cli
+        }
     
     #'A1.1.5'
     #canDeactivate(cli, cli, Clinician(spcty)) <-
@@ -55,7 +63,10 @@ class Register_Caldicott_guardian(Role):
         self.cg = cg
     
     def canActivate(self, mgr): # A1.2.1
-        pass
+        return {
+        	(mgr, role) for mgr, role in hasActivated if 
+        	role.name == "HR-mgr"
+        }
     
     #'A1.2.2'
     #canDeactivate(mgr, x, Register-Caldicott-guardian(cg)) <-
@@ -74,7 +85,11 @@ class Caldicott_guardian(Role):
         super().__init__('Caldicott-guardian', []) 
     
     def canActivate(self, cg): # A1.2.4
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-Caldicott-guardian" and 
+        	role.cg == cg
+        }
     
     #'A1.2.5'
     #canDeactivate(cg, cg, Caldicott-guardian()) <-
@@ -90,7 +105,10 @@ class Register_HR_mgr(Role):
         self.mgr2 = mgr2
     
     def canActivate(self, mgr): # A1.3.1
-        pass
+        return {
+        	(mgr, role) for mgr, role in hasActivated if 
+        	role.name == "HR-mgr"
+        }
     
     #'A1.3.2'
     #canDeactivate(mgr, x, Register-HR-mgr(mgr2)) <-
@@ -109,7 +127,11 @@ class HR_mgr(Role):
         super().__init__('HR-mgr', []) 
     
     def canActivate(self, mgr): # A1.3.4
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-HR-mgr" and 
+        	role.mgr == mgr
+        }
     
     #'A1.3.5'
     #canDeactivate(mgr, mgr, HR-mgr()) <-
@@ -125,7 +147,10 @@ class Register_receptionist(Role):
         self.rec = rec
     
     def canActivate(self, mgr): # A1.4.1
-        pass
+        return {
+        	(mgr, role) for mgr, role in hasActivated if 
+        	role.name == "HR-mgr"
+        }
     
     #'A1.4.2'
     #canDeactivate(mgr, x, Register-receptionist(rec)) <-
@@ -144,7 +169,11 @@ class Receptionist(Role):
         super().__init__('Receptionist', []) 
     
     def canActivate(self, rec): # A1.4.4
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-receptionist" and 
+        	role.rec == rec
+        }
     
     #'A1.4.5'
     #canDeactivate(rec, rec, Receptionist()) <-
@@ -160,7 +189,10 @@ class Register_patient(Role):
         self.pat = pat
     
     def canActivate(self, rec): # A1.5.1
-        pass
+        return {
+        	(rec, role) for rec, role in hasActivated if 
+        	role.name == "Receptionist"
+        }
     
     #'A1.5.2'
     #canDeactivate(rec, x, Register-patient(pat)) <-
@@ -245,7 +277,13 @@ class Agent(Role):
         pass
     
     def canActivate_2(self, agent): # A1.6.2
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-patient" and 
+        	role.agent == agent and 
+        	canActivate(self.pat, Patient()) and 
+        	canActivate(role.agent, Agent(self.pat))
+        }
 
 #'A1.6.4'
 #count-agent-activations(count<u>, user) <-
@@ -260,10 +298,17 @@ class Register_agent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # A1.6.5
-        pass
+        return {
+        	(pat, role) for pat, role in hasActivated if 
+        	role.name == "Patient"
+        }
     
     def canActivate_2(self, cg): # A1.6.6
-        pass
+        return {
+        	(cg, role) for cg, role in hasActivated if 
+        	role.name == "Caldicott-guardian" and 
+        	canActivate(self.pat, Patient())
+        }
     
     #'A1.6.7'
     #canDeactivate(pat, pat, Register-agent(agent, pat)) <-
@@ -293,10 +338,18 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # A1.7.2
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-registration-authority" and 
+        	role.ra == ra
+        }
     
     def canActivate_2(self, ra): # A1.7.3
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "NHS-registration-authority" and 
+        	role.ra == ra
+        }
 
 #'A1.7.4'
 #canReqCred(x, "RA-ADB".hasActivated(y, NHS-health-org-cert(org, start, end))) <-
@@ -308,7 +361,11 @@ class Request_consent_to_referral(Role):
         self.pat, self.ra, self.org, self.cli2, self.spcty2 = pat, ra, org, cli2, spcty2
     
     def canActivate(self, cli1): # A2.1.1
-        pass
+        return {
+        	(cli1, role) for cli1, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	canActivate(cli1, ADB_treating_clinician(self.pat, Wildcard(), role.spcty1))
+        }
     
     #'A2.1.2'
     #canDeactivate(cli, cli, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
@@ -517,7 +574,12 @@ class Head_of_team(Role):
         self.team = team
     
     def canActivate(self, hd): # A3.1.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-head-of-team" and 
+        	role.hd == hd and 
+        	role.team == self.team
+        }
     
     #'A3.1.2'
     #canDeactivate(hd, hd, Head-of-team(team)) <-
@@ -557,10 +619,19 @@ class Register_team_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, mgr): # A3.2.1
-        pass
+        return {
+        	(mgr, role) for mgr, role in hasActivated if 
+        	role.name == "HR-mgr" and 
+        	canActivate(self.mem, Clinician(self.spcty))
+        }
     
     def canActivate_2(self, hd): # A3.2.2
-        pass
+        return {
+        	(hd, role) for hd, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	canActivate(hd, Head_of_team(self.team)) and 
+        	canActivate(self.mem, Clinician(self.spcty))
+        }
     
     #'A3.2.3'
     #canDeactivate(mgr, x, Register-team-member(mem, team, spcty)) <-
@@ -591,7 +662,11 @@ class Register_team_episode(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, rec): # A3.3.1
-        pass
+        return {
+        	(rec, role) for rec, role in hasActivated if 
+        	role.name == "Receptionist" and 
+        	canActivate(self.pat, Patient())
+        }
     
     def canActivate_2(self, cli): # A3.3.2
         #todo: Not implemented: 2 hasAcs in a rule.
@@ -624,7 +699,12 @@ class Head_of_ward(Role):
         self.ward = ward
     
     def canActivate(self, cli): # A3.4.1
-        pass
+        return {
+        	(x, role) for x, role in hasActivated if 
+        	role.name == "Register-head-of-ward" and 
+        	role.ward == self.ward and 
+        	role.cli == cli
+        }
     
     #'A3.4.2'
     #canDeactivate(cli, cli, Head-of-ward(ward)) <-
@@ -664,10 +744,19 @@ class Register_ward_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, mgr): # A3.5.1
-        pass
+        return {
+        	(mgr, role) for mgr, role in hasActivated if 
+        	role.name == "HR-mgr" and 
+        	canActivate(self.cli, Clinician(self.spcty))
+        }
     
     def canActivate_2(self, hd): # A3.5.2
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	canActivate(hd, Head_of_ward(self.ward)) and 
+        	canActivate(self.cli, Clinician(self.spcty))
+        }
     
     #'A3.5.3'
     #canDeactivate(mgr, x, Register-ward-member(cli, ward, spcty)) <-
@@ -698,10 +787,19 @@ class Register_ward_episode(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, rec): # A3.6.1
-        pass
+        return {
+        	(rec, role) for rec, role in hasActivated if 
+        	role.name == "Receptionist" and 
+        	canActivate(self.pat, Patient())
+        }
     
     def canActivate_2(self, hd): # A3.6.2
-        pass
+        return {
+        	(hd, role) for hd, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	canActivate(hd, Head_of_ward(self.ward)) and 
+        	canActivate(self.pat, Patient())
+        }
     
     #'A3.6.3'
     #canDeactivate(cg, x, Register-ward-episode(pat, ward)) <-
@@ -725,7 +823,11 @@ class Emergency_clinician(Role):
         self.pat = pat
     
     def canActivate(self, cli): # A3.7.1
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	canActivate(self.pat, Patient())
+        }
     
     #'A3.7.2'
     #canDeactivate(cli, cli, Emergency-clinician(pat)) <-
@@ -764,7 +866,11 @@ class ADB_treating_clinician(Role):
         pass
     
     def canActivate_3(self, cli): # A3.8.3
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Emergency-clinician" and 
+        	role.pat == self.pat
+        }
 
 class Concealed_by_clinician(Role):
     def __init__(self, pat, id, start, end):
@@ -772,7 +878,11 @@ class Concealed_by_clinician(Role):
         self.pat, self.id, self.start, self.end = pat, id, start, end
     
     def canActivate(self, cli): # A4.1.1
-        pass
+        return {
+        	(cli, role) for cli, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	canActivate(cli, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
+        }
     
     #'A4.1.2'
     #canDeactivate(cli, cli, Concealed-by-clinician(pat, id, start, end)) <-
