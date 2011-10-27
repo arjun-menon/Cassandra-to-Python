@@ -89,7 +89,12 @@ class HypothesesTranslator(object):
                 if type(c.left) == Variable:
                     vn = h2u(repr(c.left))
                     return self.substitution_func_gen( [vn] + func_args, 
-                        "{%s} in %s" % (vn, func_name) + '(' + ', '.join('{'+a+'}' for a in func_args) + ')')                    
+                        "{%s} in %s" % (vn, func_name) + '(' + ', '.join('{'+a+'}' for a in func_args) + ')')
+            
+            elif type(c.right) == Variable:
+                if type(c.left) == Variable:
+                    cl, cr = h2u(repr(c.left)), h2u(repr(c.right))
+                    return self.substitution_func_gen([cl, cr], "{%s} in {%s}" % (cl, cr))
         
         elif c.op == '=' or c.op == '<' or c.op == '!=':
 
@@ -180,7 +185,7 @@ class HypothesesTranslator(object):
             
             for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
                 if(len(ctr_vars)):
-                    #print("hmmmm "+self.rule.name)
+                    print("hmmmm "+self.rule.name)
                     pass
                 else:
                     conditionals.append( ctr_cond_func() )
@@ -430,7 +435,7 @@ def unpickle_rules():
     with open("ehr/parse_tree.pickle", "rb") as f:
         rules_collections = pickle.load(f)
 
-def translate():
+def translate_all():
     global rules_collections
     
     def write(tr, rule_set):
@@ -444,4 +449,4 @@ def translate():
 
 #parse_rules()
 unpickle_rules()
-translate()
+translate_all()

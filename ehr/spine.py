@@ -811,11 +811,13 @@ class Concealed_by_spine_clinician(Role):
     #	hasActivated(cli1, Spine-clinician(ra, org, spcty1)), canActivate(cli1, Group-treating-clinician(pat, ra, org, group, spcty1)), canActivate(cli2, Group-treating-clinician(pat, ra, org, group, spcty2)), hasActivated(x, Consent-to-group-treatment(pat, org, group))
 
 def count_concealed_by_spine_clinician(pat, id): # S4.1.6
-    #todo: could not translate constraint: id in ids
-    #hasActivated(x, Concealed-by-spine-clinician(pat, ids, start, end))
-    #id in ids
-    #Current-time() in [start, end]
-    pass
+    return len({
+    	1 for subj, role in hasActivated if 
+    	role.name == "Concealed-by-spine-clinician" and 
+    	role.pat == pat and 
+    	id in role.ids and 
+    	Current_time() in vrange(role.start, role.end)
+    })
 
 class Conceal_request(Role):
     def __init__(self, what, who, start, end):
