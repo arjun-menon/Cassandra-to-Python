@@ -238,6 +238,15 @@ def canActivate{num}(self, {subject}): # {rule_name}
         )
 
 
+class FuncRule(HypothesesTranslator):
+    def __init__(self, rule):
+        super().__init__(rule)
+        
+        print(self.rule)
+    
+    def translate(self):
+        return "\n" + prefix_lines(repr(self.rule), "#") #temp
+
 ####################
 
 class SpecialPredicates:
@@ -247,6 +256,11 @@ class SpecialPredicates:
     canDc = "canDeactivate"  # 4. canDeactivate(e1,e2, r) indicates that e1 can deactivate e2's role r (if e2 has really currently activated r).
     isDac = "isDeactivated"  # 5. isDeactivated(e, r) indicates that e's role r shall be deactivated as a consequence of another role deactivation (if e has really currently activated r).
     canRC = "canReqCred"     # 6. canReqCred(e1,e2.p(~e)) indicates that e1 is allowed to request and receive credentials asserting p(~e) and issued by e2.
+    
+    @staticmethod
+    def list_all():
+        return [SpecialPredicates.prmts, SpecialPredicates.canAc, SpecialPredicates.hasAc,
+                SpecialPredicates.canDc, SpecialPredicates.isDac, SpecialPredicates.canRC]
     
     @staticmethod
     def separate(rules, predicates):
@@ -275,7 +289,7 @@ def canActivate(self, *params):
         "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
         
         return tab(canAc_translation)
-
+    
     def translate(self):
         return """
 class {name_u}(Role):
@@ -308,17 +322,13 @@ def generate_outline(rules):
     """
     
     # Separating the role rules
+    
     three_special_predicates = (SpecialPredicates.canAc, SpecialPredicates.canDc, SpecialPredicates.isDac)
-    
-    
     
     canAc_rules, canDc_rules, isDac_rules, others = SpecialPredicates.separate(rules, three_special_predicates)
     
-#    canAc_rules = [rule for rule in rules if rule.concl.name == special_predicates[2]] # canActivate
-#    canDc_rules = [rule for rule in rules if rule.concl.name == special_predicates[4]] # canDeactivate
-#    isDac_rules = [rule for rule in rules if rule.concl.name == special_predicates[5]] # isDeactivated
-    
     # get role names & params and build dict with it
+    
     role_names = set([rule.concl.args[1].name for rule in canAc_rules])
     role_params = []
     for rn in role_names:
@@ -348,18 +358,27 @@ def generate_outline(rules):
     outline = []
     
     for rule in rules:
-        rule_name = rule.concl.name
+        rule_type = rule.concl.name
 
-        if rule.concl.name == SpecialPredicates.canAc:
+        if rule_type == SpecialPredicates.canAc:
+            # On first encounter of a canAc, place 
+            # appropriate RoleClass in translated code.
             role_name = rule.concl.args[1].name
-
             if role_name in role_names:
                 outline.append(roles[role_name])
-
                 role_names.remove(role_name)
 
-        if rule_name not in three_special_predicates:
+        elif rule_type == SpecialPredicates.isDac:
+            pass # handled by above
+        elif rule_type == SpecialPredicates.canDc:
+            pass # handled by above
+        
+        elif rule_type == SpecialPredicates.prmts:
             outline.append(rule)
+        elif rule_type == SpecialPredicates.canRC:
+            outline.append(rule)
+        else: # func rule
+            outline.append( FuncRule(rule) )
     
     return outline
 

@@ -47,13 +47,13 @@ def which_have_canAc_hypos():
 
 def count_rule_kinds():
     c = lambda name: print(str(name) + ": " + str(len([r for r in rules if r.concl.name == name])))
-    list(map(c, special_predicates[1:]))
-    print("funcs: " + str(len([r for r in rules if r.concl.name not in special_predicates[1:]])))
+    list(map(c, SpecialPredicates.list_all()))
+    print("funcs: " + str(len([r for r in rules if r.concl.name not in SpecialPredicates.list_all()])) + '\n')
     
 count_rule_kinds()
 
 def print_func_rules():
-    for i in (r for r in rules if r.concl.name not in special_predicates):
+    for i in (r for r in rules if r.concl.name not in SpecialPredicates.list_all()):
         print(i)
         
 print_func_rules()
