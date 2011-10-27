@@ -116,40 +116,6 @@ class HypothesesTranslator(object):
             p(bound_vars[0]), h2u(role.name), ", ".join(p(v) for v in bound_vars[1:])
             ) )
     
-#    def translate_hasActivated(self, hasAc, bindings):
-#        subj, role = hasAc.args
-#        subj = repr(subj)
-#
-#        def build_if_condition(params, bindings):
-#            conds = []
-#
-#            for b in bindings:
-#                variables, func = b
-#                
-#                if variables == {subj}:
-#                    #print('yes')
-#                    conds.append( func( { subj : 'subject' } ) )                    
-#                
-#                intersection = params & variables
-#                if intersection:
-#                    if intersection != variables:
-#                        raise StopTranslating(repr(variables) + " variables in constraint: no match in " + repr(params))
-#                    conds.append( func( {v:'role.'+v for v in variables} ) )
-#
-#            return " and ".join(conds)
-#
-#        if_conds = build_if_condition({repr(arg) for arg in role.args}, bindings)
-#
-#        #print(subj, role, "-->", {repr(arg) for arg in role.args})
-#
-#        return Template(
-#"""{ (subject, role) for subject, role in hasActivated if role.name == "${role_name}"${if_conds} }"""
-#        ).substitute\
-#        (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
-#    
-#    def analyze_hasAcs(self, hasAcs):
-#        pass
-    
     def translate_hypotheses(self, wrapper=None):
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
