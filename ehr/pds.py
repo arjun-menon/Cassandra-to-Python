@@ -171,14 +171,11 @@ def count_professional_user_activations(user): # P1.4.6
     	subj == user
     })
 
-def no_main_role_active(): # P1.5.1
-    #todo: more than 1 count function invoked in a rule
-    #count-agent-activations(n, user)
-    #count-patient-activations(n, user)
-    #count-PDS-manager-activations(n, user)
-    #count-professional-user-activations(n, user)
-    #n = 0
-    pass
+def no_main_role_active(user): # P1.5.1
+    return  count_agent_activations(user) == 0 and \
+            count_patient_activations(user) == 0 and \
+            count_PDS_manager_activations(user) == 0 and \
+            count_professional_user_activations(user) == 0
 
 class Registration_authority(Role):
     def __init__(self):

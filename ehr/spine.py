@@ -346,15 +346,12 @@ class Registration_authority(Role):
         	Current_time() in vrange(role.start, role.end)
         }
 
-def no_main_role_active(): # S1.5.3
-    #todo: more than 1 count function invoked in a rule
-    #count-agent-activations(n, user)
-    #count-spine-clinician-activations(n, user)
-    #count-spine-admin-activations(n, user)
-    #count-patient-activations(n, user)
-    #count-third-party-activations(n, user)
-    #n = 0
-    pass
+def no_main_role_active(user): # S1.5.3
+    return  count_agent_activations(user) == 0 and \
+            count_spine_clinician_activations(user) == 0 and \
+            count_spine_admin_activations(user) == 0 and \
+            count_patient_activations(user) == 0 and \
+            count_third_party_activations(user) == 0
 
 class One_off_consent(Role):
     def __init__(self, pat):

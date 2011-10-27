@@ -437,18 +437,15 @@ def other_agent_regs(x, ag, pat): # A1.6.10
     	x != subj
     })
 
-def no_main_role_active(): # A1.7.1
-    #todo: more than 1 count function invoked in a rule
-    #count-agent-activations(n, user)
-    #count-caldicott-guardian-activations(n, user)
-    #count-clinician-activations(n, user)
-    #count-ext-treating-clinician-activations(n, user)
-    #count-hr-mgr-activations(n, user)
-    #count-patient-activations(n, user)
-    #count-receptionist-activations(n, user)
-    #count-third-party-activations(n, user)
-    #n = 0
-    pass
+def no_main_role_active(user): # A1.7.1
+    return  count_agent_activations(user) == 0 and \
+            count_caldicott_guardian_activations(user) == 0 and \
+            count_clinician_activations(user) == 0 and \
+            count_ext_treating_clinician_activations(user) == 0 and \
+            count_hr_mgr_activations(user) == 0 and \
+            count_patient_activations(user) == 0 and \
+            count_receptionist_activations(user) == 0 and \
+            count_third_party_activations(user) == 0
 
 class Registration_authority(Role):
     def __init__(self):

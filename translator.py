@@ -340,6 +340,7 @@ class isDac(HypothesesTranslator):
         super().__init__(rule)
         
     def translate(self):
+        #print(self.rule)
         return untranslated(self.rule)
 
 
@@ -361,14 +362,25 @@ class FuncRule(HypothesesTranslator):
             self.kind = 'nmra'
     
     def nmra_trans_hypo(self):
+        conditionals = []
+        ctrs, funcs = separate(self.rule.hypos, lambda h: type(h) == Constraint)
+        if len(ctrs) == 1:        
+            varn, foo  = self.build_constraint_bindings(ctrs[0])
+            if varn == {'n'}:
+                for f in funcs:
+                    if f.name in CountFunctions.funcs:
+                        f_name = h2u(f.name)
+                        f_args = [str(a) for a in f.args[1:]]
+                        n = f_name + "(" + ", ".join(f_args) + ")"
+                        conditionals.append( foo( { 'n' : n } ) )
+                return "return  " + " and \\\n        ".join(conditionals)
+        
         return untranslated(self.rule)
     
     def translate(self):
-        if self.kind == 'count' or self.kind == 'nmra':
+        if self.kind == 'count':
             args = [repr(a) for a in self.rule.concl.args[1:]]
-            
             self.external_vars = { a:a for a in args }
-            
             return"""
 def {func_name}({func_args}): # {rule_name}
 {hypotheses_translation}""".format(
@@ -377,7 +389,19 @@ def {func_name}({func_args}): # {rule_name}
                 ,func_args = ", ".join(args)
                 ,hypotheses_translation = tab(self.translate_hypotheses( ["len(" , ")"] ))
                 )
-               
+        
+        elif self.kind == 'nmra':
+            args = [repr(a) for a in self.rule.concl.args]
+            self.external_vars = { a:a for a in args }
+            return"""
+def {func_name}({func_args}): # {rule_name}
+{hypotheses_translation}""".format(
+                 rule_name = self.rule.name
+                ,func_name = h2u(self.rule.concl.name)
+                ,func_args = ", ".join(args)
+                ,hypotheses_translation = tab(self.nmra_trans_hypo())
+                )
+
         print(self.rule)
         return untranslated(self.rule)
 
