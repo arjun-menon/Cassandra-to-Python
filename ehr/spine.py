@@ -109,11 +109,14 @@ class Patient(Role):
         super().__init__('Patient', []) 
     
     def canActivate(self, pat): # S1.3.1
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(x, Register-patient(pat))
-        #no-main-role-active(pat)
-        #"PDS"@"PDS".hasActivated(y, Register-patient(pat))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Register-patient" and 
+        	role2.name == "Register-patient" and 
+        	role1.pat == pat and 
+        	role2.pat == pat and 
+        	no_main_role_active(role2.pat)
+        }
     
     def canDeactivae(self, pat, pat_): # S1.3.2
         #todo: a rule with no hasActivates
@@ -214,11 +217,16 @@ class Agent(Role):
         self.pat = pat
     
     def canActivate(self, ag): # S1.4.1
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(x, Register-agent(ag, pat))
-        #"PDS"@"PDS".hasActivated(y, Register-patient(ag))
-        #no-main-role-active(ag)
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Register-agent" and 
+        	role2.name == "Register-patient" and 
+        	role1.pat == self.pat and 
+        	role1.ag == ag and 
+        	role2.pat == self.pat and 
+        	role2.ag == ag and 
+        	no_main_role_active(role2.ag)
+        }
     
     def canDeactivae(self, ag, ag_): # S1.4.2
         #todo: a rule with no hasActivates
@@ -476,11 +484,14 @@ class Third_party(Role):
         super().__init__('Third-party', []) 
     
     def canActivate(self, x): # S2.2.10
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(y, Request-third-party-consent(x, pat, id))
-        #no-main-role-active(x)
-        #"PDS"@"PDS".hasActivated(z, Register-patient(x))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Request-third-party-consent" and 
+        	role2.name == "Register-patient" and 
+        	role1.x == x and 
+        	role2.x == x and 
+        	no_main_role_active(role2.x)
+        }
     
     def canDeactivae(self, x, x_): # S2.2.11
         #todo: a rule with no hasActivates
@@ -502,17 +513,21 @@ class Third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, x): # S2.2.14
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(x, Third-party())
-        #hasActivated(y, Request-third-party-consent(x, pat, id))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Third-party" and 
+        	role2.name == "Request-third-party-consent" and 
+        	subj1 == x
+        }
     
     def canActivate_2(self, cli): # S2.2.15
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(cli, Spine-clinician(ra, org, spcty))
-        #canActivate(cli, Treating-clinician(pat, org, spcty))
-        #hasActivated(y, Request-third-party-consent(x, pat, id))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Spine-clinician" and 
+        	role2.name == "Request-third-party-consent" and 
+        	subj1 == cli and 
+        	canActivate(subj1, Treating_clinician(self.pat, role2.org, role2.spcty))
+        }
 
 #untranslated:
 #'S2.2.17'
@@ -598,23 +613,35 @@ class Consent_to_treatment(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.3.9
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(pat, Patient())
-        #hasActivated(x, Request-consent-to-treatment(pat, org, cli, spcty))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Patient" and 
+        	role2.name == "Request-consent-to-treatment" and 
+        	subj1 == pat
+        }
     
     def canActivate_2(self, ag): # S2.3.10
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(ag, Agent(pat))
-        #hasActivated(x, Request-consent-to-treatment(pat, org, cli, spcty))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Agent" and 
+        	role2.name == "Request-consent-to-treatment" and 
+        	subj1 == ag and 
+        	role1.pat == self.pat and 
+        	role2.pat == self.pat
+        }
     
     def canActivate_3(self, cli1): # S2.3.11
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(cli1, Spine-clinician(ra, org, spcty))
-        #canActivate(cli1, Treating-clinician(pat, org, spcty))
-        #hasActivated(x, Request-consent-to-treatment(pat, org, cli2, spcty))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Spine-clinician" and 
+        	role2.name == "Request-consent-to-treatment" and 
+        	subj1 == cli1 and 
+        	role1.spcty == self.spcty and 
+        	role1.org == self.org and 
+        	role2.spcty == self.spcty and 
+        	role2.org == self.org and 
+        	canActivate(subj1, Treating_clinician(self.pat, role2.org, role2.spcty))
+        }
 
 class Request_consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
@@ -696,23 +723,33 @@ class Consent_to_group_treatment(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.4.9
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(pat, Patient())
-        #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Patient" and 
+        	role2.name == "Request-consent-to-group-treatment" and 
+        	subj1 == pat
+        }
     
     def canActivate_2(self, ag): # S2.4.10
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(ag, Agent(pat))
-        #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Agent" and 
+        	role2.name == "Request-consent-to-group-treatment" and 
+        	subj1 == ag and 
+        	role1.pat == self.pat and 
+        	role2.pat == self.pat
+        }
     
     def canActivate_3(self, cli1): # S2.4.11
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(cli1, Spine-clinician(ra, org, spcty))
-        #canActivate(cli1, Treating-clinician(pat, org, spcty))
-        #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Spine-clinician" and 
+        	role2.name == "Request-consent-to-group-treatment" and 
+        	subj1 == cli1 and 
+        	role1.org == self.org and 
+        	role2.org == self.org and 
+        	canActivate(subj1, Treating_clinician(self.pat, role2.org, role2.spcty))
+        }
 
 class Referrer(Role):
     def __init__(self, pat, org, cli2, spcty1):
@@ -869,12 +906,14 @@ class Concealed_by_spine_clinician(Role):
         }
     
     def canDeactivae(self, cli1, cli2): # S4.1.4
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(cli1, Spine-clinician(ra, org, spcty1))
-        #canActivate(cli1, Group-treating-clinician(pat, ra, org, group, spcty1))
-        #canActivate(cli2, Group-treating-clinician(pat, ra, org, group, spcty2))
-        #hasActivated(x, Consent-to-group-treatment(pat, org, group))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Spine-clinician" and 
+        	role2.name == "Consent-to-group-treatment" and 
+        	subj1 == cli1 and 
+        	canActivate(subj1, Group_treating_clinician(self.pat, role2.ra, role2.org, Wildcard(), role2.spcty1)) and 
+        	canActivate(cli2, Group_treating_clinician(self.pat, role2.ra, role2.org, Wildcard(), Wildcard()))
+        }
 
 def count_concealed_by_spine_clinician(pat, id): # S4.1.6
     return len({
@@ -946,11 +985,13 @@ class Concealed_by_spine_patient(Role):
         self.what, self.who, self.start, self.end = what, who, start, end
     
     def canActivate(self, cli): # S4.2.8
-        #todo: a rule with 2 hasActivates - in progress
-        #hasActivated(cli, Spine-clinician(ra, org, spcty))
-        #canActivate(cli, Treating-clinician(pat, org, spcty))
-        #hasActivated(x, Conceal-request(what, who, start, end))
-        pass
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Spine-clinician" and 
+        	role2.name == "Conceal-request" and 
+        	subj1 == cli and 
+        	canActivate(subj1, Treating_clinician(Wildcard(), role2.org, role2.spcty))
+        }
     
     def canDeactivae(self, cli, cli_): # S4.2.9
         return {

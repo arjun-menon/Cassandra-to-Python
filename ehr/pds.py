@@ -13,10 +13,9 @@ class PDS_manager(Role):
         	no_main_role_active(role.adm)
         }
     
-    #untranslated:
-    #'P1.1.2'
-    #canDeactivate(adm, adm, PDS-manager()) <-
-    #	
+    def canDeactivae(self, adm, adm_): # P1.1.2
+        #todo: a rule with no hasActivates
+        pass
 
 def count_PDS_manager_activations(user): # P1.1.4
     return len({
@@ -38,10 +37,12 @@ class Register_PDS_manager(Role):
         	pds_admin_regs(self.adm2) == 0
         }
     
-    #untranslated:
-    #'P1.1.6'
-    #canDeactivate(adm1, x, Register-PDS-manager(adm2)) <-
-    #	hasActivated(adm1, PDS-manager())
+    def canDeactivae(self, adm1, x): # P1.1.6
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "PDS-manager" and 
+        	subj == adm1
+        }
     
     #untranslated:
     #'P1.1.3'
@@ -67,10 +68,9 @@ class Patient(Role):
         	no_main_role_active(role.pat)
         }
     
-    #untranslated:
-    #'P1.2.2'
-    #canDeactivate(pat, pat, Patient()) <-
-    #	
+    def canDeactivae(self, pat, pat_): # P1.2.2
+        #todo: a rule with no hasActivates
+        pass
 
 def count_patient_activations(user): # P1.2.4
     return len({
@@ -93,10 +93,9 @@ class Agent(Role):
         	no_main_role_active(role.ag)
         }
     
-    #untranslated:
-    #'P1.3.2'
-    #canDeactivate(ag, ag, Agent(pat)) <-
-    #	
+    def canDeactivae(self, ag, ag_): # P1.3.2
+        #todo: a rule with no hasActivates
+        pass
 
 def count_agent_activations(user): # P1.3.5
     return len({
@@ -157,10 +156,9 @@ class Professional_user(Role):
         	no_main_role_active(role.cg)
         }
     
-    #untranslated:
-    #'P1.4.5'
-    #canDeactivate(x, x, Professional-user(ra, org)) <-
-    #	
+    def canDeactivae(self, x, x_): # P1.4.5
+        #todo: a rule with no hasActivates
+        pass
 
 def count_professional_user_activations(user): # P1.4.6
     return len({
@@ -210,10 +208,12 @@ class Register_patient(Role):
         	patient_regs(self.pat) == 0
         }
     
-    #untranslated:
-    #'P2.1.2'
-    #canDeactivate(adm, x, Register-patient(pat)) <-
-    #	hasActivated(adm, PDS-manager())
+    def canDeactivae(self, adm, x): # P2.1.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "PDS-manager" and 
+        	subj == adm
+        }
     
     #untranslated:
     #'P1.2.3'
