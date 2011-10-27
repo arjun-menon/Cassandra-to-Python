@@ -545,10 +545,13 @@ class Third_party_consent(Role):
         	canActivate(subj1, Treating_clinician(self.pat, role2.org, role2.spcty))
         }
 
-#untranslated:
-#'S2.2.17'
-#third-party-consent(group<consenter>, pat, id) <-
-#	hasActivated(x, Third-party-consent(consenter, pat, id))
+def third_party_consent(pat, id): # S2.2.17
+    return {
+    	role.consenter for subj, role in hasActivated if 
+    	role.name == "Third-party-consent" and 
+    	role.pat == pat and 
+    	role.id == id
+    }
 
 class Request_consent_to_treatment(Role):
     def __init__(self, pat, org2, cli2, spcty2):

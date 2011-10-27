@@ -811,10 +811,13 @@ class Third_party_consent(Role):
         	subj == cg
         }
 
-#untranslated:
-#'A2.3.21'
-#third-party-consent(group<consenter>, pat, id) <-
-#	hasActivated(x, Third-party-consent(consenter, pat, id))
+def third_party_consent(pat, id): # A2.3.21
+    return {
+    	role.consenter for subj, role in hasActivated if 
+    	role.name == "Third-party-consent" and 
+    	role.pat == pat and 
+    	role.id == id
+    }
 
 class Head_of_team(Role):
     def __init__(self, team):
@@ -1197,10 +1200,12 @@ class Emergency_clinician(Role):
         	subj == cg
         }
 
-#untranslated:
-#'A3.7.6'
-#is-emergency-clinician(group<x>, pat) <-
-#	hasActivated(x, Emergency-clinician(pat))
+def is_emergency_clinician(pat): # A3.7.6
+    return {
+    	subj for subj, role in hasActivated if 
+    	role.name == "Emergency-clinician" and 
+    	role.pat == pat
+    }
 
 class ADB_treating_clinician(Role):
     def __init__(self, pat, group, spcty):

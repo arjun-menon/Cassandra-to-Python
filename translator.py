@@ -1,6 +1,7 @@
 import pickle, itertools
 from ehrparse import *
 from helpers import *
+from string import Template
 
 class StopTranslating(Exception):
     def __init__(self, reason):
@@ -12,7 +13,7 @@ class StopTranslating(Exception):
 def warn(message : str):
     print(message)
 
-class CountFunctions(object):
+class CountFunctions:
     funcs = []
 
 class HypothesesTranslator(object):
@@ -130,7 +131,7 @@ class HypothesesTranslator(object):
     
     
     @typecheck
-    def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str='') -> lambda t: t:
+    def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str='', group_key=None) -> lambda t: t:
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
                                                   lambda h: type(h) == Constraint, 
@@ -173,7 +174,7 @@ class HypothesesTranslator(object):
                     conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
                 self.external_vars.update( { hasAc_subj : 'subj' } )
                 
-                tr = "return %s{\n\t1 for subj, role in hasActivated if \n\t" % wrapper[0]
+                tr = "return %s{\n\t$group_key for subj, role in hasActivated if \n\t" % wrapper[0]
                 ending = "\n}" + wrapper[1]
                 
             elif len(hasAcs) == 2:
@@ -265,6 +266,17 @@ class HypothesesTranslator(object):
                 
                 conditionals.append( code_gen() )
             
+            # for group<x> rules
+            if group_key:
+                group_key = str(group_key)
+                if not group_key in set(self.external_vars):
+                    raise StopTranslating("could not find %s in %s" % (group_key, set(self.external_vars)))
+                group_key = self.external_vars[group_key]
+            else:
+                group_key = 1
+            
+            tr = Template(tr).safe_substitute(group_key = group_key)
+            
             if len(conditionals):
                 tr += " and \n\t".join(conditionals)
             
@@ -349,16 +361,18 @@ class FuncRule(HypothesesTranslator):
         super().__init__(rule)
         #print(str(type(self.rule.concl.args[0])) + " " + repr(self.rule.concl.args[0]) + "  " + rule.concl.name)
         
-        self.kind = None # Determine what kind of function it is:
+        self.kind = None # Determines what kind of function it is:
         
-        # is this of the form count-role-name(count<x>, ...) <- hasActivated(x, ...), ... ?
         if type(self.rule.concl.args[0]) == Aggregate:
             if self.rule.concl.args[0].name == 'count':
                 if self.rule.hypos[0].name == SpecialPredicates.hasAc:
+                    # it is of the form: count-role-name(count<x>, ...) <- hasActivated(x, ...), ...
                     self.kind = 'count'
                     CountFunctions.funcs.append(self.rule.concl.name)
-        
-        if self.rule.concl.name == "no-main-role-active":
+            elif self.rule.concl.args[0].name == 'group':
+                self.kind = 'group'
+                self.group_key = self.rule.concl.args[0].args[0]
+        elif self.rule.concl.name == "no-main-role-active":
             self.kind = 'nmra'
     
     def nmra_trans_hypo(self):
@@ -378,31 +392,31 @@ class FuncRule(HypothesesTranslator):
         return untranslated(self.rule)
     
     def translate(self):
-        if self.kind == 'count':
-            args = [repr(a) for a in self.rule.concl.args[1:]]
+        if self.kind == 'count' or self.kind == 'group' or self.kind == 'nmra':
+            
+            if self.kind == 'nmra':
+                args = [repr(a) for a in self.rule.concl.args]
+            else:
+                args = [repr(a) for a in self.rule.concl.args[1:]]
+            
             self.external_vars = { a:a for a in args }
+            
+            if self.kind == 'nmra':
+                hypotheses_translation = tab(self.nmra_trans_hypo())
+            elif self.kind == 'count':
+                hypotheses_translation = tab(self.translate_hypotheses( ["len(" , ")"] ))
+            elif self.kind == 'group':
+                hypotheses_translation = tab(self.translate_hypotheses( group_key = self.group_key ))
+            
             return"""
 def {func_name}({func_args}): # {rule_name}
 {hypotheses_translation}""".format(
                  rule_name = self.rule.name
                 ,func_name = h2u(self.rule.concl.name)
                 ,func_args = ", ".join(args)
-                ,hypotheses_translation = tab(self.translate_hypotheses( ["len(" , ")"] ))
+                ,hypotheses_translation = hypotheses_translation
                 )
         
-        elif self.kind == 'nmra':
-            args = [repr(a) for a in self.rule.concl.args]
-            self.external_vars = { a:a for a in args }
-            return"""
-def {func_name}({func_args}): # {rule_name}
-{hypotheses_translation}""".format(
-                 rule_name = self.rule.name
-                ,func_name = h2u(self.rule.concl.name)
-                ,func_args = ", ".join(args)
-                ,hypotheses_translation = tab(self.nmra_trans_hypo())
-                )
-
-        print(self.rule)
         return untranslated(self.rule)
 
 ####################
