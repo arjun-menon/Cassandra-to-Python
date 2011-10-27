@@ -125,7 +125,8 @@ class HypothesesTranslator(object):
             ) )
     
     
-    def translate_hypotheses(self, wrapper=None):
+    @typecheck
+    def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str=''):
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
                                                   lambda h: type(h) == Constraint, 
@@ -133,6 +134,9 @@ class HypothesesTranslator(object):
                                                   lambda h: h.name == "hasActivated")
             
             conditionals = []
+            
+            if pre_conditional:
+                conditionals.append(pre_conditional)
             
             # translate hasActivated:
             tr = ""
@@ -166,12 +170,19 @@ class HypothesesTranslator(object):
                 self.external_vars.update({ hasAc_subj : 'subj' })
                 
                 tr = "return %s{\n\t1 for subj, role in hasActivated if \n\t" % ('' if not wrapper else wrapper[0])
+                ending = "\n}" + wrapper[1]
                 
             elif len(hasAcs) == 2:
                 h1, h2 = hasAcs
                 
                 
-                raise StopTranslating("2 hasAcs - in progress")
+                raise StopTranslating("a rule with 2 hasActivates - in progress")
+            
+            elif not hasAcs:
+                tr = "return "
+                ending = ""
+                raise StopTranslating("a rule with no hasActivates")
+            
             else:
                 raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
             
@@ -232,7 +243,7 @@ class HypothesesTranslator(object):
             if len(conditionals):
                 tr += " and \n\t".join(conditionals)
             
-            return tr + "\n}%s" % ('' if not wrapper else wrapper[1])
+            return tr + ending
         
         except StopTranslating as st:
             #print(self.rule.name + " was not translated.")
@@ -250,7 +261,7 @@ class canAc(HypothesesTranslator):
         self.role_params = [repr(p) for p in role_params]
         
         # build self.external_vars (for HypothesesTranslator)
-        self.external_vars = { repr(p) : 'self.'+repr(p) for p in role_params }
+        self.external_vars = { p : 'self.'+p for p in self.role_params }
         self.external_vars.update( { self.subject : self.subject } )
         
         return lambda number: """
@@ -267,8 +278,35 @@ class canDc(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
         
-    def translate(self):
-        return untranslated(self.rule)
+    @typecheck
+    def translate(self, role_params: list_of(Variable)):
+        self.role_params = [repr(p) for p in role_params]
+        
+        # build self.external_vars (for HypothesesTranslator)
+        self.external_vars = { p : 'self.'+p for p in self.role_params }
+        
+        subj1 = str(self.rule.concl.args[0])
+        subj2 = str(self.rule.concl.args[1])
+        
+        if subj1 == subj2:
+            self.external_vars.update( { subj1 : subj1 } )
+            subj2 = subj2 + "_"
+            pre_conditional = "%s == %s" % (subj1, subj2)
+        else:
+            self.external_vars.update( { subj1 : subj1 , subj2 : subj2  } )
+            pre_conditional = ""
+        
+        #print(subj1, subj2)
+        #print(self.rule)
+        
+        return"""
+def canDeactivae(self, {subj1}, {subj2}): # {rule_name}
+{hypotheses_translation}""".format(
+                     rule_name = self.rule.name
+                    ,subj1 = subj1
+                    ,subj2 = subj2
+                    ,hypotheses_translation = tab(self.translate_hypotheses(pre_conditional=pre_conditional))
+                    )
 
 
 class isDac(HypothesesTranslator):
@@ -305,7 +343,7 @@ def {func_name}({func_args}): # {rule_name}
                  rule_name = self.rule.name
                 ,func_name = h2u(self.rule.concl.name)
                 ,func_args = ", ".join(args)
-                ,hypotheses_translation = tab(self.translate_hypotheses(["len(", ")"]))
+                ,hypotheses_translation = tab(self.translate_hypotheses( ["len(" , ")"] ))
                 )
         
         #print(self.rule)
@@ -371,8 +409,8 @@ class {name_u}(Role):
         ,self_assignment = ", ".join("self."+repr(s) for s in self.params) + " = " if len(self.params) else ""
 
         ,canAcs_trans = self.canAcs_translator()
-        ,canDcs_trans = tab(''.join(map(trans, self.canDcs)))
-        ,isDacs_trans = tab(''.join(map(trans, self.isDacs)))
+        ,canDcs_trans = tab(''.join(map(lambda canDc: trans(canDc, self.params), self.canDcs)))
+        ,isDacs_trans = tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
         )
 
 
@@ -449,10 +487,10 @@ def generate_outline(rules):
 def untranslated(obj):
     return "\n" + prefix_lines("untranslated:\n" + repr(obj), "#")
 
-def trans(obj):
+def trans(obj, *args):
     """Translate object by invoking the translate() method."""
     if hasattr(obj, "translate"):
-        return obj.translate()
+        return obj.translate(*args)
     else: # comment out the repr
         return untranslated(obj)
 

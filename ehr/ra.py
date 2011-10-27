@@ -14,10 +14,12 @@ class Register_RA_manager(Role):
         	RA_manager_regs(self.mgr2) == 0
         }
     
-    #untranslated:
-    #'R1.1.2'
-    #canDeactivate(mgr, x, Register-RA-manager(mgr2)) <-
-    #	hasActivated(mgr, RA-manager())
+    def canDeactivae(self, mgr, x): # R1.1.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "RA-manager" and 
+        	subj == mgr
+        }
     
     #untranslated:
     #'R1.1.6'
@@ -42,10 +44,9 @@ class RA_manager(Role):
         	role.mgr == mgr
         }
     
-    #untranslated:
-    #'R1.1.5'
-    #canDeactivate(mgr, mgr, RA-manager()) <-
-    #	
+    def canDeactivae(self, mgr, mgr_): # R1.1.5
+        #todo: a rule with no hasActivates
+        pass
 
 #untranslated:
 #'R1.2.1'
@@ -60,12 +61,12 @@ class NHS_service(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, srv): # R1.2.2
-        #todo: Not implemented: 0 hasAcs in a rule.
+        #todo: a rule with no hasActivates
         #canActivate(srv, Registration-authority())
         pass
     
     def canActivate_2(self, srv): # R1.2.3
-        #todo: Not implemented: 0 hasAcs in a rule.
+        #todo: a rule with no hasActivates
         #srv = "Spine"
         pass
 
@@ -98,7 +99,7 @@ class NHS_clinician_cert(Role):
         self.org, self.cli, self.spcty, self.start, self.end = org, cli, spcty, start, end
     
     def canActivate(self, mgr): # R2.1.1
-        #todo: 2 hasAcs - in progress
+        #todo: a rule with 2 hasActivates - in progress
         #hasActivated(mgr, RA-manager())
         #hasActivated(y, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
@@ -106,10 +107,12 @@ class NHS_clinician_cert(Role):
         #start < end
         pass
     
-    #untranslated:
-    #'R2.1.2'
-    #canDeactivate(mgr, x, NHS-clinician-cert(org, cli, spcty, start, end)) <-
-    #	hasActivated(mgr, RA-manager())
+    def canDeactivae(self, mgr, x): # R2.1.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "RA-manager" and 
+        	subj == mgr
+        }
 
 #untranslated:
 #'R2.1.4'
@@ -132,7 +135,7 @@ class NHS_Caldicott_guardian_cert(Role):
         self.org, self.cg, self.start, self.end = org, cg, start, end
     
     def canActivate(self, mgr): # R2.2.1
-        #todo: 2 hasAcs - in progress
+        #todo: a rule with 2 hasActivates - in progress
         #hasActivated(mgr, RA-manager())
         #hasActivated(x, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
@@ -140,10 +143,12 @@ class NHS_Caldicott_guardian_cert(Role):
         #start < end
         pass
     
-    #untranslated:
-    #'R2.2.2'
-    #canDeactivate(mgr, x, NHS-Caldicott-guardian-cert(org, cg, start, end)) <-
-    #	hasActivated(mgr, RA-manager())
+    def canDeactivae(self, mgr, x): # R2.2.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "RA-manager" and 
+        	subj == mgr
+        }
 
 #untranslated:
 #'R2.2.4'
@@ -172,10 +177,12 @@ class NHS_health_org_cert(Role):
         	subj == mgr
         }
     
-    #untranslated:
-    #'R2.3.2'
-    #canDeactivate(mgr, x, NHS-health-org-cert(org, start, end)) <-
-    #	hasActivated(mgr, RA-manager())
+    def canDeactivae(self, mgr, x): # R2.3.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "RA-manager" and 
+        	subj == mgr
+        }
     
     #untranslated:
     #'R2.1.3'
@@ -259,14 +266,14 @@ class Workgroup_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # R3.1.1
-        #todo: 2 hasAcs - in progress
+        #todo: a rule with 2 hasActivates - in progress
         #hasActivated(x, NHS-health-org-cert(org, start, end))
         #org@org.hasActivated(x, Register-team-member(cli, group, spcty))
         #Current-time() in [start, end]
         pass
     
     def canActivate_2(self, cli): # R3.1.2
-        #todo: 2 hasAcs - in progress
+        #todo: a rule with 2 hasActivates - in progress
         #hasActivated(x, NHS-health-org-cert(org, start, end))
         #org@org.hasActivated(x, Register-ward-member(cli, group, spcty))
         #Current-time() in [start, end]
