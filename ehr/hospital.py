@@ -28,7 +28,7 @@ class Register_clinician(Role):
     #isDeactivated(x, Register-ward-member(cli, ward, spcty)) <-
     #	isDeactivated(y, Register-clinician(cli, spcty))
 
-def clinician_regs(cli, spcty):
+def clinician_regs(cli, spcty): # A1.1.3
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-clinician" and 
@@ -57,7 +57,7 @@ class Clinician(Role):
     #isDeactivated(x, Emergency-clinician(pat)) <-
     #	isDeactivated(x, Clinician(spcty))
 
-def count_clinician_activations(user):
+def count_clinician_activations(user): # A1.1.7
     return {
     	u for u, role in hasActivated if 
     	role.name == "Clinician"
@@ -82,7 +82,7 @@ class Register_Caldicott_guardian(Role):
     #isDeactivated(cg, Caldicott-guardian()) <-
     #	isDeactivated(x, Register-Caldicott-guardian(cg))
 
-def cg_regs(cg):
+def cg_regs(cg): # A1.2.3
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-Caldicott-guardian" and 
@@ -104,7 +104,7 @@ class Caldicott_guardian(Role):
     #canDeactivate(cg, cg, Caldicott-guardian()) <-
     #	
 
-def count_caldicott_guardian_activations(user):
+def count_caldicott_guardian_activations(user): # A1.2.7
     return {
     	u for u, role in hasActivated if 
     	role.name == "Caldicott-guardian"
@@ -129,7 +129,7 @@ class Register_HR_mgr(Role):
     #isDeactivated(mgr, HR-mgr()) <-
     #	isDeactivated(x, Register-HR-mgr(mgr))
 
-def hr_manager_regs(mgr):
+def hr_manager_regs(mgr): # A1.3.3
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-HR-mgr" and 
@@ -151,7 +151,7 @@ class HR_mgr(Role):
     #canDeactivate(mgr, mgr, HR-mgr()) <-
     #	
 
-def count_hr_mgr_activations(user):
+def count_hr_mgr_activations(user): # A1.3.7
     return {
     	u for u, role in hasActivated if 
     	role.name == "HR-mgr"
@@ -176,7 +176,7 @@ class Register_receptionist(Role):
     #isDeactivated(rec, Receptionist()) <-
     #	isDeactivated(x, Register-receptionist(rec)), no-main-role-active(rec)
 
-def receptionist_regs(rec):
+def receptionist_regs(rec): # A1.4.3
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-receptionist" and 
@@ -198,7 +198,7 @@ class Receptionist(Role):
     #canDeactivate(rec, rec, Receptionist()) <-
     #	
 
-def count_receptionist_activations(user):
+def count_receptionist_activations(user): # A1.4.7
     return {
     	u for u, role in hasActivated if 
     	role.name == "Receptionist"
@@ -259,7 +259,7 @@ class Register_patient(Role):
     #isDeactivated(x, Concealed-by-patient(what, whom, start, end)) <-
     #	isDeactivated(y, Register-patient(pat)), pi7_1(what) = pat
 
-def patient_regs(pat):
+def patient_regs(pat): # A1.5.3
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-patient" and 
@@ -281,7 +281,7 @@ class Patient(Role):
     #canDeactivate(pat, pat, Patient()) <-
     #	
 
-def count_patient_activations(user):
+def count_patient_activations(user): # A1.5.7
     return {
     	u for u, role in hasActivated if 
     	role.name == "Patient"
@@ -311,7 +311,7 @@ class Agent(Role):
         	canActivate(role.agent, Agent(self.pat))
         }
 
-def count_agent_activations(user):
+def count_agent_activations(user): # A1.6.4
     return {
     	u for u, role in hasActivated if 
     	role.name == "Agent"
@@ -350,7 +350,7 @@ class Register_agent(Role):
     #isDeactivated(ag, Agent(pat)) <-
     #	isDeactivated(x, Register-agent(ag, pat)), other-agent-regs(n, x, ag, pat), n = 0
 
-def other_agent_regs(x, ag, pat):
+def other_agent_regs(x, ag, pat): # A1.6.10
     #todo: could not translate constraint: x != y
     #hasActivated(y, Register-agent(ag, pat))
     #x != y
@@ -417,7 +417,7 @@ class Request_consent_to_referral(Role):
     #isDeactivated(x, Consent-to-referral(pat, ra, org, cli, spcty)) <-
     #	isDeactivated(y, Request-consent-to-referral(pat, ra, org, cli, spcty)), other-consent-to-referral-requests(n, y, pat, ra, org, cli, spcty), n = 0
 
-def other_consent_to_referral_requests(x, pat, ra, org, cli, spcty):
+def other_consent_to_referral_requests(x, pat, ra, org, cli, spcty): # A2.1.7
     #todo: could not translate constraint: x != y
     #hasActivated(y, Request-consent-to-referral(pat, ra, org, cli, spcty))
     #x != y
@@ -453,7 +453,7 @@ class Consent_to_referral(Role):
     #isDeactivated(cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
     #	isDeactivated(x, Consent-to-referral(pat, ra, org, cli2, spcty)), other-referral-consents(n, x, pat, ra, org, cli, spcty), n = 0
 
-def other_referral_consents(x, pat, ra, org, cli, spcty):
+def other_referral_consents(x, pat, ra, org, cli, spcty): # A2.1.12
     #todo: could not translate constraint: x != y
     #hasActivated(y, Consent-to-referral(pat, ra, org, cli, spcty))
     #x != y
@@ -487,7 +487,7 @@ class Ext_treating_clinician(Role):
     #canDeactivate(cli, cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
     #	
 
-def count_ext_treating_clinician_activations(user):
+def count_ext_treating_clinician_activations(user): # A2.2.5
     return {
     	u for u, role in hasActivated if 
     	role.name == "Ext-treating-clinician"
@@ -549,7 +549,7 @@ class Request_third_party_consent(Role):
     #isDeactivated(x, Third-party()) <-
     #	isDeactivated(y, Request-third-party-consent(x, pat, id)), other-third-party-requests(n, y, x), n = 0
 
-def count_third_party_activations(user):
+def count_third_party_activations(user): # A2.3.11
     return {
     	u for u, role in hasActivated if 
     	role.name == "Third-party"
@@ -570,7 +570,7 @@ class Third_party(Role):
     #canDeactivate(x, x, Third-party()) <-
     #	
 
-def other_third_party_requests(x, third-party):
+def other_third_party_requests(x, third-party): # A2.3.14
     #todo: could not translate constraint: x != y
     #hasActivated(y, Request-third-party-consent(third-party, pat, id))
     #x != y
@@ -646,7 +646,7 @@ class Register_head_of_team(Role):
     #isDeactivated(hd, Head-of-team(team)) <-
     #	isDeactivated(x, Register-head-of-team(hd, team))
 
-def head_of_team_regs(hd, team):
+def head_of_team_regs(hd, team): # A3.1.7
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-head-of-team" and 
@@ -693,7 +693,7 @@ class Register_team_member(Role):
 #canReqCred(ra, "ADB".Register-team-member(cli, tea, spcty)) <-
 #	ra = "RA-ADB"
 
-def team_member_regs(mem, team, spcty):
+def team_member_regs(mem, team, spcty): # A3.2.7
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-team-member" and 
@@ -738,7 +738,7 @@ class Register_team_episode(Role):
     #canDeactivate(cli, x, Register-team-episode(pat, team)) <-
     #	hasActivated(cli, Clinician(spcty)), hasActivated(x, Register-team-member(cli, team, spcty))
 
-def team_episode_regs(pat, team):
+def team_episode_regs(pat, team): # A3.3.7
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-team-episode" and 
@@ -784,7 +784,7 @@ class Register_head_of_ward(Role):
     #isDeactivated(cli, Head-of-ward(ward)) <-
     #	isDeactivated(x, Register-head-of-ward(cli, ward))
 
-def head_of_ward_regs(cli, ward):
+def head_of_ward_regs(cli, ward): # A3.4.7
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-head-of-ward" and 
@@ -831,7 +831,7 @@ class Register_ward_member(Role):
 #canReqCred(ra, "ADB".Register-ward-member(cli, ward, spcty)) <-
 #	ra = "RA-ADB"
 
-def ward_member_regs(cli, ward, spcty):
+def ward_member_regs(cli, ward, spcty): # A3.5.7
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-ward-member" and 
@@ -875,7 +875,7 @@ class Register_ward_episode(Role):
     #canDeactivate(hd, x, Register-ward-episode(pat, ward)) <-
     #	hasActivated(hd, Clinician(spcty)), canActivate(hd, Head-of-ward(ward))
 
-def ward_episode_regs(pat, ward):
+def ward_episode_regs(pat, ward): # A3.6.7
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-ward-episode" and 
@@ -962,7 +962,7 @@ class Concealed_by_clinician(Role):
     #canDeactivate(cg, cli, Concealed-by-clinician(pat, id, start, end)) <-
     #	hasActivated(cg, Caldicott-guardian())
 
-def count_concealed_by_clinician(pat, id):
+def count_concealed_by_clinician(pat, id): # A4.1.6
     return {
     	x for x, role in hasActivated if 
     	role.name == "Concealed-by-clinician" and 
@@ -1012,7 +1012,7 @@ class Concealed_by_patient(Role):
 #count-concealed-by-patient(count<y>, pat) <-
 #	hasActivated(x, Concealed-by-patient(y)), what = (pat,ids,authors,groups,subjects,from-time,to-time), who = (orgs1,readers1,groups1,spctys1), y = (what,who,start,end)
 
-def count_concealed_by_patient2(a, b):
+def count_concealed_by_patient2(a, b): # A4.2.8
     #todo: could not translate constraint: a = (pat,id)
     #hasActivated(x, Concealed-by-patient(what, whom, start, end))
     #a = (pat,id)

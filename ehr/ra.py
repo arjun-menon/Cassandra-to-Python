@@ -20,7 +20,7 @@ class Register_RA_manager(Role):
     #isDeactivated(mgr, RA-manager()) <-
     #	isDeactivated(x, Register-RA-manager(mgr))
 
-def RA_manager_regs(mgr):
+def RA_manager_regs(mgr): # R1.1.3
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-RA-manager" and 
@@ -167,7 +167,7 @@ class NHS_health_org_cert(Role):
     #isDeactivated(mgr, NHS-Caldicott-guardian-cert(org, cg, start, end)) <-
     #	isDeactivated(x, NHS-health-org-cert(org, start2, end2)), other-NHS-health-org-regs(n, x, org, start2, end2), start in [start2, end2], end in [start2, end2], start < end, n = 0
 
-def other_NHS_health_org_regs(x, org, start, end):
+def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i
     #todo: could not translate constraint: x != y
     #hasActivated(y, NHS-health-org-cert(org, start2, end2))
     #start in [start2, end2]
@@ -176,7 +176,7 @@ def other_NHS_health_org_regs(x, org, start, end):
     #x != y
     pass
 
-def other_NHS_health_org_regs(x, org, start, end):
+def other_NHS_health_org_regs(x, org, start, end): # R2.3.3ii
     #todo: could not translate constraint: start != start2
     #hasActivated(y, NHS-health-org-cert(org, start2, end2))
     #start in [start2, end2]
@@ -185,7 +185,7 @@ def other_NHS_health_org_regs(x, org, start, end):
     #start != start2
     pass
 
-def other_NHS_health_org_regs(x, org, start, end):
+def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
     #todo: could not translate constraint: end != end2
     #hasActivated(y, NHS-health-org-cert(org, start2, end2))
     #start in [start2, end2]

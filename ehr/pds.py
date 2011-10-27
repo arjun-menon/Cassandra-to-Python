@@ -16,7 +16,7 @@ class PDS_manager(Role):
     #canDeactivate(adm, adm, PDS-manager()) <-
     #	
 
-def count_PDS_manager_activations(user):
+def count_PDS_manager_activations(user): # P1.1.4
     return {
     	u for u, role in hasActivated if 
     	role.name == "PDS-manager"
@@ -41,7 +41,7 @@ class Register_PDS_manager(Role):
     #isDeactivated(adm, PDS-manager()) <-
     #	isDeactivated(x, Register-PDS-manager(adm))
 
-def pds_admin_regs(adm):
+def pds_admin_regs(adm): # P1.1.7
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-PDS-manager" and 
@@ -63,7 +63,7 @@ class Patient(Role):
     #canDeactivate(pat, pat, Patient()) <-
     #	
 
-def count_patient_activations(user):
+def count_patient_activations(user): # P1.2.4
     return {
     	u for u, role in hasActivated if 
     	role.name == "Patient"
@@ -86,7 +86,7 @@ class Agent(Role):
     #canDeactivate(ag, ag, Agent(pat)) <-
     #	
 
-def count_agent_activations(user):
+def count_agent_activations(user): # P1.3.5
     return {
     	u for u, role in hasActivated if 
     	role.name == "Agent"
@@ -136,7 +136,7 @@ class Professional_user(Role):
     #canDeactivate(x, x, Professional-user(ra, org)) <-
     #	
 
-def count_professional_user_activations(user):
+def count_professional_user_activations(user): # P1.4.6
     return {
     	u for u, role in hasActivated if 
     	role.name == "Professional-user"
@@ -194,7 +194,7 @@ class Register_patient(Role):
     #isDeactivated(ag, Agent(pat)) <-
     #	isDeactivated(x, Register-patient(pat))
 
-def patient_regs(pat):
+def patient_regs(pat): # P2.1.3
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-patient" and 

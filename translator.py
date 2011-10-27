@@ -262,9 +262,10 @@ class FuncRule(HypothesesTranslator):
             self.external_vars = { a:a for a in args }
             
             return"""
-def {func_name}({func_args}):
+def {func_name}({func_args}): # {rule_name}
 {hypotheses_translation}""".format(
-                 func_name = h2u(self.rule.concl.name)
+                 rule_name = self.rule.name
+                ,func_name = h2u(self.rule.concl.name)
                 ,func_args = ", ".join(args)
                 ,hypotheses_translation = tab(self.translate_hypotheses())
             )

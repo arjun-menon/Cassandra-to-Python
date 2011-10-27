@@ -37,7 +37,7 @@ class Spine_clinician(Role):
     #isDeactivated(x, Spine-emergency-clinician(org, pat)) <-
     #	isDeactivated(x, Spine-clinician(ra, org, spcty))
 
-def count_spine_clinician_activations(user):
+def count_spine_clinician_activations(user): # S1.1.4
     return {
     	u for u, role in hasActivated if 
     	role.name == "Spine-clinician"
@@ -58,7 +58,7 @@ class Spine_admin(Role):
     #canDeactivate(adm, adm, Spine-admin()) <-
     #	
 
-def count_spine_admin_activations(user):
+def count_spine_admin_activations(user): # S1.2.4
     return {
     	u for u, role in hasActivated if 
     	role.name == "Spine-admin"
@@ -83,7 +83,7 @@ class Register_spine_admin(Role):
     #isDeactivated(adm, Spine-admin()) <-
     #	isDeactivated(x, Register-spine-admin(adm))
 
-def spine_admin_regs(adm):
+def spine_admin_regs(adm): # S1.2.7
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-spine-admin" and 
@@ -105,7 +105,7 @@ class Patient(Role):
     #canDeactivate(pat, pat, Patient()) <-
     #	
 
-def count_patient_activations(user):
+def count_patient_activations(user): # S1.3.4
     return {
     	u for u, role in hasActivated if 
     	role.name == "Patient"
@@ -170,7 +170,7 @@ class Register_patient(Role):
     #isDeactivated(x, Authenticated-express-consent(pat, cli)) <-
     #	isDeactivated(y, Register-patient(pat))
 
-def patient_regs(pat):
+def patient_regs(pat): # S1.3.7
     return {
     	x for x, role in hasActivated if 
     	role.name == "Register-patient" and 
@@ -193,13 +193,13 @@ class Agent(Role):
     #canDeactivate(ag, ag, Agent(pat)) <-
     #	
 
-def other_agent_regs(x, ag, pat):
+def other_agent_regs(x, ag, pat): # S1.4.4
     #todo: could not translate constraint: x != y
     #hasActivated(y, Register-agent(ag, pat))
     #x != y
     pass
 
-def count_agent_activations(user):
+def count_agent_activations(user): # S1.4.5
     return {
     	u for u, role in hasActivated if 
     	role.name == "Agent"
@@ -370,7 +370,7 @@ class Request_third_party_consent(Role):
     #isDeactivated(x, Third-party-consent(x, pat, id)) <-
     #	isDeactivated(y, Request-third-party-consent(x, pat, id)), other-third-party-consent-requests(n, y, x), n = 0
 
-def other_third_party_consent_requests(y, z):
+def other_third_party_consent_requests(y, z): # S2.2.9
     #todo: could not translate constraint: x != y
     #hasActivated(x, Request-third-party-consent(z, pat, id))
     #x != y
@@ -391,7 +391,7 @@ class Third_party(Role):
     #canDeactivate(x, x, Third-party()) <-
     #	
 
-def count_third_party_activations(user):
+def count_third_party_activations(user): # S2.2.13
     return {
     	u for u, role in hasActivated if 
     	role.name == "Third-party"
@@ -459,7 +459,7 @@ class Request_consent_to_treatment(Role):
     #isDeactivated(x, Consent-to-treatment(pat, org, cli, spcty)) <-
     #	isDeactivated(y, Request-consent-to-treatment(pat, org, cli, spcty)), other-consent-to-treatment-requests(n, y, pat, org, cli, spcty), n = 0
 
-def other_consent_to_treatment_requests(x, pat, org, cli, spcty):
+def other_consent_to_treatment_requests(x, pat, org, cli, spcty): # S2.3.8
     #todo: could not translate constraint: x != y
     #hasActivated(y, Request-consent-to-treatment(pat, org, cli, spcty))
     #x != y
@@ -529,7 +529,7 @@ class Request_consent_to_group_treatment(Role):
     #isDeactivated(x, Consent-to-group-treatment(pat, org, group)) <-
     #	isDeactivated(y, Request-consent-to-group-treatment(pat, org, group)), other-consent-to-group-treatment-requests(n, y, pat, org, group), n = 0
 
-def other_consent_to_group_treatment_requests(x, pat, org, group):
+def other_consent_to_group_treatment_requests(x, pat, org, group): # S2.4.8
     #todo: could not translate constraint: x != y
     #hasActivated(y, Request-consent-to-group-treatment(pat, org, group))
     #x != y
@@ -707,7 +707,7 @@ class Concealed_by_spine_clinician(Role):
     #canDeactivate(cli1, cli2, Concealed-by-spine-clinician(pat, ids, start, end)) <-
     #	hasActivated(cli1, Spine-clinician(ra, org, spcty1)), canActivate(cli1, Group-treating-clinician(pat, ra, org, group, spcty1)), canActivate(cli2, Group-treating-clinician(pat, ra, org, group, spcty2)), hasActivated(x, Consent-to-group-treatment(pat, org, group))
 
-def count_concealed_by_spine_clinician(pat, id):
+def count_concealed_by_spine_clinician(pat, id): # S4.1.6
     #todo: could not translate constraint: id in ids
     #hasActivated(x, Concealed-by-spine-clinician(pat, ids, start, end))
     #id in ids
@@ -778,7 +778,7 @@ class Concealed_by_spine_patient(Role):
     #canDeactivate(cli1, cli2, Concealed-by-spine-patient(what, who, start1, end1)) <-
     #	hasActivated(cli1, Spine-clinician(ra, org, spcty1)), ra@ra.canActivate(cli1, Group-treating-clinician(pat, ra, org, group, spcty1)), ra@ra.canActivate(cli2, Group-treating-clinician(pat, ra, org, group, spcty2))
 
-def count_concealed_by_spine_patient(a, b):
+def count_concealed_by_spine_patient(a, b): # S4.2.12
     #todo: could not translate constraint: a = (pat,id)
     #hasActivated(x, Concealed-by-spine-patient(what, who, start, end))
     #a = (pat,id)
