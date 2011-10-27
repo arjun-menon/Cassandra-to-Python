@@ -58,7 +58,7 @@ class NHS_service(Role):
         super().__init__('NHS-service', []) 
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, srv): # R1.2.2
         #todo: a rule with no hasActivates
@@ -75,7 +75,7 @@ class Registration_authority(Role):
         super().__init__('Registration-authority', []) 
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, ra): # R1.2.4
         return {

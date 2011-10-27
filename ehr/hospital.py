@@ -346,7 +346,7 @@ class Agent(Role):
         self.pat = pat
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, agent): # A1.6.1
         return {
@@ -383,7 +383,7 @@ class Register_agent(Role):
         self.agent, self.pat = agent, pat
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, pat): # A1.6.5
         return {
@@ -442,7 +442,7 @@ class Registration_authority(Role):
         super().__init__('Registration-authority', []) 
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, ra): # A1.7.2
         return {
@@ -534,7 +534,7 @@ class Consent_to_referral(Role):
         self.pat, self.ra, self.org, self.cli, self.spcty = pat, ra, org, cli, spcty
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params)
     
     def canActivate_1(self, pat): # A2.1.8
         return {
@@ -585,7 +585,7 @@ class Ext_treating_clinician(Role):
         self.pat, self.ra, self.org, self.spcty = pat, ra, org, spcty
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, cli): # A2.2.1
         return {
@@ -642,7 +642,7 @@ class Request_third_party_consent(Role):
         self.x, self.pat, self.id = x, pat, id
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params) or self.canDeactivate_4(*params)
     
     def canActivate_1(self, pat): # A2.3.1
         return {
@@ -763,7 +763,7 @@ class Third_party_consent(Role):
         self.x, self.pat, self.id = x, pat, id
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, x): # A2.3.16
         return {
@@ -861,7 +861,7 @@ class Register_team_member(Role):
         self.mem, self.team, self.spcty = mem, team, spcty
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, mgr): # A3.2.1
         return {
@@ -925,7 +925,7 @@ class Register_team_episode(Role):
         self.pat, self.team = pat, team
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, rec): # A3.3.1
         return {
@@ -1037,7 +1037,7 @@ class Register_ward_member(Role):
         self.cli, self.ward, self.spcty = cli, ward, spcty
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, mgr): # A3.5.1
         return {
@@ -1101,7 +1101,7 @@ class Register_ward_episode(Role):
         self.pat, self.ward = pat, ward
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, rec): # A3.6.1
         return {
@@ -1193,7 +1193,7 @@ class ADB_treating_clinician(Role):
         self.pat, self.group, self.spcty = pat, group, spcty
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params)
     
     def canActivate_1(self, cli): # A3.8.1
         return {
@@ -1286,7 +1286,7 @@ class Concealed_by_patient(Role):
         self.what, self.who, self.start, self.end = what, who, start, end
     
     def canActivate(self, *params):
-        return self.canActivate_1(*params) or self.canActivate_2(*params)
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canActivate_1(self, pat): # A4.2.1
         #todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)

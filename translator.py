@@ -400,31 +400,18 @@ class RoleClass(object):
         self.isDacs = []
     def __repr__(self):
         return "\ncanActivate rules:\n" + repr(self.canAcs) + "\ncanDeactivate rules:\n" + repr(self.canDcs) + ", \nisDeactivated rules:\n" + repr(self.isDacs) + "\n"
-
-    def canAcs_translator(self):
-        assert len(self.canAcs)
-        if len(self.canAcs) == 1:
-            canAc_translation = self.canAcs[0].translate(self.params)(0)
-        else:
-            canAc_translation = """
-def canActivate(self, *params):
-    return %s
-""" % " or ".join("self.canActivate_%d(*params)" % i for i in list(range(1, len(self.canAcs) + 1))) +\
-        "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(self.canAcs))), self.canAcs) )
-        
-        return tab(canAc_translation)
     
-    def canAc_canDc_translator(self, category, rules):
+    def canAcs_canDcs_translator(self, category, rules):
         if len(rules) == 0:
             return ""
         if len(rules) == 1:
             translation = rules[0].translate(self.params)(0)
         else:
             translation = """
-def {category}(self, *params):
-    return {multiple_invokations}
-""".format(category = category, 
-           multiple_invokations = " or ".join("self.canDeactivate_%d(*params)" % i for i in list(range(1, len(rules) + 1)))
+def {cat}(self, *params):
+    return {or_calls}
+""".format(cat = category, 
+           or_calls = " or ".join("self.canDeactivate_%d(*params)" % i for i in list(range(1, len(rules) + 1)))
            ) + "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(rules))), rules) )
         
         return tab(translation)
@@ -445,8 +432,8 @@ class {name_u}(Role):
         ,optional_self_assignment_newline_tab = "\n        " if len(self.params) else ""
         ,self_assignment = ", ".join("self."+repr(s) for s in self.params) + " = " if len(self.params) else ""
 
-        ,canAcs_trans = self.canAcs_translator()
-        ,canDcs_trans = self.canAc_canDc_translator("canDeactivate", self.canDcs)#tab(''.join(map(lambda canDc: trans(canDc, self.params), self.canDcs)))
+        ,canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
+        ,canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
         ,isDacs_trans = tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
         )
 
