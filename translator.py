@@ -1,5 +1,4 @@
 import pickle, itertools
-from string import Template
 from ehrparse import *
 from helpers import *
 

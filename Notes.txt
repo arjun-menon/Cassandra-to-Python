@@ -1,24 +1,8 @@
 
-canActivate(cli, Spine-clinician(ra, org, spcty)) <-
-ra.hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end)),
-canActivate(ra, Registration-authority()),
-no-main-role-active(cli),
-Current-time() in [start, end]
-
-becomes
-
-    def canActivate_1(self, cli): # S1.1.1
-       	return { (x, role) in hasActivated if\
-       			role.name == "Sping-clinician" and \
-       			role.org == self.org and \
-       			role.cli == cli \
-
-
 TODO
+----
 
-pass "param bindings" to binding builders, so canActivate (& other) param invocations will be taken care of.
+nmra
+group
+isDac
 
-
-
-For later (Un-important)
-Convert all Template(..) to .. {abc} ...".format(abs = ...)
