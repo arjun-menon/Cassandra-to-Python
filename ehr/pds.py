@@ -13,7 +13,7 @@ class PDS_manager(Role):
         	no_main_role_active(role.adm)
         }
     
-    def canDeactivae(self, adm, adm_): # P1.1.2
+    def canDeactivate(self, adm, adm_): # P1.1.2
         #todo: a rule with no hasActivates
         pass
 
@@ -37,7 +37,7 @@ class Register_PDS_manager(Role):
         	pds_admin_regs(self.adm2) == 0
         }
     
-    def canDeactivae(self, adm1, x): # P1.1.6
+    def canDeactivate(self, adm1, x): # P1.1.6
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "PDS-manager" and 
@@ -68,7 +68,7 @@ class Patient(Role):
         	no_main_role_active(role.pat)
         }
     
-    def canDeactivae(self, pat, pat_): # P1.2.2
+    def canDeactivate(self, pat, pat_): # P1.2.2
         #todo: a rule with no hasActivates
         pass
 
@@ -93,7 +93,7 @@ class Agent(Role):
         	no_main_role_active(role.ag)
         }
     
-    def canDeactivae(self, ag, ag_): # P1.3.2
+    def canDeactivate(self, ag, ag_): # P1.3.2
         #todo: a rule with no hasActivates
         pass
 
@@ -156,7 +156,7 @@ class Professional_user(Role):
         	no_main_role_active(role.cg)
         }
     
-    def canDeactivae(self, x, x_): # P1.4.5
+    def canDeactivate(self, x, x_): # P1.4.5
         #todo: a rule with no hasActivates
         pass
 
@@ -208,7 +208,7 @@ class Register_patient(Role):
         	patient_regs(self.pat) == 0
         }
     
-    def canDeactivae(self, adm, x): # P2.1.2
+    def canDeactivate(self, adm, x): # P2.1.2
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "PDS-manager" and 

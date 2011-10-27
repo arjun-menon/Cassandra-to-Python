@@ -14,7 +14,7 @@ class Register_clinician(Role):
         	clinician_regs(self.cli, self.spcty) == 0
         }
     
-    def canDeactivae(self, mgr, x): # A1.1.2
+    def canDeactivate(self, mgr, x): # A1.1.2
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
@@ -58,7 +58,7 @@ class Clinician(Role):
         	no_main_role_active(role.cli)
         }
     
-    def canDeactivae(self, cli, cli_): # A1.1.5
+    def canDeactivate(self, cli, cli_): # A1.1.5
         #todo: a rule with no hasActivates
         pass
     
@@ -87,7 +87,7 @@ class Register_Caldicott_guardian(Role):
         	cg_regs(self.cg) == 0
         }
     
-    def canDeactivae(self, mgr, x): # A1.2.2
+    def canDeactivate(self, mgr, x): # A1.2.2
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
@@ -118,7 +118,7 @@ class Caldicott_guardian(Role):
         	no_main_role_active(role.cg)
         }
     
-    def canDeactivae(self, cg, cg_): # A1.2.5
+    def canDeactivate(self, cg, cg_): # A1.2.5
         #todo: a rule with no hasActivates
         pass
 
@@ -142,7 +142,7 @@ class Register_HR_mgr(Role):
         	hr_manager_regs(subj) == 0
         }
     
-    def canDeactivae(self, mgr, x): # A1.3.2
+    def canDeactivate(self, mgr, x): # A1.3.2
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
@@ -173,7 +173,7 @@ class HR_mgr(Role):
         	no_main_role_active(role.mgr)
         }
     
-    def canDeactivae(self, mgr, mgr_): # A1.3.5
+    def canDeactivate(self, mgr, mgr_): # A1.3.5
         #todo: a rule with no hasActivates
         pass
 
@@ -197,7 +197,7 @@ class Register_receptionist(Role):
         	receptionist_regs(self.rec) == 0
         }
     
-    def canDeactivae(self, mgr, x): # A1.4.2
+    def canDeactivate(self, mgr, x): # A1.4.2
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
@@ -227,7 +227,7 @@ class Receptionist(Role):
         	role.rec == rec
         }
     
-    def canDeactivae(self, rec, rec_): # A1.4.5
+    def canDeactivate(self, rec, rec_): # A1.4.5
         #todo: a rule with no hasActivates
         pass
 
@@ -251,7 +251,7 @@ class Register_patient(Role):
         	patient_regs(self.pat) == 0
         }
     
-    def canDeactivae(self, rec, x): # A1.5.2
+    def canDeactivate(self, rec, x): # A1.5.2
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Receptionist" and 
@@ -329,7 +329,7 @@ class Patient(Role):
         	no_main_role_active(role2.pat)
         }
     
-    def canDeactivae(self, pat, pat_): # A1.5.5
+    def canDeactivate(self, pat, pat_): # A1.5.5
         #todo: a rule with no hasActivates
         pass
 
@@ -400,7 +400,10 @@ class Register_agent(Role):
         	canActivate(self.pat, Patient())
         }
     
-    def canDeactivae(self, pat, pat_): # A1.6.7
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
+    
+    def canDeactivate_1(self, pat, pat_): # A1.6.7
         return {
         	1 for subj, role in hasActivated if 
         	pat == pat_ and 
@@ -408,7 +411,7 @@ class Register_agent(Role):
         	subj == pat
         }
     
-    def canDeactivae(self, cg, x): # A1.6.8
+    def canDeactivate_2(self, cg, x): # A1.6.8
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Caldicott-guardian" and 
@@ -475,7 +478,10 @@ class Request_consent_to_referral(Role):
         	canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty1))
         }
     
-    def canDeactivae(self, cli, cli_): # A2.1.2
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params) or self.canDeactivate_4(*params)
+    
+    def canDeactivate_1(self, cli, cli_): # A2.1.2
         return {
         	1 for subj, role in hasActivated if 
         	cli == cli_ and 
@@ -483,14 +489,14 @@ class Request_consent_to_referral(Role):
         	subj == cli
         }
     
-    def canDeactivae(self, pat, x): # A2.1.3
+    def canDeactivate_2(self, pat, x): # A2.1.3
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Patient" and 
         	subj == pat
         }
     
-    def canDeactivae(self, ag, x): # A2.1.4
+    def canDeactivate_3(self, ag, x): # A2.1.4
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Agent" and 
@@ -498,7 +504,7 @@ class Request_consent_to_referral(Role):
         	subj == ag
         }
     
-    def canDeactivae(self, cg, x): # A2.1.5
+    def canDeactivate_4(self, cg, x): # A2.1.5
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Caldicott-guardian" and 
@@ -619,7 +625,7 @@ class Ext_treating_clinician(Role):
         	no_main_role_active(role2.cli)
         }
     
-    def canDeactivae(self, cli, cli_): # A2.2.3
+    def canDeactivate(self, cli, cli_): # A2.2.3
         #todo: a rule with no hasActivates
         pass
 
@@ -671,7 +677,10 @@ class Request_third_party_consent(Role):
         	self.x in Get_record_third_parties(self.pat, self.id)
         }
     
-    def canDeactivae(self, pat, pat_): # A2.3.5
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params) or self.canDeactivate_4(*params) or self.canDeactivate_5(*params)
+    
+    def canDeactivate_1(self, pat, pat_): # A2.3.5
         return {
         	1 for subj, role in hasActivated if 
         	pat == pat_ and 
@@ -679,7 +688,7 @@ class Request_third_party_consent(Role):
         	subj == pat
         }
     
-    def canDeactivae(self, ag, ag_): # A2.3.6
+    def canDeactivate_2(self, ag, ag_): # A2.3.6
         return {
         	1 for subj, role in hasActivated if 
         	ag == ag_ and 
@@ -688,7 +697,7 @@ class Request_third_party_consent(Role):
         	subj == role.pat
         }
     
-    def canDeactivae(self, cli, cli_): # A2.3.7
+    def canDeactivate_3(self, cli, cli_): # A2.3.7
         return {
         	1 for subj, role in hasActivated if 
         	cli == cli_ and 
@@ -696,14 +705,14 @@ class Request_third_party_consent(Role):
         	subj == cli
         }
     
-    def canDeactivae(self, cg, x): # A2.3.8
+    def canDeactivate_4(self, cg, x): # A2.3.8
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Caldicott-guardian" and 
         	subj == cg
         }
     
-    def canDeactivae(self, x, y): # A2.3.9
+    def canDeactivate_5(self, x, y): # A2.3.9
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Third-party" and 
@@ -736,7 +745,7 @@ class Third_party(Role):
         	no_main_role_active(role2.x)
         }
     
-    def canDeactivae(self, x, x_): # A2.3.13
+    def canDeactivate(self, x, x_): # A2.3.13
         #todo: a rule with no hasActivates
         pass
 
@@ -772,7 +781,10 @@ class Third_party_consent(Role):
         	subj1 == cg
         }
     
-    def canDeactivae(self, x, x_): # A2.3.18
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
+    
+    def canDeactivate_1(self, x, x_): # A2.3.18
         return {
         	1 for subj, role in hasActivated if 
         	x == x_ and 
@@ -780,7 +792,7 @@ class Third_party_consent(Role):
         	subj == x
         }
     
-    def canDeactivae(self, cg, x): # A2.3.19
+    def canDeactivate_2(self, cg, x): # A2.3.19
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Caldicott-guardian" and 
@@ -805,7 +817,7 @@ class Head_of_team(Role):
         	role.team == self.team
         }
     
-    def canDeactivae(self, hd, hd_): # A3.1.2
+    def canDeactivate(self, hd, hd_): # A3.1.2
         #todo: a rule with no hasActivates
         pass
 
@@ -823,7 +835,7 @@ class Register_head_of_team(Role):
         	head_of_team_regs(self.hd, self.team) == 0
         }
     
-    def canDeactivae(self, mgr, x): # A3.1.5
+    def canDeactivate(self, mgr, x): # A3.1.5
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
@@ -870,14 +882,17 @@ class Register_team_member(Role):
         	team_member_regs(self.mem, self.team, self.spcty) == 0
         }
     
-    def canDeactivae(self, mgr, x): # A3.2.3
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
+    
+    def canDeactivate_1(self, mgr, x): # A3.2.3
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
         	subj == mgr
         }
     
-    def canDeactivae(self, hd, x): # A3.2.4
+    def canDeactivate_2(self, hd, x): # A3.2.4
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Clinician" and 
@@ -931,21 +946,24 @@ class Register_team_episode(Role):
         	team_episode_regs(self.pat, self.team) == 0
         }
     
-    def canDeactivae(self, cg, x): # A3.3.3
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params)
+    
+    def canDeactivate_1(self, cg, x): # A3.3.3
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Caldicott-guardian" and 
         	subj == cg
         }
     
-    def canDeactivae(self, rec, x): # A3.3.4
+    def canDeactivate_2(self, rec, x): # A3.3.4
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Receptionist" and 
         	subj == rec
         }
     
-    def canDeactivae(self, cli, x): # A3.3.5
+    def canDeactivate_3(self, cli, x): # A3.3.5
         return {
         	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
         	role1.name == "Clinician" and 
@@ -975,7 +993,7 @@ class Head_of_ward(Role):
         	role.cli == cli
         }
     
-    def canDeactivae(self, cli, cli_): # A3.4.2
+    def canDeactivate(self, cli, cli_): # A3.4.2
         #todo: a rule with no hasActivates
         pass
 
@@ -993,7 +1011,7 @@ class Register_head_of_ward(Role):
         	head_of_ward_regs(self.cli, self.ward) == 0
         }
     
-    def canDeactivae(self, mgr, x): # A3.4.5
+    def canDeactivate(self, mgr, x): # A3.4.5
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
@@ -1040,14 +1058,17 @@ class Register_ward_member(Role):
         	ward_member_regs(subj, self.ward, self.spcty) == 0
         }
     
-    def canDeactivae(self, mgr, x): # A3.5.3
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
+    
+    def canDeactivate_1(self, mgr, x): # A3.5.3
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
         	subj == mgr
         }
     
-    def canDeactivae(self, hd, x): # A3.5.4
+    def canDeactivate_2(self, hd, x): # A3.5.4
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Clinician" and 
@@ -1101,21 +1122,24 @@ class Register_ward_episode(Role):
         	ward_episode_regs(self.pat, self.ward) == 0
         }
     
-    def canDeactivae(self, cg, x): # A3.6.3
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params)
+    
+    def canDeactivate_1(self, cg, x): # A3.6.3
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Caldicott-guardian" and 
         	subj == cg
         }
     
-    def canDeactivae(self, rec, x): # A3.6.4
+    def canDeactivate_2(self, rec, x): # A3.6.4
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Receptionist" and 
         	subj == rec
         }
     
-    def canDeactivae(self, hd, x): # A3.6.5
+    def canDeactivate_3(self, hd, x): # A3.6.5
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Clinician" and 
@@ -1144,11 +1168,14 @@ class Emergency_clinician(Role):
         	canActivate(self.pat, Patient())
         }
     
-    def canDeactivae(self, cli, cli_): # A3.7.2
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
+    
+    def canDeactivate_1(self, cli, cli_): # A3.7.2
         #todo: a rule with no hasActivates
         pass
     
-    def canDeactivae(self, cg, cli): # A3.7.3
+    def canDeactivate_2(self, cg, cli): # A3.7.3
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Caldicott-guardian" and 
@@ -1217,7 +1244,10 @@ class Concealed_by_clinician(Role):
         	canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
         }
     
-    def canDeactivae(self, cli, cli_): # A4.1.2
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params)
+    
+    def canDeactivate_1(self, cli, cli_): # A4.1.2
         return {
         	1 for subj, role in hasActivated if 
         	cli == cli_ and 
@@ -1225,7 +1255,7 @@ class Concealed_by_clinician(Role):
         	subj == cli
         }
     
-    def canDeactivae(self, cli1, cli2): # A4.1.3
+    def canDeactivate_2(self, cli1, cli2): # A4.1.3
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Clinician" and 
@@ -1234,7 +1264,7 @@ class Concealed_by_clinician(Role):
         	canActivate(cli2, ADB_treating_clinician(self.pat, Wildcard(), Wildcard()))
         }
     
-    def canDeactivae(self, cg, cli): # A4.1.4
+    def canDeactivate_3(self, cg, cli): # A4.1.4
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Caldicott-guardian" and 
@@ -1276,19 +1306,22 @@ class Concealed_by_patient(Role):
         #n < 100
         pass
     
-    def canDeactivae(self, pat, x): # A4.2.3
+    def canDeactivate(self, *params):
+        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params)
+    
+    def canDeactivate_1(self, pat, x): # A4.2.3
         #todo: could not translate constraint: pi7_1(what) = pat
         #hasActivated(pat, Patient())
         #pi7_1(what) = pat
         pass
     
-    def canDeactivae(self, ag, x): # A4.2.4
+    def canDeactivate_2(self, ag, x): # A4.2.4
         #todo: could not translate constraint: pi7_1(what) = pat
         #hasActivated(ag, Agent(pat))
         #pi7_1(what) = pat
         pass
     
-    def canDeactivae(self, cg, x): # A4.2.5
+    def canDeactivate_3(self, cg, x): # A4.2.5
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Caldicott-guardian" and 

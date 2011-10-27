@@ -14,7 +14,7 @@ class Register_RA_manager(Role):
         	RA_manager_regs(self.mgr2) == 0
         }
     
-    def canDeactivae(self, mgr, x): # R1.1.2
+    def canDeactivate(self, mgr, x): # R1.1.2
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "RA-manager" and 
@@ -44,7 +44,7 @@ class RA_manager(Role):
         	role.mgr == mgr
         }
     
-    def canDeactivae(self, mgr, mgr_): # R1.1.5
+    def canDeactivate(self, mgr, mgr_): # R1.1.5
         #todo: a rule with no hasActivates
         pass
 

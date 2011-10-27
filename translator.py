@@ -320,10 +320,11 @@ class canDc(HypothesesTranslator):
         #print(subj1, subj2)
         #print(self.rule)
         
-        return"""
-def canDeactivae(self, {subj1}, {subj2}): # {rule_name}
+        return lambda number: """
+def canDeactivate{num}(self, {subj1}, {subj2}): # {rule_name}
 {hypotheses_translation}""".format(
                      rule_name = self.rule.name
+                     ,num = "" if number==0 else "_" + str(number)
                     ,subj1 = subj1
                     ,subj2 = subj2
                     ,hypotheses_translation = tab(self.translate_hypotheses(pre_conditional=pre_conditional))
@@ -413,6 +414,21 @@ def canActivate(self, *params):
         
         return tab(canAc_translation)
     
+    def canAc_canDc_translator(self, category, rules):
+        if len(rules) == 0:
+            return ""
+        if len(rules) == 1:
+            translation = rules[0].translate(self.params)(0)
+        else:
+            translation = """
+def {category}(self, *params):
+    return {multiple_invokations}
+""".format(category = category, 
+           multiple_invokations = " or ".join("self.canDeactivate_%d(*params)" % i for i in list(range(1, len(rules) + 1)))
+           ) + "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(rules))), rules) )
+        
+        return tab(translation)
+    
     def translate(self):
         return """
 class {name_u}(Role):
@@ -430,7 +446,7 @@ class {name_u}(Role):
         ,self_assignment = ", ".join("self."+repr(s) for s in self.params) + " = " if len(self.params) else ""
 
         ,canAcs_trans = self.canAcs_translator()
-        ,canDcs_trans = tab(''.join(map(lambda canDc: trans(canDc, self.params), self.canDcs)))
+        ,canDcs_trans = self.canAc_canDc_translator("canDeactivate", self.canDcs)#tab(''.join(map(lambda canDc: trans(canDc, self.params), self.canDcs)))
         ,isDacs_trans = tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
         )
 
