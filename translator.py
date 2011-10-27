@@ -180,7 +180,7 @@ class HypothesesTranslator(object):
                 if hasAc_subj not in set(self.external_vars):
                     self.external_vars.update({ hasAc_subj:hasAc_subj })
                  
-                tr = "return {\n\t" + \
+                tr = "return len({\n\t" + \
                     '{subj} for {subj}, role in hasActivated if \n\t'\
                     .format(subj = hasAc_subj, role_name = role_name)
             
@@ -210,7 +210,7 @@ class HypothesesTranslator(object):
             if len(conditionals):
                 tr += " and \n\t".join(conditionals)
             
-            return tr + "\n}"
+            return tr + "\n})"
         
         except StopTranslating as st:
             #print(self.rule.name + " was not translated.")
