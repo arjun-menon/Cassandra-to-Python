@@ -10,7 +10,8 @@ class Register_clinician(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
-        	subj == mgr
+        	subj == mgr and 
+        	clinician_regs(self.cli, self.spcty) == 0
         }
     
     #untranslated:
@@ -51,7 +52,8 @@ class Clinician(Role):
         	1 for subj, role in hasActivated if 
         	role.name == "Register-clinician" and 
         	role.spcty == self.spcty and 
-        	role.cli == cli
+        	role.cli == cli and 
+        	no_main_role_active(role.cli)
         }
     
     #untranslated:
@@ -80,7 +82,8 @@ class Register_Caldicott_guardian(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
-        	subj == mgr
+        	subj == mgr and 
+        	cg_regs(self.cg) == 0
         }
     
     #untranslated:
@@ -108,7 +111,8 @@ class Caldicott_guardian(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Register-Caldicott-guardian" and 
-        	role.cg == cg
+        	role.cg == cg and 
+        	no_main_role_active(role.cg)
         }
     
     #untranslated:
@@ -132,7 +136,8 @@ class Register_HR_mgr(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
-        	subj == mgr
+        	subj == mgr and 
+        	hr_manager_regs(subj) == 0
         }
     
     #untranslated:
@@ -160,7 +165,8 @@ class HR_mgr(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Register-HR-mgr" and 
-        	role.mgr == mgr
+        	role.mgr == mgr and 
+        	no_main_role_active(role.mgr)
         }
     
     #untranslated:
@@ -184,7 +190,8 @@ class Register_receptionist(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
-        	subj == mgr
+        	subj == mgr and 
+        	receptionist_regs(self.rec) == 0
         }
     
     #untranslated:
@@ -236,7 +243,8 @@ class Register_patient(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Receptionist" and 
-        	subj == rec
+        	subj == rec and 
+        	patient_regs(self.pat) == 0
         }
     
     #untranslated:
@@ -345,7 +353,8 @@ class Agent(Role):
         	role.name == "Register-patient" and 
         	role.agent == agent and 
         	canActivate(self.pat, Patient()) and 
-        	canActivate(role.agent, Agent(self.pat))
+        	canActivate(role.agent, Agent(self.pat)) and 
+        	no_main_role_active(role.agent)
         }
 
 def count_agent_activations(user): # A1.6.4
@@ -763,7 +772,8 @@ class Register_team_member(Role):
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
         	subj == mgr and 
-        	canActivate(self.mem, Clinician(self.spcty))
+        	canActivate(self.mem, Clinician(self.spcty)) and 
+        	team_member_regs(self.mem, self.team, self.spcty) == 0
         }
     
     def canActivate_2(self, hd): # A3.2.2
@@ -772,7 +782,8 @@ class Register_team_member(Role):
         	role.name == "Clinician" and 
         	subj == hd and 
         	canActivate(subj, Head_of_team(self.team)) and 
-        	canActivate(self.mem, Clinician(self.spcty))
+        	canActivate(self.mem, Clinician(self.spcty)) and 
+        	team_member_regs(self.mem, self.team, self.spcty) == 0
         }
     
     #untranslated:
@@ -817,7 +828,8 @@ class Register_team_episode(Role):
         	1 for subj, role in hasActivated if 
         	role.name == "Receptionist" and 
         	subj == rec and 
-        	canActivate(self.pat, Patient())
+        	canActivate(self.pat, Patient()) and 
+        	team_episode_regs(self.pat, self.team) == 0
         }
     
     def canActivate_2(self, cli): # A3.3.2
@@ -914,7 +926,8 @@ class Register_ward_member(Role):
         	1 for subj, role in hasActivated if 
         	role.name == "HR-mgr" and 
         	subj == mgr and 
-        	canActivate(self.cli, Clinician(self.spcty))
+        	canActivate(self.cli, Clinician(self.spcty)) and 
+        	ward_member_regs(self.cli, self.ward, self.spcty) == 0
         }
     
     def canActivate_2(self, hd): # A3.5.2
@@ -923,7 +936,8 @@ class Register_ward_member(Role):
         	role.name == "Clinician" and 
         	subj == self.cli and 
         	canActivate(hd, Head_of_ward(self.ward)) and 
-        	canActivate(subj, Clinician(self.spcty))
+        	canActivate(subj, Clinician(self.spcty)) and 
+        	ward_member_regs(subj, self.ward, self.spcty) == 0
         }
     
     #untranslated:
@@ -968,7 +982,8 @@ class Register_ward_episode(Role):
         	1 for subj, role in hasActivated if 
         	role.name == "Receptionist" and 
         	subj == rec and 
-        	canActivate(self.pat, Patient())
+        	canActivate(self.pat, Patient()) and 
+        	ward_episode_regs(self.pat, self.ward) == 0
         }
     
     def canActivate_2(self, hd): # A3.6.2
@@ -977,7 +992,8 @@ class Register_ward_episode(Role):
         	role.name == "Clinician" and 
         	subj == hd and 
         	canActivate(subj, Head_of_ward(self.ward)) and 
-        	canActivate(self.pat, Patient())
+        	canActivate(self.pat, Patient()) and 
+        	ward_episode_regs(self.pat, self.ward) == 0
         }
     
     #untranslated:

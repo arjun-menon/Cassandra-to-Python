@@ -17,7 +17,8 @@ class Spine_clinician(Role):
         	role.org == self.org and 
         	role.cli == cli and 
         	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end)
+        	Current_time() in vrange(role.start, role.end) and 
+        	no_main_role_active(role.cli)
         }
     
     def canActivate_2(self, cli): # S1.1.2
@@ -28,7 +29,8 @@ class Spine_clinician(Role):
         	role.org == self.org and 
         	role.cli == cli and 
         	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end)
+        	Current_time() in vrange(role.start, role.end) and 
+        	no_main_role_active(role.cli)
         }
     
     #untranslated:
@@ -56,7 +58,8 @@ class Spine_admin(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Register-spine-admin" and 
-        	role.adm == adm
+        	role.adm == adm and 
+        	no_main_role_active(role.adm)
         }
     
     #untranslated:
@@ -80,7 +83,8 @@ class Register_spine_admin(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Spine-admin" and 
-        	subj == adm
+        	subj == adm and 
+        	spine_admin_regs(self.adm2) == 0
         }
     
     #untranslated:
@@ -132,7 +136,8 @@ class Register_patient(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Spine-admin" and 
-        	subj == adm
+        	subj == adm and 
+        	patient_regs(self.pat) == 0
         }
     
     #untranslated:
@@ -262,7 +267,8 @@ class Register_agent(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Patient" and 
-        	subj == pat
+        	subj == pat and 
+        	agent_regs(subj) < 3
         }
     
     def canActivate_2(self, cli): # S1.4.10
@@ -925,7 +931,8 @@ class Authenticated_express_consent(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Patient" and 
-        	subj == pat
+        	subj == pat and 
+        	count_authenticated_express_consent(subj) < 100
         }
     
     def canActivate_2(self, ag): # S4.3.2
@@ -933,7 +940,8 @@ class Authenticated_express_consent(Role):
         	1 for subj, role in hasActivated if 
         	role.name == "Agent" and 
         	role.pat == self.pat and 
-        	subj == ag
+        	subj == ag and 
+        	count_authenticated_express_consent(role.pat) < 100
         }
     
     def canActivate_3(self, cli1): # S4.3.3

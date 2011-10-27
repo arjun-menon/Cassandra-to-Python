@@ -13,6 +13,9 @@ class StopTranslating(Exception):
 def warn(message : str):
     print(message)
 
+class CountFunctions(object):
+    funcs = []
+
 class HypothesesTranslator(object):
     def __init__(self, rule):
         self.rule = rule
@@ -121,6 +124,7 @@ class HypothesesTranslator(object):
             p(bound_vars[0]), h2u(role.name), ", ".join(p(v) for v in bound_vars[1:])
             ) )
     
+    
     def translate_hypotheses(self, wrapper=None):
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
@@ -162,35 +166,64 @@ class HypothesesTranslator(object):
                     conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
                 self.external_vars.update({ hasAc_subj : 'subj' })
                 
-#                if hasAc_subj not in set(self.external_vars):
-#                    self.external_vars.update({ hasAc_subj:hasAc_subj })
-                 
+                
                 tr = "return %s{\n\t1 for subj, role in hasActivated if \n\t" % ('' if not wrapper else wrapper[0])
-            
             else:
                 raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
             
-                        
+            
             # handle canActivated:
-                        
+            
             for (canAc_vars, canAc_cond_func) in map(self.build_canAc_bindings, canAcs):
                 if(len(canAc_vars)):
-                    #warn("check "+self.rule.name+" whether wildcards in canActivate are okay")
-                    pass
-                
+                    pass#warn("check "+self.rule.name+" whether wildcards in canActivate are okay")
                 vd = { canAc_var : "Wildcard()" for canAc_var in canAc_vars }
                 conditionals.append( canAc_cond_func(vd) )
             
-            # translate constraints:
+            # Handle the special case of (only) 1 count function invoked in a rule:
+            
+            count_funcs =  [f for f in funcs if f.name in CountFunctions.funcs]
+            
+            if len(count_funcs) == 1:
+                f = count_funcs[0]
+                f_return = str(f.args[0])
+                args = [str(a) for a in f.args[1:]]
+                
+                unbound_vars, code_gen = self.substitution_func_gen(args, 
+                    h2u(f.name) + '(' + ", ".join(p(str(a)) for a in args) + ')' )
+                
+                if unbound_vars:
+                    raise StopTranslating("unbound vars in %s" % repr(f))
+                
+                # create a mapping from the return value of f to its code
+                self.external_vars.update( { f_return : code_gen() } )
+                              
+                # remove f from funcs:
+                funcs = [func for func in funcs if func.name != f.name]
+                
+            elif len(count_funcs) > 1:
+                raise StopTranslating("more than 1 count function invoked in a rule")
+            
+            # handle constraints:
             
             for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
-                if(len(ctr_vars)):
-                    print("hmmmm "+self.rule.name)
-                    pass
+                if(ctr_vars):
+                    raise StopIteration("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func))
                 else:
                     conditionals.append( ctr_cond_func() )
             
-            #print(conditionals)
+            # handle functions:
+            
+            for f in funcs:
+                f_args = [str(a) for a in f.args]
+                
+                unbound_vars, code_gen = self.substitution_func_gen(f_args, 
+                    h2u(f.name) + '(' + ", ".join(p(str(a)) for a in f_args) + ')' )
+                
+                if unbound_vars:
+                    raise StopTranslating("unbound vars in %s" % repr(f))
+                
+                conditionals.append( code_gen() )
             
             if len(conditionals):
                 tr += " and \n\t".join(conditionals)
@@ -237,8 +270,8 @@ class FuncRule(HypothesesTranslator):
         if type(self.rule.concl.args[0]) == Aggregate:
             if self.rule.concl.args[0].name == 'count':
                 if self.rule.hypos[0].name == SpecialPredicates.hasAc:
-                    #if repr(self.rule.concl.args[0].args[0]) == repr(self.rule.hypos[0].args[0]):
                     self.kind = 'count'
+                    CountFunctions.funcs.append(self.rule.concl.name)
     
     def translate(self):
         if self.kind == 'count':
@@ -254,9 +287,8 @@ def {func_name}({func_args}): # {rule_name}
                 ,func_args = ", ".join(args)
                 ,hypotheses_translation = tab(self.translate_hypotheses(["len(", ")"]))
                 )
-        else:
-            print(self.rule)
         
+        #print(self.rule)
         return untranslated(self.rule)
 
 ####################

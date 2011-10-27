@@ -10,7 +10,8 @@ class Register_RA_manager(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "RA-manager" and 
-        	subj == mgr
+        	subj == mgr and 
+        	RA_manager_regs(self.mgr2) == 0
         }
     
     #untranslated:

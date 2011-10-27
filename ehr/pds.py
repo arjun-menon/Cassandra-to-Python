@@ -9,7 +9,8 @@ class PDS_manager(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Register-PDS-manager" and 
-        	role.adm == adm
+        	role.adm == adm and 
+        	no_main_role_active(role.adm)
         }
     
     #untranslated:
@@ -33,7 +34,8 @@ class Register_PDS_manager(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "PDS-manager" and 
-        	subj == adm1
+        	subj == adm1 and 
+        	pds_admin_regs(self.adm2) == 0
         }
     
     #untranslated:
@@ -61,7 +63,8 @@ class Patient(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "Register-patient" and 
-        	role.pat == pat
+        	role.pat == pat and 
+        	no_main_role_active(role.pat)
         }
     
     #untranslated:
@@ -86,7 +89,8 @@ class Agent(Role):
         	1 for subj, role in hasActivated if 
         	role.name == "Register-patient" and 
         	role.ag == ag and 
-        	canActivate(role.ag, Agent(self.pat))
+        	canActivate(role.ag, Agent(self.pat)) and 
+        	no_main_role_active(role.ag)
         }
     
     #untranslated:
@@ -116,7 +120,8 @@ class Professional_user(Role):
         	role.org == self.org and 
         	subj == x and 
         	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end)
+        	Current_time() in vrange(role.start, role.end) and 
+        	no_main_role_active(role.cli)
         }
     
     def canActivate_2(self, x): # P1.4.2
@@ -126,7 +131,8 @@ class Professional_user(Role):
         	role.org == self.org and 
         	subj == x and 
         	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end)
+        	Current_time() in vrange(role.start, role.end) and 
+        	no_main_role_active(role.cli)
         }
     
     def canActivate_3(self, x): # P1.4.3
@@ -136,7 +142,8 @@ class Professional_user(Role):
         	role.org == self.org and 
         	subj == x and 
         	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end)
+        	Current_time() in vrange(role.start, role.end) and 
+        	no_main_role_active(role.cg)
         }
     
     def canActivate_4(self, x): # P1.4.4
@@ -146,7 +153,8 @@ class Professional_user(Role):
         	role.org == self.org and 
         	subj == x and 
         	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end)
+        	Current_time() in vrange(role.start, role.end) and 
+        	no_main_role_active(role.cg)
         }
     
     #untranslated:
@@ -198,7 +206,8 @@ class Register_patient(Role):
         return {
         	1 for subj, role in hasActivated if 
         	role.name == "PDS-manager" and 
-        	subj == adm
+        	subj == adm and 
+        	patient_regs(self.pat) == 0
         }
     
     #untranslated:
