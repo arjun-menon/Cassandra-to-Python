@@ -333,9 +333,6 @@ class canDc(HypothesesTranslator):
             self.external_vars.update( { subj1 : subj1 , subj2 : subj2  } )
             pre_conditional = ""
         
-        #print(subj1, subj2)
-        #print(self.rule)
-        
         return lambda number: """
 def canDeactivate{num}(self, {subj1}, {subj2}): # {rule_name}
 {hypotheses_translation}""".format(
@@ -359,10 +356,8 @@ class isDac(HypothesesTranslator):
 class FuncRule(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
-        #print(str(type(self.rule.concl.args[0])) + " " + repr(self.rule.concl.args[0]) + "  " + rule.concl.name)
         
-        self.kind = None # Determines what kind of function it is:
-        
+        # Determine what kind of function it is...
         if type(self.rule.concl.args[0]) == Aggregate:
             if self.rule.concl.args[0].name == 'count':
                 if self.rule.hypos[0].name == SpecialPredicates.hasAc:
@@ -374,6 +369,8 @@ class FuncRule(HypothesesTranslator):
                 self.group_key = self.rule.concl.args[0].args[0]
         elif self.rule.concl.name == "no-main-role-active":
             self.kind = 'nmra'
+        
+        self.kind = None # unknown kind
     
     def nmra_trans_hypo(self):
         conditionals = []

@@ -20,7 +20,7 @@ def func_hypos():
     for i in hy:
         print(i)
 
-func_hypos()
+#func_hypos()
 
 def hasActivated_in_hypos():
     "Count and print number of hasActivated hypotheses in each rule."
@@ -50,13 +50,13 @@ def count_rule_kinds():
     list(map(c, SpecialPredicates.list_all()))
     print("funcs: " + str(len([r for r in rules if r.concl.name not in SpecialPredicates.list_all()])) + '\n')
     
-count_rule_kinds()
+#count_rule_kinds()
 
 def print_func_rules():
     for i in (r for r in rules if r.concl.name not in SpecialPredicates.list_all()):
         print(i)
         
-print_func_rules()
+#print_func_rules()
 
 def repl(): # use python's quit() to break out
     while True:
