@@ -50,7 +50,7 @@ def count_rule_kinds():
     list(map(c, special_predicates[1:]))
     print("funcs: " + str(len([r for r in rules if r.concl.name not in special_predicates[1:]])))
     
-#count_rule_kinds()
+count_rule_kinds()
 
 def print_func_rules():
     for i in (r for r in rules if r.concl.name not in special_predicates):
