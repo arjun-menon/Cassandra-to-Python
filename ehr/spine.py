@@ -31,10 +31,12 @@ class Spine_clinician(Role):
         	Current_time() in vrange(role.start, role.end)
         }
     
+    #untranslated:
     #'S1.1.3'
     #canDeactivate(cli, cli, Spine-clinician(ra, org, spcty)) <-
     #	
     
+    #untranslated:
     #'S3.2.3'
     #isDeactivated(x, Spine-emergency-clinician(org, pat)) <-
     #	isDeactivated(x, Spine-clinician(ra, org, spcty))
@@ -57,6 +59,7 @@ class Spine_admin(Role):
         	role.adm == adm
         }
     
+    #untranslated:
     #'S1.2.2'
     #canDeactivate(adm, adm, Spine-admin()) <-
     #	
@@ -80,10 +83,12 @@ class Register_spine_admin(Role):
         	subj == adm
         }
     
+    #untranslated:
     #'S1.2.6'
     #canDeactivate(adm, x, Register-spine-admin(adm2)) <-
     #	hasActivated(adm, Spine-admin())
     
+    #untranslated:
     #'S1.2.3'
     #isDeactivated(adm, Spine-admin()) <-
     #	isDeactivated(x, Register-spine-admin(adm))
@@ -106,6 +111,7 @@ class Patient(Role):
         #"PDS"@"PDS".hasActivated(y, Register-patient(pat))
         pass
     
+    #untranslated:
     #'S1.3.2'
     #canDeactivate(pat, pat, Patient()) <-
     #	
@@ -129,50 +135,62 @@ class Register_patient(Role):
         	subj == adm
         }
     
+    #untranslated:
     #'S1.3.6'
     #canDeactivate(adm, x, Register-patient(pat)) <-
     #	hasActivated(adm, Spine-admin())
     
+    #untranslated:
     #'S1.3.3'
     #isDeactivated(pat, Patient()) <-
     #	isDeactivated(x, Register-patient(pat))
     
+    #untranslated:
     #'S1.4.13'
     #isDeactivated(x, Register-agent(agent, pat)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'S2.1.7'
     #isDeactivated(x, One-off-consent(pat)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'S2.2.8'
     #isDeactivated(x, Request-third-party-consent(y, pat, id)) <-
     #	isDeactivated(z, Register-patient(pat))
     
+    #untranslated:
     #'S2.3.7'
     #isDeactivated(x, Request-consent-to-treatment(pat, org, cli, spcty)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'S2.4.7'
     #isDeactivated(x, Request-consent-to-group-treatment(pat, org, group)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'S3.1.4'
     #isDeactivated(pat, Referrer(pat, org, cli2, spcty1)) <-
     #	isDeactivated(x, Register-patient(pat))
     
+    #untranslated:
     #'S3.2.4'
     #isDeactivated(x, Spine-emergency-clinician(org, pat)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'S4.1.5'
     #isDeactivated(x, Concealed-by-spine-clinician(pat, ids, start, end)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'S4.2.6'
     #isDeactivated(x, Conceal-request(what, whom, start, end)) <-
     #	isDeactivated(y, Register-patient(pat)), pi7_1(what) = pat
     
+    #untranslated:
     #'S4.3.7'
     #isDeactivated(x, Authenticated-express-consent(pat, cli)) <-
     #	isDeactivated(y, Register-patient(pat))
@@ -196,6 +214,7 @@ class Agent(Role):
         #no-main-role-active(ag)
         pass
     
+    #untranslated:
     #'S1.4.2'
     #canDeactivate(ag, ag, Agent(pat)) <-
     #	
@@ -216,14 +235,17 @@ def count_agent_activations(user): # S1.4.5
     	subj == user
     })
 
+#untranslated:
 #'S1.4.6'
 #canReqCred(ag, "Spine".canActivate(ag, Agent(pat))) <-
 #	hasActivated(ag, Agent(pat))
 
+#untranslated:
 #'S1.4.7'
 #canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
 #	ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority()), Current-time() in [start, end]
 
+#untranslated:
 #'S1.4.8'
 #canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
 #	org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority()), Current-time() in [start, end]
@@ -251,14 +273,17 @@ class Register_agent(Role):
         	canActivate(subj, General_practitioner(self.pat))
         }
     
+    #untranslated:
     #'S1.4.11'
     #canDeactivate(pat, pat, Register-agent(agent, pat)) <-
     #	hasActivated(pat, Patient())
     
+    #untranslated:
     #'S1.4.12'
     #canDeactivate(cli, x, Register-agent(agent, pat)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, General-practitioner(pat))
     
+    #untranslated:
     #'S1.4.3'
     #isDeactivated(ag, Agent(pat)) <-
     #	isDeactivated(x, Register-agent(ag, pat)), other-agent-regs(n, x, ag, pat), n = 0
@@ -294,6 +319,7 @@ class Registration_authority(Role):
         	Current_time() in vrange(role.start, role.end)
         }
 
+#untranslated:
 #'S1.5.3'
 #no-main-role-active(user) <-
 #	count-agent-activations(n, user), count-spine-clinician-activations(n, user), count-spine-admin-activations(n, user), count-patient-activations(n, user), count-third-party-activations(n, user), n = 0
@@ -329,14 +355,17 @@ class One_off_consent(Role):
         	canActivate(subj, Treating_clinician(self.pat, role.org, role.spcty))
         }
     
+    #untranslated:
     #'S2.1.4'
     #canDeactivate(pat, x, One-off-consent(pat)) <-
     #	hasActivated(pat, Patient())
     
+    #untranslated:
     #'S2.1.5'
     #canDeactivate(ag, x, One-off-consent(pat)) <-
     #	hasActivated(ag, Agent(pat))
     
+    #untranslated:
     #'S2.1.6'
     #canDeactivate(cli, x, One-off-consent(pat)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))
@@ -375,26 +404,32 @@ class Request_third_party_consent(Role):
         	self.x in Get_spine_record_third_parties(self.pat, self.id)
         }
     
+    #untranslated:
     #'S2.2.4'
     #canDeactivate(pat, y, Request-third-party-consent(x, pat, id)) <-
     #	hasActivated(pat, Patient())
     
+    #untranslated:
     #'S2.2.5'
     #canDeactivate(ag, y, Request-third-party-consent(x, pat, id)) <-
     #	hasActivated(pat, Agent(pat))
     
+    #untranslated:
     #'S2.2.6'
     #canDeactivate(cli, y, Request-third-party-consent(x, pat, id)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty))
     
+    #untranslated:
     #'S2.2.7'
     #canDeactivate(x, y, Request-third-party-consent(x, pat, id)) <-
     #	hasActivated(x, Third-party())
     
+    #untranslated:
     #'S2.2.12'
     #isDeactivated(x, Third-party()) <-
     #	isDeactivated(y, Request-third-party-consent(x, pat, id)), other-third-party-consent-requests(n, y, x), n = 0
     
+    #untranslated:
     #'S2.2.16'
     #isDeactivated(x, Third-party-consent(x, pat, id)) <-
     #	isDeactivated(y, Request-third-party-consent(x, pat, id)), other-third-party-consent-requests(n, y, x), n = 0
@@ -418,6 +453,7 @@ class Third_party(Role):
         #"PDS"@"PDS".hasActivated(z, Register-patient(x))
         pass
     
+    #untranslated:
     #'S2.2.11'
     #canDeactivate(x, x, Third-party()) <-
     #	
@@ -450,6 +486,7 @@ class Third_party_consent(Role):
         #hasActivated(y, Request-third-party-consent(x, pat, id))
         pass
 
+#untranslated:
 #'S2.2.17'
 #third-party-consent(group<consenter>, pat, id) <-
 #	hasActivated(x, Third-party-consent(consenter, pat, id))
@@ -468,26 +505,32 @@ class Request_consent_to_treatment(Role):
         	canActivate(self.pat, Patient())
         }
     
+    #untranslated:
     #'S2.3.2'
     #canDeactivate(cli1, cli1, Request-consent-to-treatment(pat, org2, cli2, spcty2)) <-
     #	hasActivated(cli1, Spine-clinician(ra1, org1, spcty1))
     
+    #untranslated:
     #'S2.3.3'
     #canDeactivate(cli2, cli1, Request-consent-to-treatment(pat, org2, cli2, spcty2)) <-
     #	hasActivated(cli2, Spine-clinician(ra2, org2, spcty2))
     
+    #untranslated:
     #'S2.3.4'
     #canDeactivate(pat, x, Request-consent-to-treatment(pat, org, cli, spcty)) <-
     #	hasActivated(pat, Patient())
     
+    #untranslated:
     #'S2.3.5'
     #canDeactivate(ag, x, Request-consent-to-treatment(pat, org, cli, spcty)) <-
     #	hasActivated(ag, Agent(pat))
     
+    #untranslated:
     #'S2.3.6'
     #canDeactivate(cli, x, Request-consent-to-treatment(pat, org, cli2, spcty)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, General-practitioner(pat))
     
+    #untranslated:
     #'S2.3.12'
     #isDeactivated(x, Consent-to-treatment(pat, org, cli, spcty)) <-
     #	isDeactivated(y, Request-consent-to-treatment(pat, org, cli, spcty)), other-consent-to-treatment-requests(n, y, pat, org, cli, spcty), n = 0
@@ -544,26 +587,32 @@ class Request_consent_to_group_treatment(Role):
         	canActivate(self.pat, Patient())
         }
     
+    #untranslated:
     #'S2.4.2'
     #canDeactivate(cli, cli, Request-consent-to-group-treatment(pat, org, group)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty))
     
+    #untranslated:
     #'S2.4.3'
     #canDeactivate(pat, x, Request-consent-to-group-treatment(pat, org, group)) <-
     #	hasActivated(pat, Patient())
     
+    #untranslated:
     #'S2.4.4'
     #canDeactivate(ag, x, Request-consent-to-group-treatment(pat, org, group)) <-
     #	hasActivated(ag, Agent(pat))
     
+    #untranslated:
     #'S2.4.5'
     #canDeactivate(cli, x, Request-consent-to-group-treatment(pat, org, group)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, General-practitioner(pat))
     
+    #untranslated:
     #'S2.4.6'
     #canDeactivate(cli, x, Request-consent-to-group-treatment(pat, org, group)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty)), ra@ra.canActivate(cli, Workgroup-member(org, group, spcty))
     
+    #untranslated:
     #'S2.4.12'
     #isDeactivated(x, Consent-to-group-treatment(pat, org, group)) <-
     #	isDeactivated(y, Request-consent-to-group-treatment(pat, org, group)), other-consent-to-group-treatment-requests(n, y, pat, org, group), n = 0
@@ -619,10 +668,12 @@ class Referrer(Role):
         	canActivate(subj, Treating_clinician(self.pat, role.org, role.spcty2))
         }
     
+    #untranslated:
     #'S3.1.2'
     #canDeactivate(cli1, cli1, Referrer(pat, org, cli2, spcty1)) <-
     #	
     
+    #untranslated:
     #'S3.1.3'
     #canDeactivate(pat, cli1, Referrer(pat, org, cli2, spcty1)) <-
     #	
@@ -641,6 +692,7 @@ class Spine_emergency_clinician(Role):
         	canActivate(self.pat, Patient())
         }
     
+    #untranslated:
     #'S3.2.2'
     #canDeactivate(cli, cli, Spine-emergency-clinician(org, pat)) <-
     #	
@@ -743,14 +795,17 @@ class Concealed_by_spine_clinician(Role):
         	canActivate(subj, Treating_clinician(self.pat, role.org, role.spcty))
         }
     
+    #untranslated:
     #'S4.1.2'
     #canDeactivate(cli, cli, Concealed-by-spine-clinician(pat, ids, start, end)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty))
     
+    #untranslated:
     #'S4.1.3'
     #canDeactivate(cli, cli2, Concealed-by-spine-clinician(pat, ids, start, end)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, General-practitioner(pat))
     
+    #untranslated:
     #'S4.1.4'
     #canDeactivate(cli1, cli2, Concealed-by-spine-clinician(pat, ids, start, end)) <-
     #	hasActivated(cli1, Spine-clinician(ra, org, spcty1)), canActivate(cli1, Group-treating-clinician(pat, ra, org, group, spcty1)), canActivate(cli2, Group-treating-clinician(pat, ra, org, group, spcty2)), hasActivated(x, Consent-to-group-treatment(pat, org, group))
@@ -786,18 +841,22 @@ class Conceal_request(Role):
         #n < 100
         pass
     
+    #untranslated:
     #'S4.2.3'
     #canDeactivate(pat, x, Conceal-request(what, whom, start, end)) <-
     #	hasActivated(pat, Patient()), pi7_1(what) = pat
     
+    #untranslated:
     #'S4.2.4'
     #canDeactivate(ag, x, Conceal-request(what, whom, start, end)) <-
     #	hasActivated(ag, Agent(pat)), pi7_1(what) = pat
     
+    #untranslated:
     #'S4.2.5'
     #canDeactivate(cli, x, Conceal-request(what, whom, start, end)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, General-practitioner(pat)), pi7_1(what) = pat
     
+    #untranslated:
     #'S4.2.11'
     #isDeactivated(cli, Concealed-by-spine-patient(what, who, start, end)) <-
     #	isDeactivated(x, Conceal-request(what, who, start, end))
@@ -821,10 +880,12 @@ class Concealed_by_spine_patient(Role):
         #hasActivated(x, Conceal-request(what, who, start, end))
         pass
     
+    #untranslated:
     #'S4.2.9'
     #canDeactivate(cli, cli, Concealed-by-spine-patient(what, who, start, end)) <-
     #	hasActivated(cli, Spine-clinician(ra, org, spcty))
     
+    #untranslated:
     #'S4.2.10'
     #canDeactivate(cli1, cli2, Concealed-by-spine-patient(what, who, start1, end1)) <-
     #	hasActivated(cli1, Spine-clinician(ra, org, spcty1)), ra@ra.canActivate(cli1, Group-treating-clinician(pat, ra, org, group, spcty1)), ra@ra.canActivate(cli2, Group-treating-clinician(pat, ra, org, group, spcty2))
@@ -881,14 +942,17 @@ class Authenticated_express_consent(Role):
         	canActivate(subj, General_practitioner(self.pat))
         }
     
+    #untranslated:
     #'S4.3.4'
     #canDeactivate(pat, x, Authenticated-express-consent(pat, cli)) <-
     #	hasActivated(pat, Patient())
     
+    #untranslated:
     #'S4.3.5'
     #canDeactivate(ag, x, Authenticated-express-consent(pat, cli)) <-
     #	hasActivated(ag, Agent(pat))
     
+    #untranslated:
     #'S4.3.6'
     #canDeactivate(cli1, x, Authenticated-express-consent(pat, cli2)) <-
     #	hasActivated(cli1, Spine-clinician(ra, org, spcty)), canActivate(cli1, General-practitioner(pat))
@@ -900,54 +964,67 @@ def count_authenticated_express_consent(pat): # S4.3.8
     	role.pat == pat
     })
 
+#untranslated:
 #'S5.1.1'
 #permits(cli, Add-spine-record-item(pat)) <-
 #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))
 
+#untranslated:
 #'S5.1.2'
 #permits(pat, Annotate-spine-record-item(pat, id)) <-
 #	hasActivated(pat, Patient())
 
+#untranslated:
 #'S5.1.3'
 #permits(ag, Annotate-spine-record-item(pat, id)) <-
 #	hasActivated(ag, Agent(pat))
 
+#untranslated:
 #'S5.1.4'
 #permits(pat, Annotate-spine-record-item(pat, id)) <-
 #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))
 
+#untranslated:
 #'S5.2.1'
 #permits(pat, Get-spine-record-item-ids(pat)) <-
 #	hasActivated(pat, Patient())
 
+#untranslated:
 #'S5.2.2'
 #permits(ag, Get-spine-record-item-ids(pat)) <-
 #	hasActivated(ag, Agent(pat))
 
+#untranslated:
 #'S5.2.3'
 #permits(cli, Get-spine-record-item-ids(pat)) <-
 #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))
 
+#untranslated:
 #'S5.3.1'
 #permits(pat, Read-spine-record-item(pat, id)) <-
 #	hasActivated(pat, Patient()), hasActivated(x, One-off-consent(pat)), count-concealed-by-spine-patient(n, a, b), count-concealed-by-spine-clinician(m, pat, id), third-party-consent(consenters, pat, id), n = 0, m = 0, a = (pat,id), b = ("No-org",pat,"No-spcty"), Get-spine-record-third-parties(pat, id) subseteq consenters
 
+#untranslated:
 #'S5.3.2'
 #permits(ag, Read-spine-record-item(pat, id)) <-
 #	hasActivated(ag, Agent(pat)), hasActivated(x, One-off-consent(pat)), count-concealed-by-spine-patient(n, a, b), count-concealed-by-spine-clinician(m, pat, id), third-party-consent(consenters, pat, id), n = 0, m = 0, a = (pat,id), b = ("No-org",ag,"No-spcty"), Get-spine-record-third-parties(pat, id) subseteq consenters
 
+#untranslated:
 #'S5.3.3'
 #permits(cli, Read-spine-record-item(pat, id)) <-
 #	hasActivated(cli, Spine-clinician(ra, org, spcty)), hasActivated(x, One-off-consent(pat)), Get-spine-record-org(pat, id) = org, Get-spine-record-author(pat, id) = cli
 
+#untranslated:
 #'S5.3.4'
 #permits(cli, Read-spine-record-item(pat, id)) <-
 #	hasActivated(cli, Spine-clinician(ra, org, spcty)), hasActivated(x, One-off-consent(pat)), canActivate(cli, Treating-clinician(pat, org, spcty)), count-concealed-by-spine-patient(n, a, b), n = 0, a = (pat,id), b = (org,cli,spcty), Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
 
+#untranslated:
 #'S5.3.5'
 #permits(cli, Read-spine-record-item(pat, id)) <-
 #	hasActivated(cli, Spine-clinician(ra, org, spcty)), hasActivated(x, One-off-consent(pat)), canActivate(cli, Treating-clinician(pat, org, spcty)), hasActivated(y, Authenticated-express-consent(pat, cli)), Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
 
+#untranslated:
 #'S5.3.6'
 #permits(cli, Force-read-spine-record-item(pat, id)) <-
 #	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))

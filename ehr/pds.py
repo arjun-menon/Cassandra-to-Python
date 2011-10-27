@@ -12,6 +12,7 @@ class PDS_manager(Role):
         	role.adm == adm
         }
     
+    #untranslated:
     #'P1.1.2'
     #canDeactivate(adm, adm, PDS-manager()) <-
     #	
@@ -35,10 +36,12 @@ class Register_PDS_manager(Role):
         	subj == adm1
         }
     
+    #untranslated:
     #'P1.1.6'
     #canDeactivate(adm1, x, Register-PDS-manager(adm2)) <-
     #	hasActivated(adm1, PDS-manager())
     
+    #untranslated:
     #'P1.1.3'
     #isDeactivated(adm, PDS-manager()) <-
     #	isDeactivated(x, Register-PDS-manager(adm))
@@ -61,6 +64,7 @@ class Patient(Role):
         	role.pat == pat
         }
     
+    #untranslated:
     #'P1.2.2'
     #canDeactivate(pat, pat, Patient()) <-
     #	
@@ -85,6 +89,7 @@ class Agent(Role):
         	canActivate(role.ag, Agent(self.pat))
         }
     
+    #untranslated:
     #'P1.3.2'
     #canDeactivate(ag, ag, Agent(pat)) <-
     #	
@@ -144,6 +149,7 @@ class Professional_user(Role):
         	Current_time() in vrange(role.start, role.end)
         }
     
+    #untranslated:
     #'P1.4.5'
     #canDeactivate(x, x, Professional-user(ra, org)) <-
     #	
@@ -155,6 +161,7 @@ def count_professional_user_activations(user): # P1.4.6
     	subj == user
     })
 
+#untranslated:
 #'P1.5.1'
 #no-main-role-active(user) <-
 #	count-agent-activations(n, user), count-patient-activations(n, user), count-PDS-manager-activations(n, user), count-professional-user-activations(n, user), n = 0
@@ -194,18 +201,22 @@ class Register_patient(Role):
         	subj == adm
         }
     
+    #untranslated:
     #'P2.1.2'
     #canDeactivate(adm, x, Register-patient(pat)) <-
     #	hasActivated(adm, PDS-manager())
     
+    #untranslated:
     #'P1.2.3'
     #isDeactivated(pat, Patient()) <-
     #	isDeactivated(x, Register-patient(pat))
     
+    #untranslated:
     #'P1.3.3'
     #isDeactivated(ag, Agent(pat)) <-
     #	isDeactivated(x, Register-patient(ag))
     
+    #untranslated:
     #'P1.3.4'
     #isDeactivated(ag, Agent(pat)) <-
     #	isDeactivated(x, Register-patient(pat))
@@ -217,30 +228,37 @@ def patient_regs(pat): # P2.1.3
     	role.pat == pat
     })
 
+#untranslated:
 #'P2.2.1'
 #canReqCred(pat, "PDS".hasActivated(x, Register-patient(pat))) <-
 #	hasActivated(pat, Patient())
 
+#untranslated:
 #'P2.2.2'
 #canReqCred(ag, "PDS".hasActivated(x, Register-patient(pat))) <-
 #	hasActivated(ag, Agent(pat))
 
+#untranslated:
 #'P2.2.3'
 #canReqCred(usr, "PDS".hasActivated(x, Register-patient(pat))) <-
 #	hasActivated(usr, Professional-user(ra, org))
 
+#untranslated:
 #'P2.2.4'
 #canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
 #	ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority())
 
+#untranslated:
 #'P2.2.5'
 #canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
 #	org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority())
 
+#untranslated:
 #'P2.2.5'
 #canReqCred(ra, "PDS".hasActivated(x, Register-patient(pat))) <-
 #	canActivate(ra, Registration-authority())
 
+#untranslated:
 #'P2.2.5'
 #canReqCred(spine, "PDS".hasActivated(x, Register-patient(pat))) <-
 #	spine = "Spine"

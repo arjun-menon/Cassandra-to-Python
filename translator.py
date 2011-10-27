@@ -252,7 +252,7 @@ def {func_name}({func_args}): # {rule_name}
         else:
             print(self.rule)
         
-        return "\n" + prefix_lines(repr(self.rule), "#") #temp
+        return untranslated(self.rule)
 
 ####################
 
@@ -389,13 +389,15 @@ def generate_outline(rules):
     
     return outline
 
+def untranslated(obj):
+    return "\n" + prefix_lines("untranslated:\n" + repr(obj), "#")
 
 def trans(obj):
     """Translate object by invoking the translate() method."""
     if hasattr(obj, "translate"):
         return obj.translate()
     else: # comment out the repr
-        return "\n" + prefix_lines(repr(obj), "#")
+        return untranslated(obj)
 
 def translate_rules(rules, rule_set):
     print("Translating %d rules in %s..." % (len(rules), rule_set) )

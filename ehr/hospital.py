@@ -13,18 +13,22 @@ class Register_clinician(Role):
         	subj == mgr
         }
     
+    #untranslated:
     #'A1.1.2'
     #canDeactivate(mgr, x, Register-clinician(cli, spcty)) <-
     #	hasActivated(mgr, HR-mgr())
     
+    #untranslated:
     #'A1.1.6'
     #isDeactivated(cli, Clinician(spcty)) <-
     #	isDeactivated(x, Register-clinician(cli, spcty))
     
+    #untranslated:
     #'A3.2.5'
     #isDeactivated(x, Register-team-member(mem, team, spcty)) <-
     #	isDeactivated(y, Register-clinician(mem, spcty))
     
+    #untranslated:
     #'A3.5.6'
     #isDeactivated(x, Register-ward-member(cli, ward, spcty)) <-
     #	isDeactivated(y, Register-clinician(cli, spcty))
@@ -50,10 +54,12 @@ class Clinician(Role):
         	role.cli == cli
         }
     
+    #untranslated:
     #'A1.1.5'
     #canDeactivate(cli, cli, Clinician(spcty)) <-
     #	
     
+    #untranslated:
     #'A3.7.5'
     #isDeactivated(x, Emergency-clinician(pat)) <-
     #	isDeactivated(x, Clinician(spcty))
@@ -77,10 +83,12 @@ class Register_Caldicott_guardian(Role):
         	subj == mgr
         }
     
+    #untranslated:
     #'A1.2.2'
     #canDeactivate(mgr, x, Register-Caldicott-guardian(cg)) <-
     #	hasActivated(mgr, HR-mgr())
     
+    #untranslated:
     #'A1.2.6'
     #isDeactivated(cg, Caldicott-guardian()) <-
     #	isDeactivated(x, Register-Caldicott-guardian(cg))
@@ -103,6 +111,7 @@ class Caldicott_guardian(Role):
         	role.cg == cg
         }
     
+    #untranslated:
     #'A1.2.5'
     #canDeactivate(cg, cg, Caldicott-guardian()) <-
     #	
@@ -126,10 +135,12 @@ class Register_HR_mgr(Role):
         	subj == mgr
         }
     
+    #untranslated:
     #'A1.3.2'
     #canDeactivate(mgr, x, Register-HR-mgr(mgr2)) <-
     #	hasActivated(mgr, HR-mgr())
     
+    #untranslated:
     #'A1.3.6'
     #isDeactivated(mgr, HR-mgr()) <-
     #	isDeactivated(x, Register-HR-mgr(mgr))
@@ -152,6 +163,7 @@ class HR_mgr(Role):
         	role.mgr == mgr
         }
     
+    #untranslated:
     #'A1.3.5'
     #canDeactivate(mgr, mgr, HR-mgr()) <-
     #	
@@ -175,10 +187,12 @@ class Register_receptionist(Role):
         	subj == mgr
         }
     
+    #untranslated:
     #'A1.4.2'
     #canDeactivate(mgr, x, Register-receptionist(rec)) <-
     #	hasActivated(mgr, HR-mgr())
     
+    #untranslated:
     #'A1.4.6'
     #isDeactivated(rec, Receptionist()) <-
     #	isDeactivated(x, Register-receptionist(rec)), no-main-role-active(rec)
@@ -201,6 +215,7 @@ class Receptionist(Role):
         	role.rec == rec
         }
     
+    #untranslated:
     #'A1.4.5'
     #canDeactivate(rec, rec, Receptionist()) <-
     #	
@@ -224,46 +239,57 @@ class Register_patient(Role):
         	subj == rec
         }
     
+    #untranslated:
     #'A1.5.2'
     #canDeactivate(rec, x, Register-patient(pat)) <-
     #	hasActivated(rec, Receptionist())
     
+    #untranslated:
     #'A1.5.6'
     #isDeactivated(pat, Patient()) <-
     #	isDeactivated(x, Register-patient(pat))
     
+    #untranslated:
     #'A1.6.9'
     #isDeactivated(x, Register-agent(agent, pat)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'A2.1.6'
     #isDeactivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'A2.3.10'
     #isDeactivated(x, Request-third-party-consent(x2, pat, id)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'A2.3.20'
     #isDeactivated(x, Third-party-consent(x, pat, id)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'A3.3.6'
     #isDeactivated(x, Register-team-episode(pat, team)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'A3.6.6'
     #isDeactivated(x, Register-ward-episode(pat, ward)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'A3.7.4'
     #isDeactivated(x, Emergency-clinician(pat)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'A4.1.5'
     #isDeactivated(x, Concealed-by-clinician(pat, id, start, end)) <-
     #	isDeactivated(y, Register-patient(pat))
     
+    #untranslated:
     #'A4.2.6'
     #isDeactivated(x, Concealed-by-patient(what, whom, start, end)) <-
     #	isDeactivated(y, Register-patient(pat)), pi7_1(what) = pat
@@ -286,6 +312,7 @@ class Patient(Role):
         #"PDS"@"PDS".hasActivated(y, Register-patient(pat))
         pass
     
+    #untranslated:
     #'A1.5.5'
     #canDeactivate(pat, pat, Patient()) <-
     #	
@@ -351,14 +378,17 @@ class Register_agent(Role):
         	canActivate(self.pat, Patient())
         }
     
+    #untranslated:
     #'A1.6.7'
     #canDeactivate(pat, pat, Register-agent(agent, pat)) <-
     #	hasActivated(pat, Patient())
     
+    #untranslated:
     #'A1.6.8'
     #canDeactivate(cg, x, Register-agent(agent, pat)) <-
     #	hasActivated(cg, Caldicott-guardian())
     
+    #untranslated:
     #'A1.6.3'
     #isDeactivated(ag, Agent(pat)) <-
     #	isDeactivated(x, Register-agent(ag, pat)), other-agent-regs(n, x, ag, pat), n = 0
@@ -372,6 +402,7 @@ def other_agent_regs(x, ag, pat): # A1.6.10
     	x != subj
     })
 
+#untranslated:
 #'A1.7.1'
 #no-main-role-active(user) <-
 #	count-agent-activations(n, user), count-caldicott-guardian-activations(n, user), count-clinician-activations(n, user), count-ext-treating-clinician-activations(n, user), count-hr-mgr-activations(n, user), count-patient-activations(n, user), count-receptionist-activations(n, user), count-third-party-activations(n, user), n = 0
@@ -399,6 +430,7 @@ class Registration_authority(Role):
         	Current_time() in vrange(role.start, role.end)
         }
 
+#untranslated:
 #'A1.7.4'
 #canReqCred(x, "RA-ADB".hasActivated(y, NHS-health-org-cert(org, start, end))) <-
 #	org = "ADB"
@@ -416,22 +448,27 @@ class Request_consent_to_referral(Role):
         	canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty1))
         }
     
+    #untranslated:
     #'A2.1.2'
     #canDeactivate(cli, cli, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
     #	hasActivated(cli, Clinician(spcty))
     
+    #untranslated:
     #'A2.1.3'
     #canDeactivate(pat, x, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
     #	hasActivated(pat, Patient())
     
+    #untranslated:
     #'A2.1.4'
     #canDeactivate(ag, x, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
     #	hasActivated(ag, Agent(pat))
     
+    #untranslated:
     #'A2.1.5'
     #canDeactivate(cg, x, Request-consent-to-referral(pat, ra, org, cli, spcty)) <-
     #	hasActivated(cg, Caldicott-guardian())
     
+    #untranslated:
     #'A2.1.11'
     #isDeactivated(x, Consent-to-referral(pat, ra, org, cli, spcty)) <-
     #	isDeactivated(y, Request-consent-to-referral(pat, ra, org, cli, spcty)), other-consent-to-referral-requests(n, y, pat, ra, org, cli, spcty), n = 0
@@ -474,6 +511,7 @@ class Consent_to_referral(Role):
         #hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
         pass
     
+    #untranslated:
     #'A2.2.4'
     #isDeactivated(cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
     #	isDeactivated(x, Consent-to-referral(pat, ra, org, cli2, spcty)), other-referral-consents(n, x, pat, ra, org, cli, spcty), n = 0
@@ -514,6 +552,7 @@ class Ext_treating_clinician(Role):
         #canActivate(ra, Registration-authority())
         pass
     
+    #untranslated:
     #'A2.2.3'
     #canDeactivate(cli, cli, Ext-treating-clinician(pat, ra, org, spcty)) <-
     #	
@@ -566,26 +605,32 @@ class Request_third_party_consent(Role):
         	self.x in Get_record_third_parties(self.pat, self.id)
         }
     
+    #untranslated:
     #'A2.3.5'
     #canDeactivate(pat, pat, Request-third-party-consent(x, pat, id)) <-
     #	hasActivated(pat, Patient())
     
+    #untranslated:
     #'A2.3.6'
     #canDeactivate(ag, ag, Request-third-party-consent(x, pat, id)) <-
     #	hasActivated(pat, Agent(pat))
     
+    #untranslated:
     #'A2.3.7'
     #canDeactivate(cli, cli, Request-third-party-consent(x, pat, id)) <-
     #	hasActivated(cli, Clinician(spcty))
     
+    #untranslated:
     #'A2.3.8'
     #canDeactivate(cg, x, Request-third-party-consent(y, pat, id)) <-
     #	hasActivated(cg, Caldicott-guardian())
     
+    #untranslated:
     #'A2.3.9'
     #canDeactivate(x, y, Request-third-party-consent(x, pat, id)) <-
     #	hasActivated(x, Third-party())
     
+    #untranslated:
     #'A2.3.15'
     #isDeactivated(x, Third-party()) <-
     #	isDeactivated(y, Request-third-party-consent(x, pat, id)), other-third-party-requests(n, y, x), n = 0
@@ -608,6 +653,7 @@ class Third_party(Role):
         #"PDS"@"PDS".hasActivated(z, Register-patient(x))
         pass
     
+    #untranslated:
     #'A2.3.13'
     #canDeactivate(x, x, Third-party()) <-
     #	
@@ -640,14 +686,17 @@ class Third_party_consent(Role):
         #hasActivated(y, Request-third-party-consent(x, pat, id))
         pass
     
+    #untranslated:
     #'A2.3.18'
     #canDeactivate(x, x, Third-party-consent(x, pat, id)) <-
     #	hasActivated(x, Third-party())
     
+    #untranslated:
     #'A2.3.19'
     #canDeactivate(cg, x, Third-party-consent(x, pat, id)) <-
     #	hasActivated(cg, Caldicott-guardian())
 
+#untranslated:
 #'A2.3.21'
 #third-party-consent(group<consenter>, pat, id) <-
 #	hasActivated(x, Third-party-consent(consenter, pat, id))
@@ -665,6 +714,7 @@ class Head_of_team(Role):
         	role.team == self.team
         }
     
+    #untranslated:
     #'A3.1.2'
     #canDeactivate(hd, hd, Head-of-team(team)) <-
     #	
@@ -682,10 +732,12 @@ class Register_head_of_team(Role):
         #n = 0
         pass
     
+    #untranslated:
     #'A3.1.5'
     #canDeactivate(mgr, x, Register-head-of-team(hd, team)) <-
     #	hasActivated(mgr, HR-mgr())
     
+    #untranslated:
     #'A3.1.3'
     #isDeactivated(hd, Head-of-team(team)) <-
     #	isDeactivated(x, Register-head-of-team(hd, team))
@@ -723,18 +775,22 @@ class Register_team_member(Role):
         	canActivate(self.mem, Clinician(self.spcty))
         }
     
+    #untranslated:
     #'A3.2.3'
     #canDeactivate(mgr, x, Register-team-member(mem, team, spcty)) <-
     #	hasActivated(mgr, HR-mgr())
     
+    #untranslated:
     #'A3.2.4'
     #canDeactivate(hd, x, Register-team-member(mem, team, spcty)) <-
     #	hasActivated(hd, Clinician(spcty2)), canActivate(hd, Head-of-team(team))
     
+    #untranslated:
     #'A3.1.6'
     #isDeactivated(x, Register-head-of-team(hd, team)) <-
     #	isDeactivated(y, Register-team-member(hd, team, spcty))
 
+#untranslated:
 #'A3.2.6'
 #canReqCred(ra, "ADB".Register-team-member(cli, tea, spcty)) <-
 #	ra = "RA-ADB"
@@ -773,14 +829,17 @@ class Register_team_episode(Role):
         #n = 0
         pass
     
+    #untranslated:
     #'A3.3.3'
     #canDeactivate(cg, x, Register-team-episode(pat, team)) <-
     #	hasActivated(cg, Caldicott-guardian())
     
+    #untranslated:
     #'A3.3.4'
     #canDeactivate(rec, x, Register-team-episode(pat, team)) <-
     #	hasActivated(rec, Receptionist())
     
+    #untranslated:
     #'A3.3.5'
     #canDeactivate(cli, x, Register-team-episode(pat, team)) <-
     #	hasActivated(cli, Clinician(spcty)), hasActivated(x, Register-team-member(cli, team, spcty))
@@ -806,6 +865,7 @@ class Head_of_ward(Role):
         	role.cli == cli
         }
     
+    #untranslated:
     #'A3.4.2'
     #canDeactivate(cli, cli, Head-of-ward(ward)) <-
     #	
@@ -823,10 +883,12 @@ class Register_head_of_ward(Role):
         #n = 0
         pass
     
+    #untranslated:
     #'A3.4.5'
     #canDeactivate(mgr, x, Register-head-of-ward(cli, ward)) <-
     #	hasActivated(mgr, HR-mgr())
     
+    #untranslated:
     #'A3.4.3'
     #isDeactivated(cli, Head-of-ward(ward)) <-
     #	isDeactivated(x, Register-head-of-ward(cli, ward))
@@ -864,18 +926,22 @@ class Register_ward_member(Role):
         	canActivate(subj, Clinician(self.spcty))
         }
     
+    #untranslated:
     #'A3.5.3'
     #canDeactivate(mgr, x, Register-ward-member(cli, ward, spcty)) <-
     #	hasActivated(mgr, HR-mgr())
     
+    #untranslated:
     #'A3.5.4'
     #canDeactivate(hd, x, Register-ward-member(cli, ward, spcty)) <-
     #	hasActivated(hd, Clinician(spcty2)), canActivate(hd, Head-of-ward(ward))
     
+    #untranslated:
     #'A3.4.6'
     #isDeactivated(x, Register-head-of-ward(cli, ward)) <-
     #	isDeactivated(y, Register-ward-member(cli, ward, spcty))
 
+#untranslated:
 #'A3.5.5'
 #canReqCred(ra, "ADB".Register-ward-member(cli, ward, spcty)) <-
 #	ra = "RA-ADB"
@@ -914,14 +980,17 @@ class Register_ward_episode(Role):
         	canActivate(self.pat, Patient())
         }
     
+    #untranslated:
     #'A3.6.3'
     #canDeactivate(cg, x, Register-ward-episode(pat, ward)) <-
     #	hasActivated(cg, Caldicott-guardian())
     
+    #untranslated:
     #'A3.6.4'
     #canDeactivate(rec, x, Register-ward-episode(pat, ward)) <-
     #	hasActivated(rec, Receptionist())
     
+    #untranslated:
     #'A3.6.5'
     #canDeactivate(hd, x, Register-ward-episode(pat, ward)) <-
     #	hasActivated(hd, Clinician(spcty)), canActivate(hd, Head-of-ward(ward))
@@ -947,14 +1016,17 @@ class Emergency_clinician(Role):
         	canActivate(self.pat, Patient())
         }
     
+    #untranslated:
     #'A3.7.2'
     #canDeactivate(cli, cli, Emergency-clinician(pat)) <-
     #	
     
+    #untranslated:
     #'A3.7.3'
     #canDeactivate(cg, cli, Emergency-clinician(pat)) <-
     #	hasActivated(cg, Caldicott-guardian())
 
+#untranslated:
 #'A3.7.6'
 #is-emergency-clinician(group<x>, pat) <-
 #	hasActivated(x, Emergency-clinician(pat))
@@ -1006,14 +1078,17 @@ class Concealed_by_clinician(Role):
         	canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
         }
     
+    #untranslated:
     #'A4.1.2'
     #canDeactivate(cli, cli, Concealed-by-clinician(pat, id, start, end)) <-
     #	hasActivated(cli, Clinician(spcty))
     
+    #untranslated:
     #'A4.1.3'
     #canDeactivate(cli1, cli2, Concealed-by-clinician(pat, id, start, end)) <-
     #	hasActivated(cli1, Clinician(spcty1)), canActivate(cli1, ADB-treating-clinician(pat, group, spcty1)), canActivate(cli2, ADB-treating-clinician(pat, group, spcty2))
     
+    #untranslated:
     #'A4.1.4'
     #canDeactivate(cg, cli, Concealed-by-clinician(pat, id, start, end)) <-
     #	hasActivated(cg, Caldicott-guardian())
@@ -1053,14 +1128,17 @@ class Concealed_by_patient(Role):
         #n < 100
         pass
     
+    #untranslated:
     #'A4.2.3'
     #canDeactivate(pat, x, Concealed-by-patient(what, whom, start, end)) <-
     #	hasActivated(pat, Patient()), pi7_1(what) = pat
     
+    #untranslated:
     #'A4.2.4'
     #canDeactivate(ag, x, Concealed-by-patient(what, whom, start, end)) <-
     #	hasActivated(ag, Agent(pat)), pi7_1(what) = pat
     
+    #untranslated:
     #'A4.2.5'
     #canDeactivate(cg, x, Concealed-by-patient(what, whom, start, end)) <-
     #	hasActivated(cg, Caldicott-guardian())
@@ -1093,66 +1171,82 @@ def count_concealed_by_patient2(a, b): # A4.2.8
     #Current-time() in [start, end]
     pass
 
+#untranslated:
 #'A5.1.1'
 #permits(cli, Add-record-item(pat)) <-
 #	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty))
 
+#untranslated:
 #'A5.1.2'
 #permits(cli, Add-record-item(pat)) <-
 #	hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty))
 
+#untranslated:
 #'A5.1.3'
 #permits(ag, Annotate-record-item(pat, id)) <-
 #	hasActivated(ag, Agent(pat))
 
+#untranslated:
 #'A5.1.4'
 #permits(pat, Annotate-record-item(pat, id)) <-
 #	hasActivated(pat, Patient())
 
+#untranslated:
 #'A5.1.5'
 #permits(pat, Annotate-record-item(pat, id)) <-
 #	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty))
 
+#untranslated:
 #'A5.2.1'
 #permits(pat, Get-record-item-ids(pat)) <-
 #	hasActivated(pat, Patient())
 
+#untranslated:
 #'A5.2.2'
 #permits(ag, Get-record-item-ids(pat)) <-
 #	hasActivated(ag, Agent(pat))
 
+#untranslated:
 #'A5.2.3'
 #permits(cli, Get-record-item-ids(pat)) <-
 #	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty))
 
+#untranslated:
 #'A5.3.1'
 #permits(ag, Read-record-item(pat, id)) <-
 #	hasActivated(ag, Agent(pat)), count-concealed-by-patient2(n, a, b), count-concealed-by-clinician(m, pat, id), third-party-consent(consenters, pat, id), a = (pat,id), b = ("No-org",ag,"No-group","No-spcty"), n = 0, m = 0, Get-record-third-parties(pat, id) subseteq consenters
 
+#untranslated:
 #'A5.3.2'
 #permits(cli, Read-record-item(pat, id)) <-
 #	hasActivated(cli, Clinician(spcty)), Get-record-author(pat, id) = cli
 
+#untranslated:
 #'A5.3.3'
 #permits(cli, Read-record-item(pat, id)) <-
 #	hasActivated(cli, Clinician(spcty)), hasActivated(x, Register-team-member(cli, team, spcty)), Get-record-group(pat, id) = team
 
+#untranslated:
 #'A5.3.4'
 #permits(cli, Read-record-item(pat, id)) <-
 #	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty)), count-concealed-by-patient2(n, a, b), n = 0, a = (pat,id), b = ("ADB",cli,group,spcty), Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
 
+#untranslated:
 #'A5.3.5'
 #permits(cli, Read-record-item(pat, id)) <-
 #	hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty)), count-concealed-by-patient2(n, a, b), n = 0, a = (pat,id), b = (org,cli,"Ext-group",spcty), Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
 
+#untranslated:
 #'A5.3.6'
 #permits(pat, Read-record-item(pat, id)) <-
 #	hasActivated(pat, Patient()), count-concealed-by-patient2(n, a, b), count-concealed-by-clinician(m, pat, id), third-party-consent(consenters, pat, id), n = 0, m = 0, a = (pat,id), b = ("No-org",pat,"No-group","No-spcty"), Get-record-third-parties(pat, id) subseteq consenters
 
+#untranslated:
 #'A5.3.7'
 #permits(cg, Force-read-record-item(pat, id)) <-
 #	hasActivated(cg, Caldicott-guardian())
 
+#untranslated:
 #'A5.3.8'
 #permits(cli, Force-read-record-item(pat, id)) <-
 #	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty))
