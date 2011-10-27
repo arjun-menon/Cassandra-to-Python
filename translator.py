@@ -207,48 +207,9 @@ class HypothesesTranslator(object):
             #print(conditionals)
             
             if len(conditionals):
-                #tr += " and "
                 tr += " and \n\t".join(conditionals)
             
             return tr + "\n}"
-            
-            #bindings = []
-            
-            #bindings.extend(map(self.build_constraint_bindings, ctrs))
-            
-            #bindings.extend(map(self.build_canAc_bindings, canAcs))
-            
-            #bindings.extend(self.build_param_bindings(self.role_params))
-            
-#            if any_eq(None, bindings):
-#                # this means there is a constraint that couldn't be translated.
-#                # when a constraint is not translated, None is returned by the translating function
-#                raise StopTranslating("couldn't build bindings")
-#            
-#            nc_hypos = [h for h in self.rule.hypos if type(h) != Constraint]  # non-constraint hypos
-#            
-#            def print_bindings():
-#                print()
-#                print(self.rule.name)
-#                print("------")
-#                for b in bindings:
-#                    vars, func = b
-#                    print(vars, " -->", func())
-#                print("=====")
-#                print()
-#            
-#            #print_bindings()
-#            
-#            # Now translate:
-#            tr = []
-#            for h in nc_hypos:
-#                
-#                if h.name == "hasActivated":
-#                    tr.append( self.translate_hasActivated(h, bindings) )
-#                else:
-#                    tr.append( h2u(repr(h)) )
-#            
-#            return "return\\\n" + ' and\\\n'.join(tr)
         
         except StopTranslating as st:
             #print(self.rule.name + " was not translated.")
