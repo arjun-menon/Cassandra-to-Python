@@ -411,7 +411,7 @@ class RoleClass(object):
 def {cat}(self, *params):
     return {or_calls}
 """.format(cat = category, 
-           or_calls = " or ".join("self.canDeactivate_%d(*params)" % i for i in list(range(1, len(rules) + 1)))
+           or_calls = " or ".join("self.%s_%d(*params)" % (category, i) for i in list(range(1, len(rules) + 1)))
            ) + "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(rules))), rules) )
         
         return tab(translation)

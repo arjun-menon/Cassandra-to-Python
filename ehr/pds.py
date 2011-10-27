@@ -110,7 +110,7 @@ class Professional_user(Role):
         self.ra, self.org = ra, org
     
     def canActivate(self, *params):
-        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params) or self.canDeactivate_4(*params)
+        return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, x): # P1.4.1
         return {
@@ -177,7 +177,7 @@ class Registration_authority(Role):
         super().__init__('Registration-authority', []) 
     
     def canActivate(self, *params):
-        return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # P1.5.2
         return {
