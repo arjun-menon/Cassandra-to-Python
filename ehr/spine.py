@@ -978,19 +978,23 @@ class Conceal_request(Role):
         return self.canDeactivate_1(*params) or self.canDeactivate_2(*params) or self.canDeactivate_3(*params)
     
     def canDeactivate_1(self, pat, x): # S4.2.3
-        #todo: could not translate constraint: pi7_1(what) = pat
-        #hasActivated(pat, Patient())
-        #pi7_1(what) = pat
-        pass
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Patient" and 
+        	subj == pat and 
+        	pi7_1(self.what) == subj
+        }
     
     def canDeactivate_2(self, ag, x): # S4.2.4
-        #todo: could not translate constraint: pi7_1(what) = pat
-        #hasActivated(ag, Agent(pat))
-        #pi7_1(what) = pat
-        pass
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Agent" and 
+        	subj == ag and 
+        	pi7_1(self.what) == role.pat
+        }
     
     def canDeactivate_3(self, cli, x): # S4.2.5
-        #todo: could not translate constraint: pi7_1(what) = pat
+        #todo: unable to bind vars {'pat'} in constraint pi7_1(self.what) == pat
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, General-practitioner(pat))
         #pi7_1(what) = pat

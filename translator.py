@@ -110,6 +110,11 @@ class HypothesesTranslator(object):
 
             elif type(c.left) == Variable and type(c.right) == Variable:
                 return self.substitution_func_gen([cl, cr], p(cl) + ' ' + op + ' ' + p(cr))
+            
+            elif type(c.left) == Function and type(c.right) == Variable:
+                func_name, func_args = c.left.name, [str(a) for a in c.left.args]
+                return self.substitution_func_gen([cr]+func_args, func_name + 
+                            '(' + ", ".join(p(a) for a in func_args) + ') ' + op + ' ' + p(cr))
         
         raise StopTranslating("could not translate constraint: " + repr(c))
     
@@ -126,7 +131,7 @@ class HypothesesTranslator(object):
     
     
     @typecheck
-    def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str=''):
+    def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str='') -> lambda t: t:
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
                                                   lambda h: type(h) == Constraint, 
@@ -244,7 +249,7 @@ class HypothesesTranslator(object):
             
             for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
                 if(ctr_vars):
-                    raise StopIteration("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func))
+                    raise StopTranslating("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func()))
                 else:
                     conditionals.append( ctr_cond_func() )
             
