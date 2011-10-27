@@ -352,9 +352,15 @@ class FuncRule(HypothesesTranslator):
                 if self.rule.hypos[0].name == SpecialPredicates.hasAc:
                     self.kind = 'count'
                     CountFunctions.funcs.append(self.rule.concl.name)
+        
+        if self.rule.concl.name == "no-main-role-active":
+            self.kind = 'nmra'
+    
+    def nmra_trans_hypo(self):
+        return untranslated(self.rule)
     
     def translate(self):
-        if self.kind == 'count':
+        if self.kind == 'count' or self.kind == 'nmra':
             args = [repr(a) for a in self.rule.concl.args[1:]]
             
             self.external_vars = { a:a for a in args }
@@ -367,8 +373,8 @@ def {func_name}({func_args}): # {rule_name}
                 ,func_args = ", ".join(args)
                 ,hypotheses_translation = tab(self.translate_hypotheses( ["len(" , ")"] ))
                 )
-        
-        #print(self.rule)
+               
+        print(self.rule)
         return untranslated(self.rule)
 
 ####################

@@ -167,10 +167,14 @@ def count_professional_user_activations(user): # P1.4.6
     	subj == user
     })
 
-#untranslated:
-#'P1.5.1'
-#no-main-role-active(user) <-
-#	count-agent-activations(n, user), count-patient-activations(n, user), count-PDS-manager-activations(n, user), count-professional-user-activations(n, user), n = 0
+def no_main_role_active(): # P1.5.1
+    #todo: a rule with no hasActivates
+    #count-agent-activations(n, user)
+    #count-patient-activations(n, user)
+    #count-PDS-manager-activations(n, user)
+    #count-professional-user-activations(n, user)
+    #n = 0
+    pass
 
 class Registration_authority(Role):
     def __init__(self):

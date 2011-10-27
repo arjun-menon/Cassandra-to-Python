@@ -342,10 +342,15 @@ class Registration_authority(Role):
         	Current_time() in vrange(role.start, role.end)
         }
 
-#untranslated:
-#'S1.5.3'
-#no-main-role-active(user) <-
-#	count-agent-activations(n, user), count-spine-clinician-activations(n, user), count-spine-admin-activations(n, user), count-patient-activations(n, user), count-third-party-activations(n, user), n = 0
+def no_main_role_active(): # S1.5.3
+    #todo: a rule with no hasActivates
+    #count-agent-activations(n, user)
+    #count-spine-clinician-activations(n, user)
+    #count-spine-admin-activations(n, user)
+    #count-patient-activations(n, user)
+    #count-third-party-activations(n, user)
+    #n = 0
+    pass
 
 class One_off_consent(Role):
     def __init__(self, pat):

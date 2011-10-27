@@ -432,10 +432,18 @@ def other_agent_regs(x, ag, pat): # A1.6.10
     	x != subj
     })
 
-#untranslated:
-#'A1.7.1'
-#no-main-role-active(user) <-
-#	count-agent-activations(n, user), count-caldicott-guardian-activations(n, user), count-clinician-activations(n, user), count-ext-treating-clinician-activations(n, user), count-hr-mgr-activations(n, user), count-patient-activations(n, user), count-receptionist-activations(n, user), count-third-party-activations(n, user), n = 0
+def no_main_role_active(): # A1.7.1
+    #todo: a rule with no hasActivates
+    #count-agent-activations(n, user)
+    #count-caldicott-guardian-activations(n, user)
+    #count-clinician-activations(n, user)
+    #count-ext-treating-clinician-activations(n, user)
+    #count-hr-mgr-activations(n, user)
+    #count-patient-activations(n, user)
+    #count-receptionist-activations(n, user)
+    #count-third-party-activations(n, user)
+    #n = 0
+    pass
 
 class Registration_authority(Role):
     def __init__(self):
