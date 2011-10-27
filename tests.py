@@ -1,5 +1,7 @@
 from translator import *
 
+rules = rules_collections[0][1] + rules_collections[1][1] + rules_collections[2][1] + rules_collections[3][1]
+
 def func_hypos():
     """This test shows only 3 special predicates appear in hypos, 
     and all other non-constraint predicates are function calls."""
@@ -18,7 +20,7 @@ def func_hypos():
     for i in hy:
         print(i)
 
-func_hypos()
+#func_hypos()
 
 def hasActivated_in_hypos():
     "Count and print number of hasActivated hypotheses in each rule."
@@ -43,11 +45,18 @@ def which_have_canAc_hypos():
 
 #which_have_canAc_hypos()
 
-def print_special_pred():
+def count_rule_kinds():
+    c = lambda name: print(str(name) + ": " + str(len([r for r in rules if r.concl.name == name])))
+    list(map(c, special_predicates[1:]))
+    print("funcs: " + str(len([r for r in rules if r.concl.name not in special_predicates[1:]])))
+    
+#count_rule_kinds()
+
+def print_func_rules():
     for i in (r for r in rules if r.concl.name not in special_predicates):
         print(i)
         
-#print_special_pred()
+print_func_rules()
 
 def repl(): # use python's quit() to break out
     while True:

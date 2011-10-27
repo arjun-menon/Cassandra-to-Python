@@ -90,7 +90,7 @@ class HypothesesTranslator(object):
             elif type(c.left) == Variable and type(c.right) == Variable:
                 return self.substitution_func_gen([cl, cr], p(cl) + ' ' + op + ' ' + p(cr))
         
-        raise StopTranslating("could not form bindings for constraint: " + repr(c))
+        raise StopTranslating("could not translate constraint: " + repr(c))
     
     
     def build_canAc_bindings(self, canAc):

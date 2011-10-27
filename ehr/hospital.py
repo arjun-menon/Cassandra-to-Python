@@ -466,25 +466,25 @@ class Request_third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, pat): # A2.3.1
-        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
+        #todo: could not translate constraint: x in Get-record-third-parties(pat, id)
         #hasActivated(pat, Patient())
         #x in Get-record-third-parties(pat, id)
         pass
     
     def canActivate_2(self, ag): # A2.3.2
-        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
+        #todo: could not translate constraint: x in Get-record-third-parties(pat, id)
         #hasActivated(ag, Agent(pat))
         #x in Get-record-third-parties(pat, id)
         pass
     
     def canActivate_3(self, cli): # A2.3.3
-        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
+        #todo: could not translate constraint: x in Get-record-third-parties(pat, id)
         #hasActivated(cli, Clinician(spcty))
         #x in Get-record-third-parties(pat, id)
         pass
     
     def canActivate_4(self, cg): # A2.3.4
-        #todo: could not form bindings for constraint: x in Get-record-third-parties(pat, id)
+        #todo: could not translate constraint: x in Get-record-third-parties(pat, id)
         #hasActivated(cg, Caldicott-guardian())
         #x in Get-record-third-parties(pat, id)
         pass
@@ -909,7 +909,7 @@ class Concealed_by_patient(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # A4.2.1
-        #todo: could not form bindings for constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
+        #todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
         #hasActivated(pat, Patient())
         #count-concealed-by-patient(n, pat)
         #what = (pat,ids,authors,groups,subjects,from-time,to-time)
@@ -918,7 +918,7 @@ class Concealed_by_patient(Role):
         pass
     
     def canActivate_2(self, ag): # A4.2.2
-        #todo: could not form bindings for constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
+        #todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
         #hasActivated(ag, Agent(pat))
         #count-concealed-by-patient(n, pat)
         #what = (pat,ids,authors,groups,subjects,from-time,to-time)
