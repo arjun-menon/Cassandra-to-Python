@@ -6,11 +6,11 @@ class PDS_manager(Role):
         super().__init__('PDS-manager', []) 
     
     def canActivate(self, adm): # P1.1.1
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "Register-PDS-manager" and 
         	role.adm == adm
-        })
+        }
     
     #'P1.1.2'
     #canDeactivate(adm, adm, PDS-manager()) <-
@@ -18,8 +18,9 @@ class PDS_manager(Role):
 
 def count_PDS_manager_activations(user): # P1.1.4
     return len({
-    	u for u, role in hasActivated if 
-    	role.name == "PDS-manager"
+    	1 for subj, role in hasActivated if 
+    	role.name == "PDS-manager" and 
+    	subj == user
     })
 
 class Register_PDS_manager(Role):
@@ -28,10 +29,11 @@ class Register_PDS_manager(Role):
         self.adm2 = adm2
     
     def canActivate(self, adm1): # P1.1.5
-        return len({
-        	adm1 for adm1, role in hasActivated if 
-        	role.name == "PDS-manager"
-        })
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "PDS-manager" and 
+        	subj == adm1
+        }
     
     #'P1.1.6'
     #canDeactivate(adm1, x, Register-PDS-manager(adm2)) <-
@@ -43,7 +45,7 @@ class Register_PDS_manager(Role):
 
 def pds_admin_regs(adm): # P1.1.7
     return len({
-    	x for x, role in hasActivated if 
+    	1 for subj, role in hasActivated if 
     	role.name == "Register-PDS-manager" and 
     	role.adm == adm
     })
@@ -53,11 +55,11 @@ class Patient(Role):
         super().__init__('Patient', []) 
     
     def canActivate(self, pat): # P1.2.1
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "Register-patient" and 
         	role.pat == pat
-        })
+        }
     
     #'P1.2.2'
     #canDeactivate(pat, pat, Patient()) <-
@@ -65,8 +67,9 @@ class Patient(Role):
 
 def count_patient_activations(user): # P1.2.4
     return len({
-    	u for u, role in hasActivated if 
-    	role.name == "Patient"
+    	1 for subj, role in hasActivated if 
+    	role.name == "Patient" and 
+    	subj == user
     })
 
 class Agent(Role):
@@ -75,12 +78,12 @@ class Agent(Role):
         self.pat = pat
     
     def canActivate(self, ag): # P1.3.1
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "Register-patient" and 
         	role.ag == ag and 
         	canActivate(role.ag, Agent(self.pat))
-        })
+        }
     
     #'P1.3.2'
     #canDeactivate(ag, ag, Agent(pat)) <-
@@ -88,8 +91,9 @@ class Agent(Role):
 
 def count_agent_activations(user): # P1.3.5
     return len({
-    	u for u, role in hasActivated if 
-    	role.name == "Agent"
+    	1 for subj, role in hasActivated if 
+    	role.name == "Agent" and 
+    	subj == user
     })
 
 class Professional_user(Role):
@@ -101,36 +105,44 @@ class Professional_user(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
     
     def canActivate_1(self, x): # P1.4.1
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "NHS-clinician-cert" and 
         	role.org == self.org and 
-        	canActivate(self.ra, Registration_authority())
-        })
+        	subj == x and 
+        	canActivate(self.ra, Registration_authority()) and 
+        	Current_time() in vrange(role.start, role.end)
+        }
     
     def canActivate_2(self, x): # P1.4.2
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "NHS-clinician-cert" and 
         	role.org == self.org and 
-        	canActivate(self.ra, Registration_authority())
-        })
+        	subj == x and 
+        	canActivate(self.ra, Registration_authority()) and 
+        	Current_time() in vrange(role.start, role.end)
+        }
     
     def canActivate_3(self, x): # P1.4.3
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "NHS-Caldicott-guardian-cert" and 
         	role.org == self.org and 
-        	canActivate(self.ra, Registration_authority())
-        })
+        	subj == x and 
+        	canActivate(self.ra, Registration_authority()) and 
+        	Current_time() in vrange(role.start, role.end)
+        }
     
     def canActivate_4(self, x): # P1.4.4
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "NHS-Caldicott-guardian-cert" and 
         	role.org == self.org and 
-        	canActivate(self.ra, Registration_authority())
-        })
+        	subj == x and 
+        	canActivate(self.ra, Registration_authority()) and 
+        	Current_time() in vrange(role.start, role.end)
+        }
     
     #'P1.4.5'
     #canDeactivate(x, x, Professional-user(ra, org)) <-
@@ -138,8 +150,9 @@ class Professional_user(Role):
 
 def count_professional_user_activations(user): # P1.4.6
     return len({
-    	u for u, role in hasActivated if 
-    	role.name == "Professional-user"
+    	1 for subj, role in hasActivated if 
+    	role.name == "Professional-user" and 
+    	subj == user
     })
 
 #'P1.5.1'
@@ -154,18 +167,20 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # P1.5.2
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
-        	role.ra == ra
-        })
+        	role.ra == ra and 
+        	Current_time() in vrange(role.start, role.end)
+        }
     
     def canActivate_2(self, ra): # P1.5.3
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
-        	role.ra == ra
-        })
+        	role.ra == ra and 
+        	Current_time() in vrange(role.start, role.end)
+        }
 
 class Register_patient(Role):
     def __init__(self, pat):
@@ -173,10 +188,11 @@ class Register_patient(Role):
         self.pat = pat
     
     def canActivate(self, adm): # P2.1.1
-        return len({
-        	adm for adm, role in hasActivated if 
-        	role.name == "PDS-manager"
-        })
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "PDS-manager" and 
+        	subj == adm
+        }
     
     #'P2.1.2'
     #canDeactivate(adm, x, Register-patient(pat)) <-
@@ -196,7 +212,7 @@ class Register_patient(Role):
 
 def patient_regs(pat): # P2.1.3
     return len({
-    	x for x, role in hasActivated if 
+    	1 for subj, role in hasActivated if 
     	role.name == "Register-patient" and 
     	role.pat == pat
     })

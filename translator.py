@@ -60,7 +60,6 @@ class HypothesesTranslator(object):
         if c.op == 'in':
 
             if type(c.right) == Range and type(c.right.start) == Variable and type(c.right.end) == Variable:
-
                 # it's of the form "something in [lower, upper]"
                 lower, upper = h2u(c.right.start.name), h2u(c.right.end.name)
                 
@@ -78,8 +77,17 @@ class HypothesesTranslator(object):
                     vn = h2u(repr(c.left))
                     
                     return self.substitution_func_gen([vn, lower, upper], "{%s} in vrange({%s}, {%s})" % (vn, lower, upper))
+                
+            elif type(c.right) == Function:
+                func_name = h2u(str(c.right.name))
+                func_args = [repr(arg) for arg in c.right.args]
+                
+                if type(c.left) == Variable:
+                    vn = h2u(repr(c.left))
+                    return self.substitution_func_gen( [vn] + func_args, 
+                        "{%s} in %s" % (vn, func_name) + '(' + ', '.join('{'+a+'}' for a in func_args) + ')')                    
         
-        elif c.op == '=' or c.op == '<':
+        elif c.op == '=' or c.op == '<' or c.op == '!=':
 
             op = "==" if c.op == '=' else c.op
             
@@ -104,43 +112,41 @@ class HypothesesTranslator(object):
             p(bound_vars[0]), h2u(role.name), ", ".join(p(v) for v in bound_vars[1:])
             ) )
     
+#    def translate_hasActivated(self, hasAc, bindings):
+#        subj, role = hasAc.args
+#        subj = repr(subj)
+#
+#        def build_if_condition(params, bindings):
+#            conds = []
+#
+#            for b in bindings:
+#                variables, func = b
+#                
+#                if variables == {subj}:
+#                    #print('yes')
+#                    conds.append( func( { subj : 'subject' } ) )                    
+#                
+#                intersection = params & variables
+#                if intersection:
+#                    if intersection != variables:
+#                        raise StopTranslating(repr(variables) + " variables in constraint: no match in " + repr(params))
+#                    conds.append( func( {v:'role.'+v for v in variables} ) )
+#
+#            return " and ".join(conds)
+#
+#        if_conds = build_if_condition({repr(arg) for arg in role.args}, bindings)
+#
+#        #print(subj, role, "-->", {repr(arg) for arg in role.args})
+#
+#        return Template(
+#"""{ (subject, role) for subject, role in hasActivated if role.name == "${role_name}"${if_conds} }"""
+#        ).substitute\
+#        (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
+#    
+#    def analyze_hasAcs(self, hasAcs):
+#        pass
     
-    def translate_hasActivated(self, hasAc, bindings):
-        subj, role = hasAc.args
-        subj = repr(subj)
-
-        def build_if_condition(params, bindings):
-            conds = []
-
-            for b in bindings:
-                variables, func = b
-                
-                if variables == {subj}:
-                    #print('yes')
-                    conds.append( func( { subj : 'subject' } ) )                    
-                
-                intersection = params & variables
-                if intersection:
-                    if intersection != variables:
-                        raise StopTranslating(repr(variables) + " variables in constraint: no match in " + repr(params))
-                    conds.append( func( {v:'role.'+v for v in variables} ) )
-
-            return " and ".join(conds)
-
-        if_conds = build_if_condition({repr(arg) for arg in role.args}, bindings)
-
-        #print(subj, role, "-->", {repr(arg) for arg in role.args})
-
-        return Template(
-"""{ (subject, role) for subject, role in hasActivated if role.name == "${role_name}"${if_conds} }"""
-        ).substitute\
-        (role_name = role.name, if_conds = " and " + if_conds if len(if_conds) else "")
-    
-    def analyze_hasAcs(self, hasAcs):
-        pass
-
-    
-    def translate_hypotheses(self):
+    def translate_hypotheses(self, wrapper=None):
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
                                                   lambda h: type(h) == Constraint, 
@@ -177,12 +183,16 @@ class HypothesesTranslator(object):
                 role_param_mapping = { rp : "role."+rp for rp in role_params }
                 self.external_vars.update( role_param_mapping )
                 
-                if hasAc_subj not in set(self.external_vars):
-                    self.external_vars.update({ hasAc_subj:hasAc_subj })
+                if hasAc_subj in set(self.external_vars):
+                    conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
+                    print(self.rule.name)
+                
+                self.external_vars.update({ hasAc_subj : 'subj' })
+                
+#                if hasAc_subj not in set(self.external_vars):
+#                    self.external_vars.update({ hasAc_subj:hasAc_subj })
                  
-                tr = "return len({\n\t" + \
-                    '{subj} for {subj}, role in hasActivated if \n\t'\
-                    .format(subj = hasAc_subj, role_name = role_name)
+                tr = "return %s{\n\t1 for subj, role in hasActivated if \n\t" % ('' if not wrapper else wrapper[0])
             
             else:
                 raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
@@ -201,16 +211,17 @@ class HypothesesTranslator(object):
             
             for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
                 if(len(ctr_vars)):
-                    #print("check "+self.rule.name)
+                    #print("hmmmm "+self.rule.name)
                     pass
-                pass
+                else:
+                    conditionals.append( ctr_cond_func() )
             
             #print(conditionals)
             
             if len(conditionals):
                 tr += " and \n\t".join(conditionals)
             
-            return tr + "\n})"
+            return tr + "\n}%s" % ('' if not wrapper else wrapper[1])
         
         except StopTranslating as st:
             #print(self.rule.name + " was not translated.")
@@ -267,7 +278,7 @@ def {func_name}({func_args}): # {rule_name}
                  rule_name = self.rule.name
                 ,func_name = h2u(self.rule.concl.name)
                 ,func_args = ", ".join(args)
-                ,hypotheses_translation = tab(self.translate_hypotheses())
+                ,hypotheses_translation = tab(self.translate_hypotheses(["len(", ")"]))
             )
         
         return "\n" + prefix_lines(repr(self.rule), "#") #temp

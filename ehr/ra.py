@@ -7,10 +7,11 @@ class Register_RA_manager(Role):
         self.mgr2 = mgr2
     
     def canActivate(self, mgr): # R1.1.1
-        return len({
-        	mgr for mgr, role in hasActivated if 
-        	role.name == "RA-manager"
-        })
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "RA-manager" and 
+        	subj == mgr
+        }
     
     #'R1.1.2'
     #canDeactivate(mgr, x, Register-RA-manager(mgr2)) <-
@@ -22,7 +23,7 @@ class Register_RA_manager(Role):
 
 def RA_manager_regs(mgr): # R1.1.3
     return len({
-    	x for x, role in hasActivated if 
+    	1 for subj, role in hasActivated if 
     	role.name == "Register-RA-manager" and 
     	role.mgr == mgr
     })
@@ -32,11 +33,11 @@ class RA_manager(Role):
         super().__init__('RA-manager', []) 
     
     def canActivate(self, mgr): # R1.1.4
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "Register-RA-manager" and 
         	role.mgr == mgr
-        })
+        }
     
     #'R1.1.5'
     #canDeactivate(mgr, mgr, RA-manager()) <-
@@ -71,18 +72,20 @@ class Registration_authority(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, ra): # R1.2.4
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
-        	role.ra == ra
-        })
+        	role.ra == ra and 
+        	Current_time() in vrange(role.start, role.end)
+        }
     
     def canActivate_2(self, ra): # R1.2.5
-        return len({
-        	x for x, role in hasActivated if 
+        return {
+        	1 for subj, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
-        	role.ra == ra
-        })
+        	role.ra == ra and 
+        	Current_time() in vrange(role.start, role.end)
+        }
 
 class NHS_clinician_cert(Role):
     def __init__(self, org, cli, spcty, start, end):
@@ -150,10 +153,11 @@ class NHS_health_org_cert(Role):
         self.org, self.start, self.end = org, start, end
     
     def canActivate(self, mgr): # R2.3.1
-        return len({
-        	mgr for mgr, role in hasActivated if 
-        	role.name == "RA-manager"
-        })
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "RA-manager" and 
+        	subj == mgr
+        }
     
     #'R2.3.2'
     #canDeactivate(mgr, x, NHS-health-org-cert(org, start, end)) <-
@@ -168,31 +172,37 @@ class NHS_health_org_cert(Role):
     #	isDeactivated(x, NHS-health-org-cert(org, start2, end2)), other-NHS-health-org-regs(n, x, org, start2, end2), start in [start2, end2], end in [start2, end2], start < end, n = 0
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i
-    #todo: could not translate constraint: x != y
-    #hasActivated(y, NHS-health-org-cert(org, start2, end2))
-    #start in [start2, end2]
-    #end in [start2, end2]
-    #start < end
-    #x != y
-    pass
+    return len({
+    	1 for subj, role in hasActivated if 
+    	role.name == "NHS-health-org-cert" and 
+    	role.org == org and 
+    	start in vrange(role.start2, role.end2) and 
+    	end in vrange(role.start2, role.end2) and 
+    	start < end and 
+    	x != subj
+    })
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3ii
-    #todo: could not translate constraint: start != start2
-    #hasActivated(y, NHS-health-org-cert(org, start2, end2))
-    #start in [start2, end2]
-    #end in [start2, end2]
-    #start < end
-    #start != start2
-    pass
+    return len({
+    	1 for subj, role in hasActivated if 
+    	role.name == "NHS-health-org-cert" and 
+    	role.org == org and 
+    	start in vrange(role.start2, role.end2) and 
+    	end in vrange(role.start2, role.end2) and 
+    	start < end and 
+    	start != role.start2
+    })
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
-    #todo: could not translate constraint: end != end2
-    #hasActivated(y, NHS-health-org-cert(org, start2, end2))
-    #start in [start2, end2]
-    #end in [start2, end2]
-    #start < end
-    #end != end2
-    pass
+    return len({
+    	1 for subj, role in hasActivated if 
+    	role.name == "NHS-health-org-cert" and 
+    	role.org == org and 
+    	start in vrange(role.start2, role.end2) and 
+    	end in vrange(role.start2, role.end2) and 
+    	start < end and 
+    	end != role.end2
+    })
 
 #'R2.3.4'
 #canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
