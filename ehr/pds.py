@@ -14,8 +14,9 @@ class PDS_manager(Role):
         }
     
     def canDeactivate(self, adm, adm_): # P1.1.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	adm == adm_
+        )
 
 def count_PDS_manager_activations(user): # P1.1.4
     return len({
@@ -69,8 +70,9 @@ class Patient(Role):
         }
     
     def canDeactivate(self, pat, pat_): # P1.2.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	pat == pat_
+        )
 
 def count_patient_activations(user): # P1.2.4
     return len({
@@ -94,8 +96,9 @@ class Agent(Role):
         }
     
     def canDeactivate(self, ag, ag_): # P1.3.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	ag == ag_
+        )
 
 def count_agent_activations(user): # P1.3.5
     return len({
@@ -157,8 +160,9 @@ class Professional_user(Role):
         }
     
     def canDeactivate(self, x, x_): # P1.4.5
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	x == x_
+        )
 
 def count_professional_user_activations(user): # P1.4.6
     return len({
@@ -168,7 +172,7 @@ def count_professional_user_activations(user): # P1.4.6
     })
 
 def no_main_role_active(): # P1.5.1
-    #todo: a rule with no hasActivates
+    #todo: more than 1 count function invoked in a rule
     #count-agent-activations(n, user)
     #count-patient-activations(n, user)
     #count-PDS-manager-activations(n, user)

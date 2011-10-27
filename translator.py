@@ -207,7 +207,7 @@ class HypothesesTranslator(object):
             elif len(hasAcs) == 0:
                 tr = "return (\n\t"
                 ending = "\n)"
-                raise StopTranslating("a rule with no hasActivates")
+                #raise StopTranslating("a rule with no hasActivates")
             
             else:
                 raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))

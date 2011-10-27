@@ -45,8 +45,9 @@ class RA_manager(Role):
         }
     
     def canDeactivate(self, mgr, mgr_): # R1.1.5
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	mgr == mgr_
+        )
 
 #untranslated:
 #'R1.2.1'
@@ -61,14 +62,14 @@ class NHS_service(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, srv): # R1.2.2
-        #todo: a rule with no hasActivates
-        #canActivate(srv, Registration-authority())
-        pass
+        return (
+        	canActivate(srv, Registration_authority())
+        )
     
     def canActivate_2(self, srv): # R1.2.3
-        #todo: a rule with no hasActivates
-        #srv = "Spine"
-        pass
+        return (
+        	srv == "Spine"
+        )
 
 class Registration_authority(Role):
     def __init__(self):

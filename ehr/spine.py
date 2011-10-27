@@ -34,8 +34,9 @@ class Spine_clinician(Role):
         }
     
     def canDeactivate(self, cli, cli_): # S1.1.3
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	cli == cli_
+        )
     
     #untranslated:
     #'S3.2.3'
@@ -62,8 +63,9 @@ class Spine_admin(Role):
         }
     
     def canDeactivate(self, adm, adm_): # S1.2.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	adm == adm_
+        )
 
 def count_spine_admin_activations(user): # S1.2.4
     return len({
@@ -119,8 +121,9 @@ class Patient(Role):
         }
     
     def canDeactivate(self, pat, pat_): # S1.3.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	pat == pat_
+        )
 
 def count_patient_activations(user): # S1.3.4
     return len({
@@ -229,8 +232,9 @@ class Agent(Role):
         }
     
     def canDeactivate(self, ag, ag_): # S1.4.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	ag == ag_
+        )
 
 def other_agent_regs(x, ag, pat): # S1.4.4
     return len({
@@ -343,7 +347,7 @@ class Registration_authority(Role):
         }
 
 def no_main_role_active(): # S1.5.3
-    #todo: a rule with no hasActivates
+    #todo: more than 1 count function invoked in a rule
     #count-agent-activations(n, user)
     #count-spine-clinician-activations(n, user)
     #count-spine-admin-activations(n, user)
@@ -508,8 +512,9 @@ class Third_party(Role):
         }
     
     def canDeactivate(self, x, x_): # S2.2.11
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	x == x_
+        )
 
 def count_third_party_activations(user): # S2.2.13
     return len({
@@ -789,12 +794,14 @@ class Referrer(Role):
         return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canDeactivate_1(self, cli1, cli1_): # S3.1.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	cli1 == cli1_
+        )
     
     def canDeactivate_2(self, pat, cli1): # S3.1.3
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	
+        )
 
 class Spine_emergency_clinician(Role):
     def __init__(self, org, pat):
@@ -811,8 +818,9 @@ class Spine_emergency_clinician(Role):
         }
     
     def canDeactivate(self, cli, cli_): # S3.2.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	cli == cli_
+        )
 
 class Treating_clinician(Role):
     def __init__(self, pat, org, spcty):
@@ -854,9 +862,9 @@ class Treating_clinician(Role):
         }
     
     def canActivate_4(self, cli): # S3.3.4
-        #todo: a rule with no hasActivates
-        #canActivate(cli, Group-treating-clinician(pat, ra, org, group, spcty))
-        pass
+        return (
+        	canActivate(cli, Group_treating_clinician(self.pat, Wildcard(), self.org, Wildcard(), self.spcty))
+        )
 
 class General_practitioner(Role):
     def __init__(self, pat):
@@ -864,7 +872,7 @@ class General_practitioner(Role):
         self.pat = pat
     
     def canActivate(self, cli): # S3.3.5
-        #todo: a rule with no hasActivates
+        #todo: unable to bind vars {'spcty'} in constraint spcty == "GP"
         #canActivate(cli, Treating-clinician(pat, org, spcty))
         #spcty = "GP"
         pass

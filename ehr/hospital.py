@@ -59,8 +59,9 @@ class Clinician(Role):
         }
     
     def canDeactivate(self, cli, cli_): # A1.1.5
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	cli == cli_
+        )
     
     #untranslated:
     #'A3.7.5'
@@ -119,8 +120,9 @@ class Caldicott_guardian(Role):
         }
     
     def canDeactivate(self, cg, cg_): # A1.2.5
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	cg == cg_
+        )
 
 def count_caldicott_guardian_activations(user): # A1.2.7
     return len({
@@ -174,8 +176,9 @@ class HR_mgr(Role):
         }
     
     def canDeactivate(self, mgr, mgr_): # A1.3.5
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	mgr == mgr_
+        )
 
 def count_hr_mgr_activations(user): # A1.3.7
     return len({
@@ -228,8 +231,9 @@ class Receptionist(Role):
         }
     
     def canDeactivate(self, rec, rec_): # A1.4.5
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	rec == rec_
+        )
 
 def count_receptionist_activations(user): # A1.4.7
     return len({
@@ -330,8 +334,9 @@ class Patient(Role):
         }
     
     def canDeactivate(self, pat, pat_): # A1.5.5
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	pat == pat_
+        )
 
 def count_patient_activations(user): # A1.5.7
     return len({
@@ -433,7 +438,7 @@ def other_agent_regs(x, ag, pat): # A1.6.10
     })
 
 def no_main_role_active(): # A1.7.1
-    #todo: a rule with no hasActivates
+    #todo: more than 1 count function invoked in a rule
     #count-agent-activations(n, user)
     #count-caldicott-guardian-activations(n, user)
     #count-clinician-activations(n, user)
@@ -634,8 +639,9 @@ class Ext_treating_clinician(Role):
         }
     
     def canDeactivate(self, cli, cli_): # A2.2.3
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	cli == cli_
+        )
 
 def count_ext_treating_clinician_activations(user): # A2.2.5
     return len({
@@ -754,8 +760,9 @@ class Third_party(Role):
         }
     
     def canDeactivate(self, x, x_): # A2.3.13
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	x == x_
+        )
 
 def other_third_party_requests(x, third-party): # A2.3.14
     return len({
@@ -826,8 +833,9 @@ class Head_of_team(Role):
         }
     
     def canDeactivate(self, hd, hd_): # A3.1.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	hd == hd_
+        )
 
 class Register_head_of_team(Role):
     def __init__(self, hd, team):
@@ -1002,8 +1010,9 @@ class Head_of_ward(Role):
         }
     
     def canDeactivate(self, cli, cli_): # A3.4.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	cli == cli_
+        )
 
 class Register_head_of_ward(Role):
     def __init__(self, cli, ward):
@@ -1180,8 +1189,9 @@ class Emergency_clinician(Role):
         return self.canDeactivate_1(*params) or self.canDeactivate_2(*params)
     
     def canDeactivate_1(self, cli, cli_): # A3.7.2
-        #todo: a rule with no hasActivates
-        pass
+        return (
+        	cli == cli_
+        )
     
     def canDeactivate_2(self, cg, cli): # A3.7.3
         return {
