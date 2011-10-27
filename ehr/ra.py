@@ -98,7 +98,7 @@ class NHS_clinician_cert(Role):
         self.org, self.cli, self.spcty, self.start, self.end = org, cli, spcty, start, end
     
     def canActivate(self, mgr): # R2.1.1
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(mgr, RA-manager())
         #hasActivated(y, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
@@ -132,7 +132,7 @@ class NHS_Caldicott_guardian_cert(Role):
         self.org, self.cg, self.start, self.end = org, cg, start, end
     
     def canActivate(self, mgr): # R2.2.1
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(mgr, RA-manager())
         #hasActivated(x, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
@@ -259,14 +259,14 @@ class Workgroup_member(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # R3.1.1
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(x, NHS-health-org-cert(org, start, end))
         #org@org.hasActivated(x, Register-team-member(cli, group, spcty))
         #Current-time() in [start, end]
         pass
     
     def canActivate_2(self, cli): # R3.1.2
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(x, NHS-health-org-cert(org, start, end))
         #org@org.hasActivated(x, Register-ward-member(cli, group, spcty))
         #Current-time() in [start, end]

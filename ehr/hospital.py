@@ -314,7 +314,7 @@ class Patient(Role):
         super().__init__('Patient', []) 
     
     def canActivate(self, pat): # A1.5.4
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(x, Register-patient(pat))
         #no-main-role-active(pat)
         #"PDS"@"PDS".hasActivated(y, Register-patient(pat))
@@ -341,7 +341,7 @@ class Agent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, agent): # A1.6.1
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(x, Register-agent(agent, pat))
         #"PDS"@"PDS".hasActivated(x, Register-patient(agent))
         #no-main-role-active(agent)
@@ -503,19 +503,19 @@ class Consent_to_referral(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # A2.1.8
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(pat, Patient())
         #hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
         pass
     
     def canActivate_2(self, pat): # A2.1.9
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(pat, Agent(pat))
         #hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
         pass
     
     def canActivate_3(self, cg): # A2.1.10
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(cg, Caldicott-guardian())
         #hasActivated(x, Request-consent-to-referral(pat, ra, org, cli, spcty))
         pass
@@ -546,7 +546,7 @@ class Ext_treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, cli): # A2.2.1
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(x, Consent-to-referral(pat, ra, org, cli, spcty))
         #no-main-role-active(cli)
         #ra.hasActivated(y, NHS-clinician-cert(org, cli, spcty, start, end))
@@ -554,7 +554,7 @@ class Ext_treating_clinician(Role):
         pass
     
     def canActivate_2(self, cli): # A2.2.2
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(ref, Consent-to-referral(pat, ra, org, cli, spcty))
         #no-main-role-active(cli)
         #ra@ra.hasActivated(y, NHS-clinician-cert(org, cli, spcty, start, end))
@@ -656,7 +656,7 @@ class Third_party(Role):
         super().__init__('Third-party', []) 
     
     def canActivate(self, x): # A2.3.12
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(y, Request-third-party-consent(x, pat, id))
         #no-main-role-active(x)
         #"PDS"@"PDS".hasActivated(z, Register-patient(x))
@@ -684,13 +684,13 @@ class Third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, x): # A2.3.16
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(x, Third-party())
         #hasActivated(y, Request-third-party-consent(x, pat, id))
         pass
     
     def canActivate_2(self, cg): # A2.3.17
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(cg, Caldicott-guardian())
         #hasActivated(y, Request-third-party-consent(x, pat, id))
         pass
@@ -734,7 +734,7 @@ class Register_head_of_team(Role):
         self.hd, self.team = hd, team
     
     def canActivate(self, mgr): # A3.1.4
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(mgr, HR-mgr())
         #hasActivated(x, Register-team-member(hd, team, spcty))
         #head-of-team-regs(n, hd, team)
@@ -833,7 +833,7 @@ class Register_team_episode(Role):
         }
     
     def canActivate_2(self, cli): # A3.3.2
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(cli, Clinician(spcty))
         #hasActivated(x, Register-team-member(cli, team, spcty))
         #canActivate(pat, Patient())
@@ -888,7 +888,7 @@ class Register_head_of_ward(Role):
         self.cli, self.ward = cli, ward
     
     def canActivate(self, mgr): # A3.4.4
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(mgr, HR-mgr())
         #hasActivated(x, Register-ward-member(cli, ward, spcty))
         #head-of-ward-regs(n, cli, ward)
@@ -1056,7 +1056,7 @@ class ADB_treating_clinician(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, cli): # A3.8.1
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #canActivate(cli, Clinician(spcty))
         #hasActivated(x, Register-team-member(cli, team, spcty))
         #hasActivated(y, Register-team-episode(pat, team))
@@ -1064,7 +1064,7 @@ class ADB_treating_clinician(Role):
         pass
     
     def canActivate_2(self, cli): # A3.8.2
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #canActivate(cli, Clinician(spcty))
         #hasActivated(x, Register-ward-member(cli, ward, spcty))
         #hasActivated(x, Register-ward-episode(pat, ward))

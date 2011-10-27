@@ -138,7 +138,6 @@ class HypothesesTranslator(object):
             tr = ""
             
             if len(hasAcs) == 1:
-                #print(hasAcs[0])
                 hasAc = hasAcs[0]
                 role = hasAc.args[1]
                 hasAc_subj = repr(hasAc.args[0])
@@ -166,8 +165,13 @@ class HypothesesTranslator(object):
                     conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
                 self.external_vars.update({ hasAc_subj : 'subj' })
                 
-                
                 tr = "return %s{\n\t1 for subj, role in hasActivated if \n\t" % ('' if not wrapper else wrapper[0])
+                
+            elif len(hasAcs) == 2:
+                h1, h2 = hasAcs
+                
+                
+                raise StopTranslating("2 hasAcs - in progress")
             else:
                 raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
             
@@ -257,6 +261,22 @@ def canActivate{num}(self, {subject}): # {rule_name}
             ,subject = self.subject
             ,hypotheses_translation = tab(self.translate_hypotheses())
         )
+
+
+class canDc(HypothesesTranslator):
+    def __init__(self, rule):
+        super().__init__(rule)
+        
+    def translate(self):
+        return untranslated(self.rule)
+
+
+class isDac(HypothesesTranslator):
+    def __init__(self, rule):
+        super().__init__(rule)
+        
+    def translate(self):
+        return untranslated(self.rule)
 
 
 class FuncRule(HypothesesTranslator):
@@ -390,13 +410,13 @@ def generate_outline(rules):
         roles[r.concl.args[1].name].canAcs.append( canAc(r) )
     
     for r in canDc_rules:
-        roles[r.concl.args[2].name].canDcs.append(r)
+        roles[r.concl.args[2].name].canDcs.append( canDc(r) )
     
     for r in isDac_rules:
         for h in r.hypos:
             if type(h) == Atom and h.name == SpecialPredicates.isDac:
                 role_name = h.args[1].name
-        roles[role_name].isDacs.append(r)
+        roles[role_name].isDacs.append( isDac(r) )
     
     # non-role rules
     outline = []

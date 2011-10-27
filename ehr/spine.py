@@ -109,7 +109,7 @@ class Patient(Role):
         super().__init__('Patient', []) 
     
     def canActivate(self, pat): # S1.3.1
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(x, Register-patient(pat))
         #no-main-role-active(pat)
         #"PDS"@"PDS".hasActivated(y, Register-patient(pat))
@@ -213,7 +213,7 @@ class Agent(Role):
         self.pat = pat
     
     def canActivate(self, ag): # S1.4.1
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(x, Register-agent(ag, pat))
         #"PDS"@"PDS".hasActivated(y, Register-patient(ag))
         #no-main-role-active(ag)
@@ -453,7 +453,7 @@ class Third_party(Role):
         super().__init__('Third-party', []) 
     
     def canActivate(self, x): # S2.2.10
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(y, Request-third-party-consent(x, pat, id))
         #no-main-role-active(x)
         #"PDS"@"PDS".hasActivated(z, Register-patient(x))
@@ -480,13 +480,13 @@ class Third_party_consent(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, x): # S2.2.14
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(x, Third-party())
         #hasActivated(y, Request-third-party-consent(x, pat, id))
         pass
     
     def canActivate_2(self, cli): # S2.2.15
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
         #hasActivated(y, Request-third-party-consent(x, pat, id))
@@ -561,19 +561,19 @@ class Consent_to_treatment(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.3.9
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(pat, Patient())
         #hasActivated(x, Request-consent-to-treatment(pat, org, cli, spcty))
         pass
     
     def canActivate_2(self, ag): # S2.3.10
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(ag, Agent(pat))
         #hasActivated(x, Request-consent-to-treatment(pat, org, cli, spcty))
         pass
     
     def canActivate_3(self, cli1): # S2.3.11
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(cli1, Spine-clinician(ra, org, spcty))
         #canActivate(cli1, Treating-clinician(pat, org, spcty))
         #hasActivated(x, Request-consent-to-treatment(pat, org, cli2, spcty))
@@ -642,19 +642,19 @@ class Consent_to_group_treatment(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
     
     def canActivate_1(self, pat): # S2.4.9
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(pat, Patient())
         #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
         pass
     
     def canActivate_2(self, ag): # S2.4.10
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(ag, Agent(pat))
         #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
         pass
     
     def canActivate_3(self, cli1): # S2.4.11
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(cli1, Spine-clinician(ra, org, spcty))
         #canActivate(cli1, Treating-clinician(pat, org, spcty))
         #hasActivated(x, Request-consent-to-group-treatment(pat, org, group))
@@ -882,7 +882,7 @@ class Concealed_by_spine_patient(Role):
         self.what, self.who, self.start, self.end = what, who, start, end
     
     def canActivate(self, cli): # S4.2.8
-        #todo: Not implemented: 2 hasAcs in a rule.
+        #todo: 2 hasAcs - in progress
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
         #hasActivated(x, Conceal-request(what, who, start, end))
