@@ -11,7 +11,7 @@ class Spine_clinician(Role):
     
     def canActivate_1(self, cli): # S1.1.1
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-clinician-cert" and 
         	role.spcty == self.spcty and 
         	role.org == self.org and 
@@ -21,7 +21,7 @@ class Spine_clinician(Role):
     
     def canActivate_2(self, cli): # S1.1.2
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-clinician-cert" and 
         	role.spcty == self.spcty and 
         	role.org == self.org and 
@@ -37,9 +37,11 @@ class Spine_clinician(Role):
     #isDeactivated(x, Spine-emergency-clinician(org, pat)) <-
     #	isDeactivated(x, Spine-clinician(ra, org, spcty))
 
-#'S1.1.4'
-#count-spine-clinician-activations(count<u>, user) <-
-#	hasActivated(u, Spine-clinician(ra, org, spcty)), u = user
+def count_spine_clinician_activations(user):
+    return {
+    	u for u, role in hasActivated if 
+    	role.name == "Spine-clinician"
+    }
 
 class Spine_admin(Role):
     def __init__(self):
@@ -47,7 +49,7 @@ class Spine_admin(Role):
     
     def canActivate(self, adm): # S1.2.1
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "Register-spine-admin" and 
         	role.adm == adm
         }
@@ -56,9 +58,11 @@ class Spine_admin(Role):
     #canDeactivate(adm, adm, Spine-admin()) <-
     #	
 
-#'S1.2.4'
-#count-spine-admin-activations(count<u>, user) <-
-#	hasActivated(u, Spine-admin()), u = user
+def count_spine_admin_activations(user):
+    return {
+    	u for u, role in hasActivated if 
+    	role.name == "Spine-admin"
+    }
 
 class Register_spine_admin(Role):
     def __init__(self, adm2):
@@ -67,7 +71,7 @@ class Register_spine_admin(Role):
     
     def canActivate(self, adm): # S1.2.5
         return {
-        	(adm, role) for adm, role in hasActivated if 
+        	adm for adm, role in hasActivated if 
         	role.name == "Spine-admin"
         }
     
@@ -79,9 +83,12 @@ class Register_spine_admin(Role):
     #isDeactivated(adm, Spine-admin()) <-
     #	isDeactivated(x, Register-spine-admin(adm))
 
-#'S1.2.7'
-#spine-admin-regs(count<x>, adm) <-
-#	hasActivated(x, Register-spine-admin(adm))
+def spine_admin_regs(adm):
+    return {
+    	x for x, role in hasActivated if 
+    	role.name == "Register-spine-admin" and 
+    	role.adm == adm
+    }
 
 class Patient(Role):
     def __init__(self):
@@ -98,9 +105,11 @@ class Patient(Role):
     #canDeactivate(pat, pat, Patient()) <-
     #	
 
-#'S1.3.4'
-#count-patient-activations(count<u>, user) <-
-#	hasActivated(u, Patient()), u = user
+def count_patient_activations(user):
+    return {
+    	u for u, role in hasActivated if 
+    	role.name == "Patient"
+    }
 
 class Register_patient(Role):
     def __init__(self, pat):
@@ -109,7 +118,7 @@ class Register_patient(Role):
     
     def canActivate(self, adm): # S1.3.5
         return {
-        	(adm, role) for adm, role in hasActivated if 
+        	adm for adm, role in hasActivated if 
         	role.name == "Spine-admin"
         }
     
@@ -161,9 +170,12 @@ class Register_patient(Role):
     #isDeactivated(x, Authenticated-express-consent(pat, cli)) <-
     #	isDeactivated(y, Register-patient(pat))
 
-#'S1.3.7'
-#patient-regs(count<x>, pat) <-
-#	hasActivated(x, Register-patient(pat))
+def patient_regs(pat):
+    return {
+    	x for x, role in hasActivated if 
+    	role.name == "Register-patient" and 
+    	role.pat == pat
+    }
 
 class Agent(Role):
     def __init__(self, pat):
@@ -181,13 +193,17 @@ class Agent(Role):
     #canDeactivate(ag, ag, Agent(pat)) <-
     #	
 
-#'S1.4.4'
-#other-agent-regs(count<y>, x, ag, pat) <-
-#	hasActivated(y, Register-agent(ag, pat)), x != y
+def other_agent_regs(x, ag, pat):
+    #todo: could not translate constraint: x != y
+    #hasActivated(y, Register-agent(ag, pat))
+    #x != y
+    pass
 
-#'S1.4.5'
-#count-agent-activations(count<u>, user) <-
-#	hasActivated(u, Agent(pat)), u = user
+def count_agent_activations(user):
+    return {
+    	u for u, role in hasActivated if 
+    	role.name == "Agent"
+    }
 
 #'S1.4.6'
 #canReqCred(ag, "Spine".canActivate(ag, Agent(pat))) <-
@@ -211,13 +227,13 @@ class Register_agent(Role):
     
     def canActivate_1(self, pat): # S1.4.9
         return {
-        	(pat, role) for pat, role in hasActivated if 
+        	pat for pat, role in hasActivated if 
         	role.name == "Patient"
         }
     
     def canActivate_2(self, cli): # S1.4.10
         return {
-        	(cli, role) for cli, role in hasActivated if 
+        	cli for cli, role in hasActivated if 
         	role.name == "Spine-clinician" and 
         	canActivate(cli, General_practitioner(self.pat))
         }
@@ -247,14 +263,14 @@ class Registration_authority(Role):
     
     def canActivate_1(self, ra): # S1.5.1
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
         	role.ra == ra
         }
     
     def canActivate_2(self, ra): # S1.5.2
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
         	role.ra == ra
         }
@@ -273,20 +289,20 @@ class One_off_consent(Role):
     
     def canActivate_1(self, pat): # S2.1.1
         return {
-        	(pat, role) for pat, role in hasActivated if 
+        	pat for pat, role in hasActivated if 
         	role.name == "Patient"
         }
     
     def canActivate_2(self, ag): # S2.1.2
         return {
-        	(ag, role) for ag, role in hasActivated if 
+        	ag for ag, role in hasActivated if 
         	role.name == "Agent" and 
         	role.pat == self.pat
         }
     
     def canActivate_3(self, cli): # S2.1.3
         return {
-        	(cli, role) for cli, role in hasActivated if 
+        	cli for cli, role in hasActivated if 
         	role.name == "Spine-clinician" and 
         	canActivate(cli, Treating_clinician(self.pat, role.org, role.spcty))
         }
@@ -354,9 +370,11 @@ class Request_third_party_consent(Role):
     #isDeactivated(x, Third-party-consent(x, pat, id)) <-
     #	isDeactivated(y, Request-third-party-consent(x, pat, id)), other-third-party-consent-requests(n, y, x), n = 0
 
-#'S2.2.9'
-#other-third-party-consent-requests(count<x>, y, z) <-
-#	hasActivated(x, Request-third-party-consent(z, pat, id)), x != y
+def other_third_party_consent_requests(y, z):
+    #todo: could not translate constraint: x != y
+    #hasActivated(x, Request-third-party-consent(z, pat, id))
+    #x != y
+    pass
 
 class Third_party(Role):
     def __init__(self):
@@ -373,9 +391,11 @@ class Third_party(Role):
     #canDeactivate(x, x, Third-party()) <-
     #	
 
-#'S2.2.13'
-#count-third-party-activations(count<u>, user) <-
-#	hasActivated(u, Third-party()), u = user
+def count_third_party_activations(user):
+    return {
+    	u for u, role in hasActivated if 
+    	role.name == "Third-party"
+    }
 
 class Third_party_consent(Role):
     def __init__(self, x, pat, id):
@@ -409,7 +429,7 @@ class Request_consent_to_treatment(Role):
     
     def canActivate(self, cli1): # S2.3.1
         return {
-        	(cli1, role) for cli1, role in hasActivated if 
+        	cli1 for cli1, role in hasActivated if 
         	role.name == "Spine-clinician" and 
         	canActivate(self.cli2, Spine_clinician(Wildcard(), self.org2, self.spcty2)) and 
         	canActivate(self.pat, Patient())
@@ -439,9 +459,11 @@ class Request_consent_to_treatment(Role):
     #isDeactivated(x, Consent-to-treatment(pat, org, cli, spcty)) <-
     #	isDeactivated(y, Request-consent-to-treatment(pat, org, cli, spcty)), other-consent-to-treatment-requests(n, y, pat, org, cli, spcty), n = 0
 
-#'S2.3.8'
-#other-consent-to-treatment-requests(count<y>, x, pat, org, cli, spcty) <-
-#	hasActivated(y, Request-consent-to-treatment(pat, org, cli, spcty)), x != y
+def other_consent_to_treatment_requests(x, pat, org, cli, spcty):
+    #todo: could not translate constraint: x != y
+    #hasActivated(y, Request-consent-to-treatment(pat, org, cli, spcty))
+    #x != y
+    pass
 
 class Consent_to_treatment(Role):
     def __init__(self, pat, org, cli, spcty):
@@ -477,7 +499,7 @@ class Request_consent_to_group_treatment(Role):
     
     def canActivate(self, cli): # S2.4.1
         return {
-        	(cli, role) for cli, role in hasActivated if 
+        	cli for cli, role in hasActivated if 
         	role.name == "Spine-clinician" and 
         	role.org == self.org and 
         	canActivate(self.pat, Patient())
@@ -507,9 +529,11 @@ class Request_consent_to_group_treatment(Role):
     #isDeactivated(x, Consent-to-group-treatment(pat, org, group)) <-
     #	isDeactivated(y, Request-consent-to-group-treatment(pat, org, group)), other-consent-to-group-treatment-requests(n, y, pat, org, group), n = 0
 
-#'S2.4.8'
-#other-consent-to-group-treatment-requests(count<y>, x, pat, org, group) <-
-#	hasActivated(y, Request-consent-to-group-treatment(pat, org, group)), x != y
+def other_consent_to_group_treatment_requests(x, pat, org, group):
+    #todo: could not translate constraint: x != y
+    #hasActivated(y, Request-consent-to-group-treatment(pat, org, group))
+    #x != y
+    pass
 
 class Consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
@@ -545,7 +569,7 @@ class Referrer(Role):
     
     def canActivate(self, cli1): # S3.1.1
         return {
-        	(cli1, role) for cli1, role in hasActivated if 
+        	cli1 for cli1, role in hasActivated if 
         	role.name == "Spine-clinician" and 
         	role.org == self.org and 
         	canActivate(cli1, Treating_clinician(self.pat, role.org, role.spcty2))
@@ -566,7 +590,7 @@ class Spine_emergency_clinician(Role):
     
     def canActivate(self, cli): # S3.2.1
         return {
-        	(cli, role) for cli, role in hasActivated if 
+        	cli for cli, role in hasActivated if 
         	role.name == "Spine-clinician" and 
         	role.org == self.org and 
         	canActivate(self.pat, Patient())
@@ -586,7 +610,7 @@ class Treating_clinician(Role):
     
     def canActivate_1(self, cli): # S3.3.1
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "Consent-to-treatment" and 
         	role.spcty == self.spcty and 
         	role.org == self.org and 
@@ -596,7 +620,7 @@ class Treating_clinician(Role):
     
     def canActivate_2(self, cli): # S3.3.2
         return {
-        	(cli, role) for cli, role in hasActivated if 
+        	cli for cli, role in hasActivated if 
         	role.name == "Spine-emergency-clinician" and 
         	role.org == self.org and 
         	role.pat == self.pat
@@ -604,7 +628,7 @@ class Treating_clinician(Role):
     
     def canActivate_3(self, cli): # S3.3.3
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "Referrer" and 
         	role.spcty == self.spcty and 
         	role.org == self.org and 
@@ -639,7 +663,7 @@ class Group_treating_clinician(Role):
     
     def canActivate_1(self, cli): # S3.4.1
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "Consent-to-group-treatment" and 
         	role.org == self.org and 
         	role.pat == self.pat and 
@@ -650,7 +674,7 @@ class Group_treating_clinician(Role):
     
     def canActivate_2(self, cli): # S3.4.2
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "Consent-to-group-treatment" and 
         	role.org == self.org and 
         	role.pat == self.pat and 
@@ -666,7 +690,7 @@ class Concealed_by_spine_clinician(Role):
     
     def canActivate(self, cli): # S4.1.1
         return {
-        	(cli, role) for cli, role in hasActivated if 
+        	cli for cli, role in hasActivated if 
         	role.name == "Spine-clinician" and 
         	canActivate(cli, Treating_clinician(self.pat, role.org, role.spcty))
         }
@@ -683,9 +707,12 @@ class Concealed_by_spine_clinician(Role):
     #canDeactivate(cli1, cli2, Concealed-by-spine-clinician(pat, ids, start, end)) <-
     #	hasActivated(cli1, Spine-clinician(ra, org, spcty1)), canActivate(cli1, Group-treating-clinician(pat, ra, org, group, spcty1)), canActivate(cli2, Group-treating-clinician(pat, ra, org, group, spcty2)), hasActivated(x, Consent-to-group-treatment(pat, org, group))
 
-#'S4.1.6'
-#count-concealed-by-spine-clinician(count<x>, pat, id) <-
-#	hasActivated(x, Concealed-by-spine-clinician(pat, ids, start, end)), id in ids, Current-time() in [start, end]
+def count_concealed_by_spine_clinician(pat, id):
+    #todo: could not translate constraint: id in ids
+    #hasActivated(x, Concealed-by-spine-clinician(pat, ids, start, end))
+    #id in ids
+    #Current-time() in [start, end]
+    pass
 
 class Conceal_request(Role):
     def __init__(self, what, who, start, end):
@@ -751,9 +778,26 @@ class Concealed_by_spine_patient(Role):
     #canDeactivate(cli1, cli2, Concealed-by-spine-patient(what, who, start1, end1)) <-
     #	hasActivated(cli1, Spine-clinician(ra, org, spcty1)), ra@ra.canActivate(cli1, Group-treating-clinician(pat, ra, org, group, spcty1)), ra@ra.canActivate(cli2, Group-treating-clinician(pat, ra, org, group, spcty2))
 
-#'S4.2.12'
-#count-concealed-by-spine-patient(count<x>, a, b) <-
-#	hasActivated(x, Concealed-by-spine-patient(what, who, start, end)), a = (pat,id), b = (org,reader,spcty), what = (pat,ids,orgs,authors,subjects,from-time,to-time), whom = (orgs1,readers1,spctys1), Get-spine-record-org(pat, id) in orgs, Get-spine-record-author(pat, id) in authors, sub in Get-spine-record-subjects(pat, id), sub in subjects, Get-spine-record-time(pat, id) in [from-time, to-time], id in ids, org in orgs1, reader in readers1, spcty in spctys1, Current-time() in [start, end], Get-spine-record-third-parties(pat, id) = emptyset, "non-clinical" notin Get-spine-record-subjects(pat, id)
+def count_concealed_by_spine_patient(a, b):
+    #todo: could not translate constraint: a = (pat,id)
+    #hasActivated(x, Concealed-by-spine-patient(what, who, start, end))
+    #a = (pat,id)
+    #b = (org,reader,spcty)
+    #what = (pat,ids,orgs,authors,subjects,from-time,to-time)
+    #whom = (orgs1,readers1,spctys1)
+    #Get-spine-record-org(pat, id) in orgs
+    #Get-spine-record-author(pat, id) in authors
+    #sub in Get-spine-record-subjects(pat, id)
+    #sub in subjects
+    #Get-spine-record-time(pat, id) in [from-time, to-time]
+    #id in ids
+    #org in orgs1
+    #reader in readers1
+    #spcty in spctys1
+    #Current-time() in [start, end]
+    #Get-spine-record-third-parties(pat, id) = emptyset
+    #"non-clinical" notin Get-spine-record-subjects(pat, id)
+    pass
 
 class Authenticated_express_consent(Role):
     def __init__(self, pat, cli):
@@ -765,20 +809,20 @@ class Authenticated_express_consent(Role):
     
     def canActivate_1(self, pat): # S4.3.1
         return {
-        	(pat, role) for pat, role in hasActivated if 
+        	pat for pat, role in hasActivated if 
         	role.name == "Patient"
         }
     
     def canActivate_2(self, ag): # S4.3.2
         return {
-        	(ag, role) for ag, role in hasActivated if 
+        	ag for ag, role in hasActivated if 
         	role.name == "Agent" and 
         	role.pat == self.pat
         }
     
     def canActivate_3(self, cli1): # S4.3.3
         return {
-        	(cli1, role) for cli1, role in hasActivated if 
+        	cli1 for cli1, role in hasActivated if 
         	role.name == "Spine-clinician" and 
         	canActivate(cli1, General_practitioner(self.pat))
         }

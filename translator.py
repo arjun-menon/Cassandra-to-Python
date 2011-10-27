@@ -12,7 +12,8 @@ class StopTranslating(Exception):
 class HypothesesTranslator(object):
     def __init__(self, rule):
         self.rule = rule
-        self.external_vars = None # will become dict
+        self.external_vars = None # initialized by derived class, will become dict
+    
     def __repr__(self):
         return repr(self.rule)
     
@@ -180,7 +181,7 @@ class HypothesesTranslator(object):
                     self.external_vars.update({ hasAc_subj:hasAc_subj })
                  
                 tr = "return {\n\t" + \
-                    '({subj}, role) for {subj}, role in hasActivated if \n\t'\
+                    '{subj} for {subj}, role in hasActivated if \n\t'\
                     .format(subj = hasAc_subj, role_name = role_name)
             
             else:
@@ -215,6 +216,8 @@ class HypothesesTranslator(object):
             #print(self.rule.name + " was not translated.")
             return "".join("#" + str(x) + '\n' for x in [repr(st)] + self.rule.hypos) + "pass"
 
+####################
+
 class canAc(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
@@ -230,21 +233,42 @@ class canAc(HypothesesTranslator):
         
         return lambda number: """
 def canActivate{num}(self, {subject}): # {rule_name}
-{translation}""".format(
+{hypotheses_translation}""".format(
              rule_name = self.rule.name
             ,num = "" if number==0 else "_" + str(number)
             ,subject = self.subject
-            ,translation = tab(self.translate_hypotheses())
+            ,hypotheses_translation = tab(self.translate_hypotheses())
         )
 
 
 class FuncRule(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
+        #print(str(type(self.rule.concl.args[0])) + " " + repr(self.rule.concl.args[0]) + "  " + rule.concl.name)
         
-        print(self.rule)
+        self.kind = None # Determine what kind of function it is:
+        
+        # is this of the form count-role-name(count<x>, ...) <- hasActivated(x, ...), ... ?
+        if type(self.rule.concl.args[0]) == Aggregate:
+            if self.rule.concl.args[0].name == 'count':
+                if self.rule.hypos[0].name == SpecialPredicates.hasAc:
+                    if repr(self.rule.concl.args[0].args[0]) == repr(self.rule.hypos[0].args[0]):
+                        self.kind = 'count'
     
     def translate(self):
+        if self.kind == 'count':
+            args = [repr(a) for a in self.rule.concl.args[1:]]
+            
+            self.external_vars = { a:a for a in args }
+            
+            return"""
+def {func_name}({func_args}):
+{hypotheses_translation}""".format(
+                 func_name = h2u(self.rule.concl.name)
+                ,func_args = ", ".join(args)
+                ,hypotheses_translation = tab(self.translate_hypotheses())
+            )
+        
         return "\n" + prefix_lines(repr(self.rule), "#") #temp
 
 ####################

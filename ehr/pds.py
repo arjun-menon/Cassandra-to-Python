@@ -7,7 +7,7 @@ class PDS_manager(Role):
     
     def canActivate(self, adm): # P1.1.1
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "Register-PDS-manager" and 
         	role.adm == adm
         }
@@ -16,9 +16,11 @@ class PDS_manager(Role):
     #canDeactivate(adm, adm, PDS-manager()) <-
     #	
 
-#'P1.1.4'
-#count-PDS-manager-activations(count<u>, user) <-
-#	hasActivated(u, PDS-manager()), u = user
+def count_PDS_manager_activations(user):
+    return {
+    	u for u, role in hasActivated if 
+    	role.name == "PDS-manager"
+    }
 
 class Register_PDS_manager(Role):
     def __init__(self, adm2):
@@ -27,7 +29,7 @@ class Register_PDS_manager(Role):
     
     def canActivate(self, adm1): # P1.1.5
         return {
-        	(adm1, role) for adm1, role in hasActivated if 
+        	adm1 for adm1, role in hasActivated if 
         	role.name == "PDS-manager"
         }
     
@@ -39,9 +41,12 @@ class Register_PDS_manager(Role):
     #isDeactivated(adm, PDS-manager()) <-
     #	isDeactivated(x, Register-PDS-manager(adm))
 
-#'P1.1.7'
-#pds-admin-regs(count<x>, adm) <-
-#	hasActivated(x, Register-PDS-manager(adm))
+def pds_admin_regs(adm):
+    return {
+    	x for x, role in hasActivated if 
+    	role.name == "Register-PDS-manager" and 
+    	role.adm == adm
+    }
 
 class Patient(Role):
     def __init__(self):
@@ -49,7 +54,7 @@ class Patient(Role):
     
     def canActivate(self, pat): # P1.2.1
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "Register-patient" and 
         	role.pat == pat
         }
@@ -58,9 +63,11 @@ class Patient(Role):
     #canDeactivate(pat, pat, Patient()) <-
     #	
 
-#'P1.2.4'
-#count-patient-activations(count<u>, user) <-
-#	hasActivated(u, Patient()), u = user
+def count_patient_activations(user):
+    return {
+    	u for u, role in hasActivated if 
+    	role.name == "Patient"
+    }
 
 class Agent(Role):
     def __init__(self, pat):
@@ -69,7 +76,7 @@ class Agent(Role):
     
     def canActivate(self, ag): # P1.3.1
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "Register-patient" and 
         	role.ag == ag and 
         	canActivate(role.ag, Agent(self.pat))
@@ -79,9 +86,11 @@ class Agent(Role):
     #canDeactivate(ag, ag, Agent(pat)) <-
     #	
 
-#'P1.3.5'
-#count-agent-activations(count<u>, user) <-
-#	hasActivated(u, Agent(pat)), u = user
+def count_agent_activations(user):
+    return {
+    	u for u, role in hasActivated if 
+    	role.name == "Agent"
+    }
 
 class Professional_user(Role):
     def __init__(self, ra, org):
@@ -93,7 +102,7 @@ class Professional_user(Role):
     
     def canActivate_1(self, x): # P1.4.1
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-clinician-cert" and 
         	role.org == self.org and 
         	canActivate(self.ra, Registration_authority())
@@ -101,7 +110,7 @@ class Professional_user(Role):
     
     def canActivate_2(self, x): # P1.4.2
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-clinician-cert" and 
         	role.org == self.org and 
         	canActivate(self.ra, Registration_authority())
@@ -109,7 +118,7 @@ class Professional_user(Role):
     
     def canActivate_3(self, x): # P1.4.3
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-Caldicott-guardian-cert" and 
         	role.org == self.org and 
         	canActivate(self.ra, Registration_authority())
@@ -117,7 +126,7 @@ class Professional_user(Role):
     
     def canActivate_4(self, x): # P1.4.4
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-Caldicott-guardian-cert" and 
         	role.org == self.org and 
         	canActivate(self.ra, Registration_authority())
@@ -127,9 +136,11 @@ class Professional_user(Role):
     #canDeactivate(x, x, Professional-user(ra, org)) <-
     #	
 
-#'P1.4.6'
-#count-professional-user-activations(count<u>, user) <-
-#	hasActivated(u, Professional-user(ra, org)), u = user
+def count_professional_user_activations(user):
+    return {
+    	u for u, role in hasActivated if 
+    	role.name == "Professional-user"
+    }
 
 #'P1.5.1'
 #no-main-role-active(user) <-
@@ -144,14 +155,14 @@ class Registration_authority(Role):
     
     def canActivate_1(self, ra): # P1.5.2
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
         	role.ra == ra
         }
     
     def canActivate_2(self, ra): # P1.5.3
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
         	role.ra == ra
         }
@@ -163,7 +174,7 @@ class Register_patient(Role):
     
     def canActivate(self, adm): # P2.1.1
         return {
-        	(adm, role) for adm, role in hasActivated if 
+        	adm for adm, role in hasActivated if 
         	role.name == "PDS-manager"
         }
     
@@ -183,9 +194,12 @@ class Register_patient(Role):
     #isDeactivated(ag, Agent(pat)) <-
     #	isDeactivated(x, Register-patient(pat))
 
-#'P2.1.3'
-#patient-regs(count<x>, pat) <-
-#	hasActivated(x, Register-patient(pat))
+def patient_regs(pat):
+    return {
+    	x for x, role in hasActivated if 
+    	role.name == "Register-patient" and 
+    	role.pat == pat
+    }
 
 #'P2.2.1'
 #canReqCred(pat, "PDS".hasActivated(x, Register-patient(pat))) <-

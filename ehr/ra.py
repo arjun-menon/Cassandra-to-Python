@@ -8,7 +8,7 @@ class Register_RA_manager(Role):
     
     def canActivate(self, mgr): # R1.1.1
         return {
-        	(mgr, role) for mgr, role in hasActivated if 
+        	mgr for mgr, role in hasActivated if 
         	role.name == "RA-manager"
         }
     
@@ -20,9 +20,12 @@ class Register_RA_manager(Role):
     #isDeactivated(mgr, RA-manager()) <-
     #	isDeactivated(x, Register-RA-manager(mgr))
 
-#'R1.1.3'
-#RA-manager-regs(count<x>, mgr) <-
-#	hasActivated(x, Register-RA-manager(mgr))
+def RA_manager_regs(mgr):
+    return {
+    	x for x, role in hasActivated if 
+    	role.name == "Register-RA-manager" and 
+    	role.mgr == mgr
+    }
 
 class RA_manager(Role):
     def __init__(self):
@@ -30,7 +33,7 @@ class RA_manager(Role):
     
     def canActivate(self, mgr): # R1.1.4
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "Register-RA-manager" and 
         	role.mgr == mgr
         }
@@ -69,14 +72,14 @@ class Registration_authority(Role):
     
     def canActivate_1(self, ra): # R1.2.4
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
         	role.ra == ra
         }
     
     def canActivate_2(self, ra): # R1.2.5
         return {
-        	(x, role) for x, role in hasActivated if 
+        	x for x, role in hasActivated if 
         	role.name == "NHS-registration-authority" and 
         	role.ra == ra
         }
@@ -148,7 +151,7 @@ class NHS_health_org_cert(Role):
     
     def canActivate(self, mgr): # R2.3.1
         return {
-        	(mgr, role) for mgr, role in hasActivated if 
+        	mgr for mgr, role in hasActivated if 
         	role.name == "RA-manager"
         }
     
@@ -164,17 +167,32 @@ class NHS_health_org_cert(Role):
     #isDeactivated(mgr, NHS-Caldicott-guardian-cert(org, cg, start, end)) <-
     #	isDeactivated(x, NHS-health-org-cert(org, start2, end2)), other-NHS-health-org-regs(n, x, org, start2, end2), start in [start2, end2], end in [start2, end2], start < end, n = 0
 
-#'R2.3.3i'
-#other-NHS-health-org-regs(count<y>, x, org, start, end) <-
-#	hasActivated(y, NHS-health-org-cert(org, start2, end2)), start in [start2, end2], end in [start2, end2], start < end, x != y
+def other_NHS_health_org_regs(x, org, start, end):
+    #todo: could not translate constraint: x != y
+    #hasActivated(y, NHS-health-org-cert(org, start2, end2))
+    #start in [start2, end2]
+    #end in [start2, end2]
+    #start < end
+    #x != y
+    pass
 
-#'R2.3.3ii'
-#other-NHS-health-org-regs(count<y>, x, org, start, end) <-
-#	hasActivated(y, NHS-health-org-cert(org, start2, end2)), start in [start2, end2], end in [start2, end2], start < end, start != start2
+def other_NHS_health_org_regs(x, org, start, end):
+    #todo: could not translate constraint: start != start2
+    #hasActivated(y, NHS-health-org-cert(org, start2, end2))
+    #start in [start2, end2]
+    #end in [start2, end2]
+    #start < end
+    #start != start2
+    pass
 
-#'R2.3.3iii'
-#other-NHS-health-org-regs(count<y>, x, org, start, end) <-
-#	hasActivated(y, NHS-health-org-cert(org, start2, end2)), start in [start2, end2], end in [start2, end2], start < end, end != end2
+def other_NHS_health_org_regs(x, org, start, end):
+    #todo: could not translate constraint: end != end2
+    #hasActivated(y, NHS-health-org-cert(org, start2, end2))
+    #start in [start2, end2]
+    #end in [start2, end2]
+    #start < end
+    #end != end2
+    pass
 
 #'R2.3.4'
 #canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-

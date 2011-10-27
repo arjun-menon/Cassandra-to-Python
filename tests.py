@@ -20,7 +20,7 @@ def func_hypos():
     for i in hy:
         print(i)
 
-#func_hypos()
+func_hypos()
 
 def hasActivated_in_hypos():
     "Count and print number of hasActivated hypotheses in each rule."
