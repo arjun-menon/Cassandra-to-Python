@@ -266,8 +266,8 @@ class FuncRule(HypothesesTranslator):
         if type(self.rule.concl.args[0]) == Aggregate:
             if self.rule.concl.args[0].name == 'count':
                 if self.rule.hypos[0].name == SpecialPredicates.hasAc:
-                    if repr(self.rule.concl.args[0].args[0]) == repr(self.rule.hypos[0].args[0]):
-                        self.kind = 'count'
+                    #if repr(self.rule.concl.args[0].args[0]) == repr(self.rule.hypos[0].args[0]):
+                    self.kind = 'count'
     
     def translate(self):
         if self.kind == 'count':

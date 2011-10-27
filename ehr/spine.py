@@ -263,9 +263,13 @@ class Register_agent(Role):
     #isDeactivated(ag, Agent(pat)) <-
     #	isDeactivated(x, Register-agent(ag, pat)), other-agent-regs(n, x, ag, pat), n = 0
 
-#'S1.4.14'
-#agent-regs(count<x>, pat) <-
-#	hasActivated(pat, Register-agent(x, pat))
+def agent_regs(pat): # S1.4.14
+    return len({
+    	1 for subj, role in hasActivated if 
+    	role.name == "Register-agent" and 
+    	role.pat == pat and 
+    	subj == role.pat
+    })
 
 class Registration_authority(Role):
     def __init__(self):
@@ -798,9 +802,12 @@ class Conceal_request(Role):
     #isDeactivated(cli, Concealed-by-spine-patient(what, who, start, end)) <-
     #	isDeactivated(x, Conceal-request(what, who, start, end))
 
-#'S4.2.7'
-#count-conceal-requests(count<y>, pat) <-
-#	hasActivated(x, Conceal-request(y)), (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)), y = (what,who,start,end)
+def count_conceal_requests(pat): # S4.2.7
+    #todo: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+    #hasActivated(x, Conceal-request(y))
+    #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+    #y = (what,who,start,end)
+    pass
 
 class Concealed_by_spine_patient(Role):
     def __init__(self, what, who, start, end):
@@ -886,9 +893,12 @@ class Authenticated_express_consent(Role):
     #canDeactivate(cli1, x, Authenticated-express-consent(pat, cli2)) <-
     #	hasActivated(cli1, Spine-clinician(ra, org, spcty)), canActivate(cli1, General-practitioner(pat))
 
-#'S4.3.8'
-#count-authenticated-express-consent(count<cli>, pat) <-
-#	hasActivated(x, Authenticated-express-consent(pat, cli))
+def count_authenticated_express_consent(pat): # S4.3.8
+    return len({
+    	1 for subj, role in hasActivated if 
+    	role.name == "Authenticated-express-consent" and 
+    	role.pat == pat
+    })
 
 #'S5.1.1'
 #permits(cli, Add-spine-record-item(pat)) <-

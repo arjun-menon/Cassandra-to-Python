@@ -1065,9 +1065,13 @@ class Concealed_by_patient(Role):
     #canDeactivate(cg, x, Concealed-by-patient(what, whom, start, end)) <-
     #	hasActivated(cg, Caldicott-guardian())
 
-#'A4.2.7'
-#count-concealed-by-patient(count<y>, pat) <-
-#	hasActivated(x, Concealed-by-patient(y)), what = (pat,ids,authors,groups,subjects,from-time,to-time), who = (orgs1,readers1,groups1,spctys1), y = (what,who,start,end)
+def count_concealed_by_patient(pat): # A4.2.7
+    #todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
+    #hasActivated(x, Concealed-by-patient(y))
+    #what = (pat,ids,authors,groups,subjects,from-time,to-time)
+    #who = (orgs1,readers1,groups1,spctys1)
+    #y = (what,who,start,end)
+    pass
 
 def count_concealed_by_patient2(a, b): # A4.2.8
     #todo: could not translate constraint: a = (pat,id)
