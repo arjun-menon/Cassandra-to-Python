@@ -9,6 +9,10 @@ class StopTranslating(Exception):
     def __repr__(self):
         return "todo: " + self.reason
 
+@typecheck
+def warn(message : str):
+    print(message)
+
 class HypothesesTranslator(object):
     def __init__(self, rule):
         self.rule = rule
@@ -185,8 +189,6 @@ class HypothesesTranslator(object):
                 
                 if hasAc_subj in set(self.external_vars):
                     conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
-                    print(self.rule.name)
-                
                 self.external_vars.update({ hasAc_subj : 'subj' })
                 
 #                if hasAc_subj not in set(self.external_vars):
@@ -202,7 +204,8 @@ class HypothesesTranslator(object):
                         
             for (canAc_vars, canAc_cond_func) in map(self.build_canAc_bindings, canAcs):
                 if(len(canAc_vars)):
-                    print("check "+self.rule.name+" whether wildcards in canActivate are okay")
+                    #warn("check "+self.rule.name+" whether wildcards in canActivate are okay")
+                    pass
                 
                 vd = { canAc_var : "Wildcard()" for canAc_var in canAc_vars }
                 conditionals.append( canAc_cond_func(vd) )
@@ -279,7 +282,9 @@ def {func_name}({func_args}): # {rule_name}
                 ,func_name = h2u(self.rule.concl.name)
                 ,func_args = ", ".join(args)
                 ,hypotheses_translation = tab(self.translate_hypotheses(["len(", ")"]))
-            )
+                )
+        else:
+            print(self.rule)
         
         return "\n" + prefix_lines(repr(self.rule), "#") #temp
 
