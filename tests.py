@@ -72,3 +72,10 @@ def repl(): # use python's quit() to break out
 
 #repl()
 
+def remote_hypos():
+    for r in rules:
+        for h in r.hypos:
+            if type(h) != Constraint:
+                if h.issuer or h.location:
+                    print(h)
+remote_hypos()

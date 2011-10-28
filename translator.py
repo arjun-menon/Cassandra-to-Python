@@ -27,13 +27,11 @@ class HypothesesTranslator(object):
     def substitution_func_gen(self, variables, code):
         """ 'variables' is a list of variables that appear in 'code'.
         'code' is a format string on which string.format is invoked. """
-        
+
         ext, rest = separate(variables, lambda v: v in set(self.external_vars))
         
         substitution_dict = dict()
-        
         substitution_dict.update( { e : self.external_vars[e] for e in ext } )
-        
         substitution_dict.update( { r : p(r) for r in rest } )
         
         new_format_string = code.format(**substitution_dict)
@@ -174,7 +172,9 @@ class HypothesesTranslator(object):
                     conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
                 self.external_vars.update( { hasAc_subj : 'subj' } )
                 
-                tr = "return %s{\n    $group_key for subj, role in hasActivated if \n    " % wrapper[0]
+                loc = repr(hasAc.location)+'.' if hasAc.location else ''
+                
+                tr = "return %s{\n    $group_key for subj, role in %shasActivated if \n    " % (wrapper[0], loc)
                 ending = "\n}" + wrapper[1]
                 
             elif len(hasAcs) == 2:
@@ -199,7 +199,10 @@ class HypothesesTranslator(object):
                 self.external_vars.update( { rp : "role1."+rp for rp in role1_args } )
                 self.external_vars.update( { rp : "role2."+rp for rp in role2_args } )
                 
-                tr = "return %s{\n    1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if \n    " % wrapper[0]
+                loc1 = repr(h1.location)+'.' if h1.location else ''
+                loc2 = repr(h2.location)+'.' if h2.location else ''
+                
+                tr = "return %s{\n    1 for (subj1, role1) in %shasActivated for (subj2, role2) in %shasActivated if \n    " % (wrapper[0], loc1, loc2)
                 ending = "\n}" + wrapper[1]
                 
                 #print("Rule with 2 hasActivates:", self.rule.name)
@@ -413,6 +416,7 @@ def {func_name}({func_args}): # {rule_name}
 class CanReqCredRule(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
+        #print(self.rule)
     
 
 class PermitsRule(HypothesesTranslator):
@@ -513,7 +517,6 @@ def {cat}(self, *params):
                 cond = ht.translate_hypotheses(countf_wildcard = True)
                 if cond[:8] == 'return (' and cond[-1:] == ')':
                     cond = cond[13:][:-2]
-                    print(rule.name, rule.hypos)
                 if cond[0] == '#':
                     tr += cond[:-4]
                     cond = ''
@@ -682,13 +685,11 @@ def translate_rules(rules, rule_set):
     print("Translating %d rules in %s..." % (len(rules), rule_set) )
     outline = generate_outline(rules)
     
-#    for i in outline:
-#        print(type(i))
+    other_rule_sets = set(rule_sets) - set([rule_set])
+    other_imports = "import " + ", ".join(rs for rs in other_rule_sets) + '\n'
 
-    translation  = ""
-    translation += """from cassandra import *
-from datetime import datetime
-"""
+    translation  = "from cassandra import *\n"
+    translation += other_imports
     translation += "".join( map(trans, outline) )
 
     return translation

@@ -1,5 +1,5 @@
 from cassandra import *
-from datetime import datetime
+import spine, pds, ra
 
 class Register_clinician(Role):
     def __init__(self, cli, spcty):
@@ -288,7 +288,7 @@ class Patient(Role):
     
     def canActivate(self, pat): # A1.5.4
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in "PDS".hasActivated if 
             role1.name == "Register-patient" and 
             role2.name == "Register-patient" and 
             role1.pat == pat and 
@@ -318,7 +318,7 @@ class Agent(Role):
     
     def canActivate_1(self, agent): # A1.6.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in "PDS".hasActivated if 
             role1.name == "Register-agent" and 
             role2.name == "Register-patient" and 
             role1.pat == self.pat and 
@@ -330,7 +330,7 @@ class Agent(Role):
     
     def canActivate_2(self, agent): # A1.6.2
         return {
-            1 for subj, role in hasActivated if 
+            1 for subj, role in "PDS".hasActivated if 
             role.name == "Register-patient" and 
             role.agent == agent and 
             canActivate(self.pat, Patient()) and 
@@ -426,7 +426,7 @@ class Registration_authority(Role):
     
     def canActivate_2(self, ra): # A1.7.3
         return {
-            1 for subj, role in hasActivated if 
+            1 for subj, role in ra.hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -578,7 +578,7 @@ class Ext_treating_clinician(Role):
     
     def canActivate_2(self, cli): # A2.2.2
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in ra.hasActivated if 
             role1.name == "Consent-to-referral" and 
             role2.name == "NHS-clinician-cert" and 
             role1.spcty == self.spcty and 
@@ -707,7 +707,7 @@ class Third_party(Role):
     
     def canActivate(self, x): # A2.3.12
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in "PDS".hasActivated if 
             role1.name == "Request-third-party-consent" and 
             role2.name == "Register-patient" and 
             role1.x == x and 

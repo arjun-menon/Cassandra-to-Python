@@ -1,5 +1,5 @@
 from cassandra import *
-from datetime import datetime
+import hospital, pds, ra
 
 class Spine_clinician(Role):
     def __init__(self, ra, org, spcty):
@@ -23,7 +23,7 @@ class Spine_clinician(Role):
     
     def canActivate_2(self, cli): # S1.1.2
         return {
-            1 for subj, role in hasActivated if 
+            1 for subj, role in ra.hasActivated if 
             role.name == "NHS-clinician-cert" and 
             role.spcty == self.spcty and 
             role.org == self.org and 
@@ -110,7 +110,7 @@ class Patient(Role):
     
     def canActivate(self, pat): # S1.3.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in "PDS".hasActivated if 
             role1.name == "Register-patient" and 
             role2.name == "Register-patient" and 
             role1.pat == pat and 
@@ -190,7 +190,7 @@ class Agent(Role):
     
     def canActivate(self, ag): # S1.4.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in "PDS".hasActivated if 
             role1.name == "Register-agent" and 
             role2.name == "Register-patient" and 
             role1.pat == self.pat and 
@@ -308,7 +308,7 @@ class Registration_authority(Role):
     
     def canActivate_2(self, ra): # S1.5.2
         return {
-            1 for subj, role in hasActivated if 
+            1 for subj, role in ra.hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -464,7 +464,7 @@ class Third_party(Role):
     
     def canActivate(self, x): # S2.2.10
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in "PDS".hasActivated if 
             role1.name == "Request-third-party-consent" and 
             role2.name == "Register-patient" and 
             role1.x == x and 

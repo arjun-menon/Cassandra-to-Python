@@ -1,5 +1,5 @@
 from cassandra import *
-from datetime import datetime
+import spine, hospital, pds
 
 class Register_RA_manager(Role):
     def __init__(self, mgr2):
@@ -87,7 +87,7 @@ class Registration_authority(Role):
     
     def canActivate_2(self, ra): # R1.2.5
         return {
-            1 for subj, role in hasActivated if 
+            1 for subj, role in ra.hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -275,7 +275,7 @@ class Workgroup_member(Role):
     
     def canActivate_1(self, cli): # R3.1.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in org.hasActivated if 
             role1.name == "NHS-health-org-cert" and 
             role2.name == "Register-team-member" and 
             role1.org == self.org and 
@@ -285,7 +285,7 @@ class Workgroup_member(Role):
     
     def canActivate_2(self, cli): # R3.1.2
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in org.hasActivated if 
             role1.name == "NHS-health-org-cert" and 
             role2.name == "Register-ward-member" and 
             role1.org == self.org and 
