@@ -36,13 +36,17 @@ def canActivate(subject, role):
 def Current_time():
     return datetime.utcnow()
 
-class Action(object):
-    def __init__(self, name, **a):
+class  Action(object):
+    def __init__(self, name, **params):
         self.name = name
-        self.__dict__.update(a)
-        self.args = list(a)
+        self.__dict__.update(params)
+        self.prms = list(params)
     
     def __repr__(self):
         r = 'Action(' + repr(self.name)
-        a = ', '.join( aname + ' = ' + repr(self.__dict__[aname]) for aname in self.args )
+        a = ', '.join( prm + ' = ' + repr(self.__dict__[prm]) for prm in self.prms )
         return ( (r + ', ' + a) if a else r ) + ')'
+
+class Add_bla(Action):
+    def __init__(self, pat, id):
+        super().__init__('Add_bla', **{'pat':pat, 'id':id})
