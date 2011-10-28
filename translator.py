@@ -225,8 +225,7 @@ class HypothesesTranslator(object):
             
             count_funcs =  [f for f in funcs if f.name in CountFunctions.funcs]
             
-            if len(count_funcs) == 1:
-                f = count_funcs[0]
+            for f in count_funcs:
                 f_return = str(f.args[0])
                 args = [str(a) for a in f.args[1:]]
                 
@@ -234,16 +233,33 @@ class HypothesesTranslator(object):
                     h2u(f.name) + '(' + ", ".join(p(str(a)) for a in args) + ')' )
                 
                 if unbound_vars:
-                    raise StopTranslating("unbound vars in %s" % repr(f))
+                    raise StopTranslating("unbound vars %r in %r" % (unbound_vars, f))
                 
                 # create a mapping from the return value of f to its code
                 self.external_vars.update( { f_return : code_gen() } )
-                              
+                
                 # remove f from funcs:
                 funcs = [func for func in funcs if func.name != f.name]
-                
-            elif len(count_funcs) > 1:
-                raise StopTranslating("more than 1 count function invoked in a rule")
+            
+#            if len(count_funcs) == 1:
+#                f = count_funcs[0]
+#                f_return = str(f.args[0])
+#                args = [str(a) for a in f.args[1:]]
+#                
+#                unbound_vars, code_gen = self.substitution_func_gen(args, 
+#                    h2u(f.name) + '(' + ", ".join(p(str(a)) for a in args) + ')' )
+#                
+#                if unbound_vars:
+#                    raise StopTranslating("unbound vars in %s" % repr(f))
+#                
+#                # create a mapping from the return value of f to its code
+#                self.external_vars.update( { f_return : code_gen() } )
+#                              
+#                # remove f from funcs:
+#                funcs = [func for func in funcs if func.name != f.name]
+#                
+#            elif len(count_funcs) > 1:
+#                raise StopTranslating("more than 1 count function invoked in a rule")
             
             # handle constraints:
             

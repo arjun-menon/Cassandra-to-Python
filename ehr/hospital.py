@@ -1473,7 +1473,7 @@ class Read_record_item(Action):
         return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj) or self.permits_4(subj) or self.permits_5(subj) or self.permits_6(subj)
     
     def permits_1(self, ag): # A5.3.1
-        #todo: more than 1 count function invoked in a rule
+        #todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #hasActivated(ag, Agent(pat))
         #count-concealed-by-patient2(n, a, b)
         #count-concealed-by-clinician(m, pat, id)
@@ -1501,7 +1501,7 @@ class Read_record_item(Action):
         pass
     
     def permits_4(self, cli): # A5.3.4
-        #todo: unbound vars in count-concealed-by-patient2(n, a, b)
+        #todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #hasActivated(cli, Clinician(spcty))
         #canActivate(cli, ADB-treating-clinician(pat, group, spcty))
         #count-concealed-by-patient2(n, a, b)
@@ -1512,7 +1512,7 @@ class Read_record_item(Action):
         pass
     
     def permits_5(self, cli): # A5.3.5
-        #todo: unbound vars in count-concealed-by-patient2(n, a, b)
+        #todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty))
         #count-concealed-by-patient2(n, a, b)
         #n = 0
@@ -1522,7 +1522,7 @@ class Read_record_item(Action):
         pass
     
     def permits_6(self, pat): # A5.3.6
-        #todo: more than 1 count function invoked in a rule
+        #todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #hasActivated(pat, Patient())
         #count-concealed-by-patient2(n, a, b)
         #count-concealed-by-clinician(m, pat, id)

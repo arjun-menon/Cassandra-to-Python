@@ -1223,7 +1223,7 @@ class Read_spine_record_item(Action):
         return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj) or self.permits_4(subj) or self.permits_5(subj)
     
     def permits_1(self, pat): # S5.3.1
-        #todo: more than 1 count function invoked in a rule
+        #todo: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
         #hasActivated(pat, Patient())
         #hasActivated(x, One-off-consent(pat))
         #count-concealed-by-spine-patient(n, a, b)
@@ -1237,7 +1237,7 @@ class Read_spine_record_item(Action):
         pass
     
     def permits_2(self, ag): # S5.3.2
-        #todo: more than 1 count function invoked in a rule
+        #todo: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
         #hasActivated(ag, Agent(pat))
         #hasActivated(x, One-off-consent(pat))
         #count-concealed-by-spine-patient(n, a, b)
@@ -1261,7 +1261,7 @@ class Read_spine_record_item(Action):
         }
     
     def permits_4(self, cli): # S5.3.4
-        #todo: unbound vars in count-concealed-by-spine-patient(n, a, b)
+        #todo: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #hasActivated(x, One-off-consent(pat))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
