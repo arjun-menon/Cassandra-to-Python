@@ -3,7 +3,6 @@ from datetime import datetime
 
 class Role(object):
     def __init__(self, name, args):
-        assert type(args) == tuple
         self.name = name
         self.args = args
     
