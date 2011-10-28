@@ -1,6 +1,8 @@
 from cassandra import *
 import spine, hospital, pds
 
+hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
+
 class Register_RA_manager(Role):
     def __init__(self, mgr2):
         super().__init__('Register-RA-manager', ['mgr2']) 
@@ -22,7 +24,7 @@ class Register_RA_manager(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(Wildcard(), RA_manager())  # R1.1.6
+        deactivate(hasActivated, self.mgr2, RA_manager())  # R1.1.6
         
 
 def RA_manager_regs(mgr): # R1.1.3
@@ -185,21 +187,21 @@ class NHS_health_org_cert(Role):
         }
     
     def onDeactivate(self, subj):
-        #todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
+        #todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
         #other-NHS-health-org-regs(n, x, org, start2, end2)
         #n = 0
         #start in [start2, end2]
         #end in [start2, end2]
         #start < end
-        deactivate(Wildcard(), NHS_clinician_cert(self.org, Wildcard(), Wildcard(), self.start, self.end))  # R2.1.3
+        deactivate(hasActivated, Wildcard(), NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # R2.1.3
         
-        #todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
+        #todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
         #other-NHS-health-org-regs(n, x, org, start2, end2)
         #start in [start2, end2]
         #end in [start2, end2]
         #start < end
         #n = 0
-        deactivate(Wildcard(), NHS_Caldicott_guardian_cert(self.org, Wildcard(), self.start, self.end))  # R2.2.3
+        deactivate(hasActivated, Wildcard(), NHS_Caldicott_guardian_cert(self.org, Wildcard(), Wildcard(), Wildcard()))  # R2.2.3
         
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i

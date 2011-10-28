@@ -1,7 +1,6 @@
 from helpers import *
 from datetime import datetime
-
-hasActivated = set()  # Set of (entity, role) pairs representing current activations.
+from ehr.spine import hasActivated
 
 class Role(object):
     def __init__(self, name, args):
@@ -31,7 +30,10 @@ class Wildcard(object):
 def canActivate(subject, role):
     role.canActivate(subject)
 
-def deactivate(subject, role):
+def deactivate(hasActivated, subj, role):
+    hasActivated -= {(s, r) for (s, r) in hasActivated if s == subj and r == role}
+
+def pi7_1(obj):
     pass
 
 def Current_time():

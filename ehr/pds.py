@@ -1,6 +1,8 @@
 from cassandra import *
 import spine, hospital, ra
 
+hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
+
 class PDS_manager(Role):
     def __init__(self):
         super().__init__('PDS-manager', []) 
@@ -46,7 +48,7 @@ class Register_PDS_manager(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(Wildcard(), PDS_manager())  # P1.1.3
+        deactivate(hasActivated, self.adm2, PDS_manager())  # P1.1.3
         
 
 def pds_admin_regs(adm): # P1.1.7
@@ -90,7 +92,7 @@ class Agent(Role):
             1 for subj, role in hasActivated if 
             role.name == "Register-patient" and 
             role.ag == ag and 
-            canActivate(role.ag, Agent(self.pat)) and 
+            canActivate(role.ag, "Spine".Agent(self.pat)) and 
             no_main_role_active(role.ag)
         }
     
@@ -220,11 +222,11 @@ class Register_patient(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(self.pat, Patient())  # P1.2.3
+        deactivate(hasActivated, self.pat, Patient())  # P1.2.3
         
-        deactivate(Wildcard(), Agent(self.pat))  # P1.3.3
+        deactivate(hasActivated, self.pat, Agent(Wildcard()))  # P1.3.3
         
-        deactivate(Wildcard(), Agent(self.pat))  # P1.3.4
+        deactivate(hasActivated, Wildcard(), Agent(self.pat))  # P1.3.4
         
 
 def patient_regs(pat): # P2.1.3

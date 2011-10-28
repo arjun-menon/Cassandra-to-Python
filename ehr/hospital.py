@@ -1,6 +1,8 @@
 from cassandra import *
 import spine, pds, ra
 
+hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
+
 class Register_clinician(Role):
     def __init__(self, cli, spcty):
         super().__init__('Register-clinician', ['cli', 'spcty']) 
@@ -22,11 +24,11 @@ class Register_clinician(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(self.cli, Clinician(self.spcty))  # A1.1.6
+        deactivate(hasActivated, self.cli, Clinician(self.spcty))  # A1.1.6
         
-        deactivate(Wildcard(), Register_team_member(Wildcard(), Wildcard(), self.spcty))  # A3.2.5
+        deactivate(hasActivated, Wildcard(), Register_team_member(self.cli, Wildcard(), self.spcty))  # A3.2.5
         
-        deactivate(Wildcard(), Register_ward_member(self.cli, Wildcard(), self.spcty))  # A3.5.6
+        deactivate(hasActivated, Wildcard(), Register_ward_member(self.cli, Wildcard(), self.spcty))  # A3.5.6
         
 
 def clinician_regs(cli, spcty): # A1.1.3
@@ -57,7 +59,7 @@ class Clinician(Role):
         )
     
     def onDeactivate(self, subj):
-        deactivate(subj, Emergency_clinician(Wildcard()))  # A3.7.5
+        deactivate(hasActivated, subj, Emergency_clinician(Wildcard()))  # A3.7.5
         
 
 def count_clinician_activations(user): # A1.1.7
@@ -88,7 +90,7 @@ class Register_Caldicott_guardian(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(self.cg, Caldicott_guardian())  # A1.2.6
+        deactivate(hasActivated, self.cg, Caldicott_guardian())  # A1.2.6
         
 
 def cg_regs(cg): # A1.2.3
@@ -143,7 +145,7 @@ class Register_HR_mgr(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(Wildcard(), HR_mgr())  # A1.3.6
+        deactivate(hasActivated, self.mgr2, HR_mgr())  # A1.3.6
         
 
 def hr_manager_regs(mgr): # A1.3.3
@@ -199,7 +201,7 @@ class Register_receptionist(Role):
     
     def onDeactivate(self, subj):
         if no_main_role_active(self.rec):
-            deactivate(self.rec, Receptionist())  # A1.4.6
+            deactivate(hasActivated, self.rec, Receptionist())  # A1.4.6
 
 def receptionist_regs(rec): # A1.4.3
     return len({
@@ -252,27 +254,27 @@ class Register_patient(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(self.pat, Patient())  # A1.5.6
+        deactivate(hasActivated, self.pat, Patient())  # A1.5.6
         
-        deactivate(Wildcard(), Register_agent(Wildcard(), self.pat))  # A1.6.9
+        deactivate(hasActivated, Wildcard(), Register_agent(Wildcard(), self.pat))  # A1.6.9
         
-        deactivate(Wildcard(), Request_consent_to_referral(self.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # A2.1.6
+        deactivate(hasActivated, Wildcard(), Request_consent_to_referral(self.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # A2.1.6
         
-        deactivate(Wildcard(), Request_third_party_consent(Wildcard(), self.pat, Wildcard()))  # A2.3.10
+        deactivate(hasActivated, Wildcard(), Request_third_party_consent(Wildcard(), self.pat, Wildcard()))  # A2.3.10
         
-        deactivate(Wildcard(), Third_party_consent(Wildcard(), self.pat, Wildcard()))  # A2.3.20
+        deactivate(hasActivated, Wildcard(), Third_party_consent(Wildcard(), self.pat, Wildcard()))  # A2.3.20
         
-        deactivate(Wildcard(), Register_team_episode(self.pat, Wildcard()))  # A3.3.6
+        deactivate(hasActivated, Wildcard(), Register_team_episode(self.pat, Wildcard()))  # A3.3.6
         
-        deactivate(Wildcard(), Register_ward_episode(self.pat, Wildcard()))  # A3.6.6
+        deactivate(hasActivated, Wildcard(), Register_ward_episode(self.pat, Wildcard()))  # A3.6.6
         
-        deactivate(Wildcard(), Emergency_clinician(self.pat))  # A3.7.4
+        deactivate(hasActivated, Wildcard(), Emergency_clinician(self.pat))  # A3.7.4
         
-        deactivate(Wildcard(), Concealed_by_clinician(self.pat, Wildcard(), Wildcard(), Wildcard()))  # A4.1.5
+        deactivate(hasActivated, Wildcard(), Concealed_by_clinician(self.pat, Wildcard(), Wildcard(), Wildcard()))  # A4.1.5
         
         #todo: unable to bind vars {'what'} in constraint pi7_1(what) == self.pat
         #pi7_1(what) = pat
-        deactivate(Wildcard(), Concealed_by_patient(Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # A4.2.6
+        deactivate(hasActivated, Wildcard(), Concealed_by_patient(Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # A4.2.6
         
 
 def patient_regs(pat): # A1.5.3
@@ -334,7 +336,7 @@ class Agent(Role):
             role.name == "Register-patient" and 
             role.agent == agent and 
             canActivate(self.pat, Patient()) and 
-            canActivate(role.agent, Agent(self.pat)) and 
+            canActivate(role.agent, "Spine".Agent(self.pat)) and 
             no_main_role_active(role.agent)
         }
 
@@ -387,8 +389,8 @@ class Register_agent(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_agent_regs(subj, ag, self.pat) == 0:
-            deactivate(Wildcard(), Agent(self.pat))  # A1.6.3
+        if other_agent_regs(subj, self.agent, self.pat) == 0:
+            deactivate(hasActivated, self.agent, Agent(self.pat))  # A1.6.3
 
 def other_agent_regs(x, ag, pat): # A1.6.10
     return len({
@@ -484,8 +486,8 @@ class Request_consent_to_referral(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_consent_to_referral_requests(subj, self.pat, self.ra, self.org, cli, spcty) == 0:
-            deactivate(Wildcard(), Consent_to_referral(self.pat, self.ra, self.org, Wildcard(), Wildcard()))  # A2.1.11
+        if other_consent_to_referral_requests(subj, self.pat, self.ra, self.org, self.cli2, self.spcty2) == 0:
+            deactivate(hasActivated, Wildcard(), Consent_to_referral(self.pat, self.ra, self.org, self.cli2, self.spcty2))  # A2.1.11
 
 def other_consent_to_referral_requests(x, pat, ra, org, cli, spcty): # A2.1.7
     return len({
@@ -534,8 +536,8 @@ class Consent_to_referral(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_referral_consents(subj, self.pat, self.ra, self.org, self.cli, self.spcty) == 0:
-            deactivate(self.cli, Ext_treating_clinician(self.pat, self.ra, self.org, self.spcty))  # A2.2.4
+        if other_referral_consents(subj, self.pat, self.ra, self.org, cli, self.spcty) == 0:
+            deactivate(hasActivated, Wildcard(), Ext_treating_clinician(self.pat, self.ra, self.org, self.spcty))  # A2.2.4
 
 def other_referral_consents(x, pat, ra, org, cli, spcty): # A2.1.12
     return len({
@@ -692,7 +694,7 @@ class Request_third_party_consent(Role):
     
     def onDeactivate(self, subj):
         if other_third_party_requests(subj, self.x) == 0:
-            deactivate(self.x, Third_party())  # A2.3.15
+            deactivate(hasActivated, self.x, Third_party())  # A2.3.15
 
 def count_third_party_activations(user): # A2.3.11
     return len({
@@ -720,11 +722,10 @@ class Third_party(Role):
             x == x_
         )
 
-def other_third_party_requests(x, third-party): # A2.3.14
+def other_third_party_requests(x, third_party): # A2.3.14
     return len({
         1 for subj, role in hasActivated if 
         role.name == "Request-third-party-consent" and 
-        role.third-party == third-party and 
         x != subj
     })
 
@@ -818,7 +819,7 @@ class Register_head_of_team(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(self.hd, Head_of_team(self.team))  # A3.1.3
+        deactivate(hasActivated, self.hd, Head_of_team(self.team))  # A3.1.3
         
 
 def head_of_team_regs(hd, team): # A3.1.7
@@ -875,7 +876,7 @@ class Register_team_member(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(Wildcard(), Register_head_of_team(Wildcard(), self.team))  # A3.1.6
+        deactivate(hasActivated, Wildcard(), Register_head_of_team(self.mem, self.team))  # A3.1.6
         
 
 #untranslated:
@@ -993,7 +994,7 @@ class Register_head_of_ward(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(self.cli, Head_of_ward(self.ward))  # A3.4.3
+        deactivate(hasActivated, self.cli, Head_of_ward(self.ward))  # A3.4.3
         
 
 def head_of_ward_regs(cli, ward): # A3.4.7
@@ -1050,7 +1051,7 @@ class Register_ward_member(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(Wildcard(), Register_head_of_ward(self.cli, self.ward))  # A3.4.6
+        deactivate(hasActivated, Wildcard(), Register_head_of_ward(self.cli, self.ward))  # A3.4.6
         
 
 #untranslated:

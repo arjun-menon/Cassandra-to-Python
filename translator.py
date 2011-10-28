@@ -123,8 +123,14 @@ class HypothesesTranslator(object):
         bound_vars = [var.name for var in [subj] + role.args]
         default_vd = {vn : vn for vn in bound_vars}
         
-        return self.substitution_func_gen(bound_vars, "canActivate({}, {}({}))".format(
-            p(bound_vars[0]), h2u(role.name), ", ".join(p(v) for v in bound_vars[1:])
+        loc = ''
+        if canAc.issuer:
+            loc = repr(canAc.issuer)+'.'
+        if canAc.location:
+            loc = repr(canAc.location)+'.' 
+        
+        return self.substitution_func_gen(bound_vars, "canActivate({}, {}{}({}))".format(
+            p(bound_vars[0]), loc, h2u(role.name), ", ".join(p(v) for v in bound_vars[1:])
             ) )
     
     
@@ -388,9 +394,9 @@ class FuncRule(HypothesesTranslator):
         if self.kind == 'count' or self.kind == 'group' or self.kind == 'nmra':
             
             if self.kind == 'nmra':
-                args = [repr(a) for a in self.rule.concl.args]
+                args = [h2u(repr(a)) for a in self.rule.concl.args]
             else:
-                args = [repr(a) for a in self.rule.concl.args[1:]]
+                args = [h2u(repr(a)) for a in self.rule.concl.args[1:]]
             
             self.external_vars = { a:a for a in args }
             
@@ -495,15 +501,18 @@ def {cat}(self, *params):
             deac_role =     rule.concl.args[1]
             deac_subj = str(rule.concl.args[0])
             
-            subj = repr(rule.hypos[0].args[0]) # triggering hypo's subject
+            trigger = rule.hypos[0]
             rule.hypos = rule.hypos[1:] # remove triggering hypo.
             
+            subj = repr(trigger.args[0]) # triggering hypo's subject
+            t_params = [p for p in trigger.args[1].args]
+            
             ht = HypothesesTranslator(rule)
-            ht.external_vars = { repr(p) : 'self.'+repr(p) for p in self.params }
+            ht.external_vars = { repr(tp) : 'self.'+repr(sp) for tp, sp in zip(t_params, self.params) }
             ht.external_vars.update( { subj : 'subj' } )
             
             bound_vars = [deac_subj] + [repr(p) for p in deac_role.args]
-            code = "deactivate({}, {}({}))  # {}\n".format(
+            code = "deactivate(hasActivated, {}, {}({}))  # {}\n".format(
                         p(deac_subj), h2u(deac_role.name),
                         ', '.join(p(repr(a)) for a in deac_role.args),
                         rule.name )
@@ -690,6 +699,7 @@ def translate_rules(rules, rule_set):
 
     translation  = "from cassandra import *\n"
     translation += other_imports
+    translation += "\nhasActivated = set()  # Set of (subject, role) pairs representing currently active roles.\n"
     translation += "".join( map(trans, outline) )
 
     return translation

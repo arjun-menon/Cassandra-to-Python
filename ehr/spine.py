@@ -1,6 +1,8 @@
 from cassandra import *
 import hospital, pds, ra
 
+hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
+
 class Spine_clinician(Role):
     def __init__(self, ra, org, spcty):
         super().__init__('Spine-clinician', ['ra', 'org', 'spcty']) 
@@ -39,7 +41,7 @@ class Spine_clinician(Role):
         )
     
     def onDeactivate(self, subj):
-        deactivate(subj, Spine_emergency_clinician(self.org, Wildcard()))  # S3.2.3
+        deactivate(hasActivated, subj, Spine_emergency_clinician(self.org, Wildcard()))  # S3.2.3
         
 
 def count_spine_clinician_activations(user): # S1.1.4
@@ -94,7 +96,7 @@ class Register_spine_admin(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(Wildcard(), Spine_admin())  # S1.2.3
+        deactivate(hasActivated, self.adm2, Spine_admin())  # S1.2.3
         
 
 def spine_admin_regs(adm): # S1.2.7
@@ -151,29 +153,29 @@ class Register_patient(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(self.pat, Patient())  # S1.3.3
+        deactivate(hasActivated, self.pat, Patient())  # S1.3.3
         
-        deactivate(Wildcard(), Register_agent(Wildcard(), self.pat))  # S1.4.13
+        deactivate(hasActivated, Wildcard(), Register_agent(Wildcard(), self.pat))  # S1.4.13
         
-        deactivate(Wildcard(), One_off_consent(self.pat))  # S2.1.7
+        deactivate(hasActivated, Wildcard(), One_off_consent(self.pat))  # S2.1.7
         
-        deactivate(Wildcard(), Request_third_party_consent(Wildcard(), self.pat, Wildcard()))  # S2.2.8
+        deactivate(hasActivated, Wildcard(), Request_third_party_consent(Wildcard(), self.pat, Wildcard()))  # S2.2.8
         
-        deactivate(Wildcard(), Request_consent_to_treatment(self.pat, Wildcard(), Wildcard(), Wildcard()))  # S2.3.7
+        deactivate(hasActivated, Wildcard(), Request_consent_to_treatment(self.pat, Wildcard(), Wildcard(), Wildcard()))  # S2.3.7
         
-        deactivate(Wildcard(), Request_consent_to_group_treatment(self.pat, Wildcard(), Wildcard()))  # S2.4.7
+        deactivate(hasActivated, Wildcard(), Request_consent_to_group_treatment(self.pat, Wildcard(), Wildcard()))  # S2.4.7
         
-        deactivate(self.pat, Referrer(self.pat, Wildcard(), Wildcard(), Wildcard()))  # S3.1.4
+        deactivate(hasActivated, self.pat, Referrer(self.pat, Wildcard(), Wildcard(), Wildcard()))  # S3.1.4
         
-        deactivate(Wildcard(), Spine_emergency_clinician(Wildcard(), self.pat))  # S3.2.4
+        deactivate(hasActivated, Wildcard(), Spine_emergency_clinician(Wildcard(), self.pat))  # S3.2.4
         
-        deactivate(Wildcard(), Concealed_by_spine_clinician(self.pat, Wildcard(), Wildcard(), Wildcard()))  # S4.1.5
+        deactivate(hasActivated, Wildcard(), Concealed_by_spine_clinician(self.pat, Wildcard(), Wildcard(), Wildcard()))  # S4.1.5
         
         #todo: unable to bind vars {'what'} in constraint pi7_1(what) == self.pat
         #pi7_1(what) = pat
-        deactivate(Wildcard(), Conceal_request(Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # S4.2.6
+        deactivate(hasActivated, Wildcard(), Conceal_request(Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # S4.2.6
         
-        deactivate(Wildcard(), Authenticated_express_consent(self.pat, Wildcard()))  # S4.3.7
+        deactivate(hasActivated, Wildcard(), Authenticated_express_consent(self.pat, Wildcard()))  # S4.3.7
         
 
 def patient_regs(pat): # S1.3.7
@@ -280,8 +282,8 @@ class Register_agent(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_agent_regs(subj, ag, self.pat) == 0:
-            deactivate(Wildcard(), Agent(self.pat))  # S1.4.3
+        if other_agent_regs(subj, self.agent, self.pat) == 0:
+            deactivate(hasActivated, self.agent, Agent(self.pat))  # S1.4.3
 
 def agent_regs(pat): # S1.4.14
     return len({
@@ -446,9 +448,9 @@ class Request_third_party_consent(Role):
     
     def onDeactivate(self, subj):
         if other_third_party_consent_requests(subj, self.x) == 0:
-            deactivate(self.x, Third_party())  # S2.2.12
+            deactivate(hasActivated, self.x, Third_party())  # S2.2.12
         if other_third_party_consent_requests(subj, self.x) == 0:
-            deactivate(self.x, Third_party_consent(self.x, self.pat, self.id))  # S2.2.16
+            deactivate(hasActivated, self.x, Third_party_consent(self.x, self.pat, self.id))  # S2.2.16
 
 def other_third_party_consent_requests(y, z): # S2.2.9
     return len({
@@ -575,8 +577,8 @@ class Request_consent_to_treatment(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_consent_to_treatment_requests(subj, self.pat, org, cli, spcty) == 0:
-            deactivate(Wildcard(), Consent_to_treatment(self.pat, Wildcard(), Wildcard(), Wildcard()))  # S2.3.12
+        if other_consent_to_treatment_requests(subj, self.pat, self.org2, self.cli2, self.spcty2) == 0:
+            deactivate(hasActivated, Wildcard(), Consent_to_treatment(self.pat, self.org2, self.cli2, self.spcty2))  # S2.3.12
 
 def other_consent_to_treatment_requests(x, pat, org, cli, spcty): # S2.3.8
     return len({
@@ -684,12 +686,12 @@ class Request_consent_to_group_treatment(Role):
             role.name == "Spine-clinician" and 
             role.org == self.org and 
             subj == cli and 
-            canActivate(subj, Workgroup_member(role.org, self.group, role.spcty))
+            canActivate(subj, ra.Workgroup_member(role.org, self.group, role.spcty))
         }
     
     def onDeactivate(self, subj):
         if other_consent_to_group_treatment_requests(subj, self.pat, self.org, self.group) == 0:
-            deactivate(Wildcard(), Consent_to_group_treatment(self.pat, self.org, self.group))  # S2.4.12
+            deactivate(hasActivated, Wildcard(), Consent_to_group_treatment(self.pat, self.org, self.group))  # S2.4.12
 
 def other_consent_to_group_treatment_requests(x, pat, org, group): # S2.4.8
     return len({
@@ -854,7 +856,7 @@ class Group_treating_clinician(Role):
             role.org == self.org and 
             role.pat == self.pat and 
             role.group == self.group and 
-            canActivate(cli, Workgroup_member(role.org, role.group, self.spcty)) and 
+            canActivate(cli, ra.Workgroup_member(role.org, role.group, self.spcty)) and 
             canActivate(self.ra, Registration_authority())
         }
     
@@ -865,7 +867,7 @@ class Group_treating_clinician(Role):
             role.org == self.org and 
             role.pat == self.pat and 
             role.group == self.group and 
-            canActivate(cli, Workgroup_member(role.org, role.group, self.spcty)) and 
+            canActivate(cli, ra.Workgroup_member(role.org, role.group, self.spcty)) and 
             canActivate(self.ra, Registration_authority())
         }
 
@@ -971,7 +973,7 @@ class Conceal_request(Role):
         pass
     
     def onDeactivate(self, subj):
-        deactivate(Wildcard(), Concealed_by_spine_patient(self.what, self.who, self.start, self.end))  # S4.2.11
+        deactivate(hasActivated, Wildcard(), Concealed_by_spine_patient(self.what, self.who, self.start, self.end))  # S4.2.11
         
 
 def count_conceal_requests(pat): # S4.2.7
@@ -1011,8 +1013,8 @@ class Concealed_by_spine_patient(Role):
             1 for subj, role in hasActivated if 
             role.name == "Spine-clinician" and 
             subj == cli1 and 
-            canActivate(subj, Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), role.spcty1)) and 
-            canActivate(cli2, Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), Wildcard()))
+            canActivate(subj, ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), role.spcty1)) and 
+            canActivate(cli2, ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), Wildcard()))
         }
 
 def count_concealed_by_spine_patient(a, b): # S4.2.12

@@ -77,5 +77,5 @@ def remote_hypos():
         for h in r.hypos:
             if type(h) != Constraint:
                 if h.issuer or h.location:
-                    print(h)
-remote_hypos()
+                    print(r.name, h)
+#remote_hypos()
