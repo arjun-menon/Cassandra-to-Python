@@ -36,3 +36,13 @@ def canActivate(subject, role):
 def Current_time():
     return datetime.utcnow()
 
+class Action(object):
+    def __init__(self, name, **a):
+        self.name = name
+        self.__dict__.update(a)
+        self.args = list(a)
+    
+    def __repr__(self):
+        r = 'Action(' + repr(self.name)
+        a = ', '.join( aname + ' = ' + repr(self.__dict__[aname]) for aname in self.args )
+        return ( (r + ', ' + a) if a else r ) + ')'

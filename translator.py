@@ -357,6 +357,7 @@ class FuncRule(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
         
+        self.kind = None # unknown kind        
         # Determine what kind of function it is...
         if type(self.rule.concl.args[0]) == Aggregate:
             if self.rule.concl.args[0].name == 'count':
@@ -369,8 +370,6 @@ class FuncRule(HypothesesTranslator):
                 self.group_key = self.rule.concl.args[0].args[0]
         elif self.rule.concl.name == "no-main-role-active":
             self.kind = 'nmra'
-        
-        self.kind = None # unknown kind
     
     def nmra_trans_hypo(self):
         conditionals = []
