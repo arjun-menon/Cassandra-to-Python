@@ -6,8 +6,17 @@ class Role(object):
         assert type(args) == tuple
         self.name = name
         self.args = args
+    
     def __eq__(self, other):
-        return self.name == other.args and self.args == other.args
+        if self.name == other.name and self.args == other.args:
+            self_params = [self.__dict__[p] for p in self.args]
+            other_params = [other.__dict__[p] for p in other.args]
+            
+            matching_params = [a for (a, b) in zip(self_params, other_params)]
+            if len(matching_params) == len(other_params):
+                return True
+        return False
+    
     def __repr__(self):
         return self.name + '(' + ', '.join(map(repr, self.args)) + ')'
 
