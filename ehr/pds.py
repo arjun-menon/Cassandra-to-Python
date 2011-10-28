@@ -7,22 +7,22 @@ class PDS_manager(Role):
     
     def canActivate(self, adm): # P1.1.1
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "Register-PDS-manager" and 
-        	role.adm == adm and 
-        	no_main_role_active(role.adm)
+            1 for subj, role in hasActivated if 
+            role.name == "Register-PDS-manager" and 
+            role.adm == adm and 
+            no_main_role_active(role.adm)
         }
     
     def canDeactivate(self, adm, adm_): # P1.1.2
         return (
-        	adm == adm_
+            adm == adm_
         )
 
 def count_PDS_manager_activations(user): # P1.1.4
     return len({
-    	1 for subj, role in hasActivated if 
-    	role.name == "PDS-manager" and 
-    	subj == user
+        1 for subj, role in hasActivated if 
+        role.name == "PDS-manager" and 
+        subj == user
     })
 
 class Register_PDS_manager(Role):
@@ -32,29 +32,28 @@ class Register_PDS_manager(Role):
     
     def canActivate(self, adm1): # P1.1.5
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "PDS-manager" and 
-        	subj == adm1 and 
-        	pds_admin_regs(self.adm2) == 0
+            1 for subj, role in hasActivated if 
+            role.name == "PDS-manager" and 
+            subj == adm1 and 
+            pds_admin_regs(self.adm2) == 0
         }
     
     def canDeactivate(self, adm1, x): # P1.1.6
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "PDS-manager" and 
-        	subj == adm1
+            1 for subj, role in hasActivated if 
+            role.name == "PDS-manager" and 
+            subj == adm1
         }
     
-    #untranslated:
-    #'P1.1.3'
-    #isDeactivated(adm, PDS-manager()) <-
-    #	isDeactivated(x, Register-PDS-manager(adm))
+    def onDeactivate(self, subj):
+        deactivate(Wildcard(), PDS_manager())  # P1.1.3
+        
 
 def pds_admin_regs(adm): # P1.1.7
     return len({
-    	1 for subj, role in hasActivated if 
-    	role.name == "Register-PDS-manager" and 
-    	role.adm == adm
+        1 for subj, role in hasActivated if 
+        role.name == "Register-PDS-manager" and 
+        role.adm == adm
     })
 
 class Patient(Role):
@@ -63,22 +62,22 @@ class Patient(Role):
     
     def canActivate(self, pat): # P1.2.1
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "Register-patient" and 
-        	role.pat == pat and 
-        	no_main_role_active(role.pat)
+            1 for subj, role in hasActivated if 
+            role.name == "Register-patient" and 
+            role.pat == pat and 
+            no_main_role_active(role.pat)
         }
     
     def canDeactivate(self, pat, pat_): # P1.2.2
         return (
-        	pat == pat_
+            pat == pat_
         )
 
 def count_patient_activations(user): # P1.2.4
     return len({
-    	1 for subj, role in hasActivated if 
-    	role.name == "Patient" and 
-    	subj == user
+        1 for subj, role in hasActivated if 
+        role.name == "Patient" and 
+        subj == user
     })
 
 class Agent(Role):
@@ -88,23 +87,23 @@ class Agent(Role):
     
     def canActivate(self, ag): # P1.3.1
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "Register-patient" and 
-        	role.ag == ag and 
-        	canActivate(role.ag, Agent(self.pat)) and 
-        	no_main_role_active(role.ag)
+            1 for subj, role in hasActivated if 
+            role.name == "Register-patient" and 
+            role.ag == ag and 
+            canActivate(role.ag, Agent(self.pat)) and 
+            no_main_role_active(role.ag)
         }
     
     def canDeactivate(self, ag, ag_): # P1.3.2
         return (
-        	ag == ag_
+            ag == ag_
         )
 
 def count_agent_activations(user): # P1.3.5
     return len({
-    	1 for subj, role in hasActivated if 
-    	role.name == "Agent" and 
-    	subj == user
+        1 for subj, role in hasActivated if 
+        role.name == "Agent" and 
+        subj == user
     })
 
 class Professional_user(Role):
@@ -117,58 +116,58 @@ class Professional_user(Role):
     
     def canActivate_1(self, x): # P1.4.1
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "NHS-clinician-cert" and 
-        	role.org == self.org and 
-        	subj == x and 
-        	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end) and 
-        	no_main_role_active(role.cli)
+            1 for subj, role in hasActivated if 
+            role.name == "NHS-clinician-cert" and 
+            role.org == self.org and 
+            subj == x and 
+            canActivate(self.ra, Registration_authority()) and 
+            Current_time() in vrange(role.start, role.end) and 
+            no_main_role_active(role.cli)
         }
     
     def canActivate_2(self, x): # P1.4.2
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "NHS-clinician-cert" and 
-        	role.org == self.org and 
-        	subj == x and 
-        	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end) and 
-        	no_main_role_active(role.cli)
+            1 for subj, role in hasActivated if 
+            role.name == "NHS-clinician-cert" and 
+            role.org == self.org and 
+            subj == x and 
+            canActivate(self.ra, Registration_authority()) and 
+            Current_time() in vrange(role.start, role.end) and 
+            no_main_role_active(role.cli)
         }
     
     def canActivate_3(self, x): # P1.4.3
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "NHS-Caldicott-guardian-cert" and 
-        	role.org == self.org and 
-        	subj == x and 
-        	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end) and 
-        	no_main_role_active(role.cg)
+            1 for subj, role in hasActivated if 
+            role.name == "NHS-Caldicott-guardian-cert" and 
+            role.org == self.org and 
+            subj == x and 
+            canActivate(self.ra, Registration_authority()) and 
+            Current_time() in vrange(role.start, role.end) and 
+            no_main_role_active(role.cg)
         }
     
     def canActivate_4(self, x): # P1.4.4
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "NHS-Caldicott-guardian-cert" and 
-        	role.org == self.org and 
-        	subj == x and 
-        	canActivate(self.ra, Registration_authority()) and 
-        	Current_time() in vrange(role.start, role.end) and 
-        	no_main_role_active(role.cg)
+            1 for subj, role in hasActivated if 
+            role.name == "NHS-Caldicott-guardian-cert" and 
+            role.org == self.org and 
+            subj == x and 
+            canActivate(self.ra, Registration_authority()) and 
+            Current_time() in vrange(role.start, role.end) and 
+            no_main_role_active(role.cg)
         }
     
     def canDeactivate(self, x, x_): # P1.4.5
         return (
-        	x == x_
+            x == x_
         )
 
 def count_professional_user_activations(user): # P1.4.6
     return len({
-    	1 for subj, role in hasActivated if 
-    	role.name == "Professional-user" and 
-    	subj == user
+        1 for subj, role in hasActivated if 
+        role.name == "Professional-user" and 
+        subj == user
     })
 
 def no_main_role_active(user): # P1.5.1
@@ -186,18 +185,18 @@ class Registration_authority(Role):
     
     def canActivate_1(self, ra): # P1.5.2
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "NHS-registration-authority" and 
-        	role.ra == ra and 
-        	Current_time() in vrange(role.start, role.end)
+            1 for subj, role in hasActivated if 
+            role.name == "NHS-registration-authority" and 
+            role.ra == ra and 
+            Current_time() in vrange(role.start, role.end)
         }
     
     def canActivate_2(self, ra): # P1.5.3
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "NHS-registration-authority" and 
-        	role.ra == ra and 
-        	Current_time() in vrange(role.start, role.end)
+            1 for subj, role in hasActivated if 
+            role.name == "NHS-registration-authority" and 
+            role.ra == ra and 
+            Current_time() in vrange(role.start, role.end)
         }
 
 class Register_patient(Role):
@@ -207,39 +206,32 @@ class Register_patient(Role):
     
     def canActivate(self, adm): # P2.1.1
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "PDS-manager" and 
-        	subj == adm and 
-        	patient_regs(self.pat) == 0
+            1 for subj, role in hasActivated if 
+            role.name == "PDS-manager" and 
+            subj == adm and 
+            patient_regs(self.pat) == 0
         }
     
     def canDeactivate(self, adm, x): # P2.1.2
         return {
-        	1 for subj, role in hasActivated if 
-        	role.name == "PDS-manager" and 
-        	subj == adm
+            1 for subj, role in hasActivated if 
+            role.name == "PDS-manager" and 
+            subj == adm
         }
     
-    #untranslated:
-    #'P1.2.3'
-    #isDeactivated(pat, Patient()) <-
-    #	isDeactivated(x, Register-patient(pat))
-    
-    #untranslated:
-    #'P1.3.3'
-    #isDeactivated(ag, Agent(pat)) <-
-    #	isDeactivated(x, Register-patient(ag))
-    
-    #untranslated:
-    #'P1.3.4'
-    #isDeactivated(ag, Agent(pat)) <-
-    #	isDeactivated(x, Register-patient(pat))
+    def onDeactivate(self, subj):
+        deactivate(self.pat, Patient())  # P1.2.3
+        
+        deactivate(Wildcard(), Agent(self.pat))  # P1.3.3
+        
+        deactivate(Wildcard(), Agent(self.pat))  # P1.3.4
+        
 
 def patient_regs(pat): # P2.1.3
     return len({
-    	1 for subj, role in hasActivated if 
-    	role.name == "Register-patient" and 
-    	role.pat == pat
+        1 for subj, role in hasActivated if 
+        role.name == "Register-patient" and 
+        role.pat == pat
     })
 
 #untranslated:

@@ -131,7 +131,7 @@ class HypothesesTranslator(object):
     
     
     @typecheck
-    def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str='', group_key=None) -> lambda t: t:
+    def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str='', group_key=None, countf_wildcard=False) -> lambda t: t:
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
                                                   lambda h: type(h) == Constraint, 
@@ -174,7 +174,7 @@ class HypothesesTranslator(object):
                     conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
                 self.external_vars.update( { hasAc_subj : 'subj' } )
                 
-                tr = "return %s{\n\t$group_key for subj, role in hasActivated if \n\t" % wrapper[0]
+                tr = "return %s{\n    $group_key for subj, role in hasActivated if \n    " % wrapper[0]
                 ending = "\n}" + wrapper[1]
                 
             elif len(hasAcs) == 2:
@@ -199,13 +199,13 @@ class HypothesesTranslator(object):
                 self.external_vars.update( { rp : "role1."+rp for rp in role1_args } )
                 self.external_vars.update( { rp : "role2."+rp for rp in role2_args } )
                 
-                tr = "return %s{\n\t1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if \n\t" % wrapper[0]
+                tr = "return %s{\n    1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if \n    " % wrapper[0]
                 ending = "\n}" + wrapper[1]
                 
                 #print("Rule with 2 hasActivates:", self.rule.name)
             
             elif len(hasAcs) == 0:
-                tr = "return (\n\t"
+                tr = "return (\n    "
                 ending = "\n)"
                 #raise StopTranslating("a rule with no hasActivates")
             
@@ -233,10 +233,17 @@ class HypothesesTranslator(object):
                     h2u(f.name) + '(' + ", ".join(p(str(a)) for a in args) + ')' )
                 
                 if unbound_vars:
-                    raise StopTranslating("unbound vars %r in %r" % (unbound_vars, f))
+                    if countf_wildcard:
+                        self.external_vars.update( { v : "Wildcard()" for v in unbound_vars } )
+                    else:
+                        raise StopTranslating("unbound vars %r in %r" % (unbound_vars, f))
                 
                 # create a mapping from the return value of f to its code
                 self.external_vars.update( { f_return : code_gen() } )
+                
+                if unbound_vars and countf_wildcard:
+                    for v in unbound_vars:
+                        self.external_vars.pop(v)
                 
                 # remove f from funcs:
                 funcs = [func for func in funcs if func.name != f.name]
@@ -274,7 +281,7 @@ class HypothesesTranslator(object):
             tr = Template(tr).safe_substitute(group_key = group_key)
             
             if len(conditionals):
-                tr += " and \n\t".join(conditionals)
+                tr += " and \n    ".join(conditionals)
             
             return tr + ending
         
@@ -340,15 +347,6 @@ def canDeactivate{num}(self, {subj1}, {subj2}): # {rule_name}
                     )
 
 
-class isDac(HypothesesTranslator):
-    def __init__(self, rule):
-        super().__init__(rule)
-        
-    def translate(self):
-        #print(self.rule)
-        return untranslated(self.rule)
-
-
 class FuncRule(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
@@ -411,6 +409,11 @@ def {func_name}({func_args}): # {rule_name}
         
         return untranslated(self.rule)
 
+
+class CanReqCredRule(HypothesesTranslator):
+    def __init__(self, rule):
+        super().__init__(rule)
+    
 
 class PermitsRule(HypothesesTranslator):
     def __init__(self, rule):
@@ -476,6 +479,55 @@ def {cat}(self, *params):
         
         return tab(translation)
     
+    def isDac_translator(self):
+        if not self.isDacs:
+            return ''
+        
+        tr = ""
+        for rule in self.isDacs:
+            #print(rule)
+            assert rule.hypos[0].name == SpecialPredicates.isDac
+            
+            deac_role =     rule.concl.args[1]
+            deac_subj = str(rule.concl.args[0])
+            
+            subj = repr(rule.hypos[0].args[0]) # triggering hypo's subject
+            rule.hypos = rule.hypos[1:] # remove triggering hypo.
+            
+            ht = HypothesesTranslator(rule)
+            ht.external_vars = { repr(p) : 'self.'+repr(p) for p in self.params }
+            ht.external_vars.update( { subj : 'subj' } )
+            
+            bound_vars = [deac_subj] + [repr(p) for p in deac_role.args]
+            code = "deactivate({}, {}({}))  # {}\n".format(
+                        p(deac_subj), h2u(deac_role.name),
+                        ', '.join(p(repr(a)) for a in deac_role.args),
+                        rule.name )
+            
+            unbound_vars, foo = ht.substitution_func_gen(bound_vars, code)
+            vd = { v : "Wildcard()" for v in unbound_vars }
+            deac = foo(vd)
+            
+            cond = ""
+            if rule.hypos:
+                cond = ht.translate_hypotheses(countf_wildcard = True)
+                if cond[:8] == 'return (' and cond[-1:] == ')':
+                    cond = cond[13:][:-2]
+                    print(rule.name, rule.hypos)
+                if cond[0] == '#':
+                    tr += cond[:-4]
+                    cond = ''
+            
+            if cond:
+                tr += "if " + cond + ":\n    " + deac
+            else:
+                tr += deac + '\n'
+            
+            
+        return """
+def onDeactivate(self, subj):
+"""+tab(tr)
+    
     def translate(self):
         return """
 class {name_u}(Role):
@@ -494,7 +546,7 @@ class {name_u}(Role):
 
         ,canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
         ,canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
-        ,isDacs_trans = tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
+        ,isDacs_trans = tab(self.isDac_translator()) #tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
         )
 
 
@@ -578,7 +630,7 @@ def generate_outline(rules):
         for h in r.hypos:
             if type(h) == Atom and h.name == SpecialPredicates.isDac:
                 role_name = h.args[1].name
-        roles[role_name].isDacs.append( isDac(r) )
+        roles[role_name].isDacs.append( r )
     
     permits = [ r for r in rules if r.concl.name == 'permits' ]
     actions = { r.concl.args[1].name : r.concl.args[1] for r in permits }
@@ -610,7 +662,7 @@ def generate_outline(rules):
                 actions.pop(action.name)
         
         elif rule_type == SpecialPredicates.canRC:
-            outline.append(rule)
+            outline.append( CanReqCredRule(rule) )
         else: # func rule
             outline.append( FuncRule(rule) )
     
