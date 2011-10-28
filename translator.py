@@ -241,26 +241,6 @@ class HypothesesTranslator(object):
                 # remove f from funcs:
                 funcs = [func for func in funcs if func.name != f.name]
             
-#            if len(count_funcs) == 1:
-#                f = count_funcs[0]
-#                f_return = str(f.args[0])
-#                args = [str(a) for a in f.args[1:]]
-#                
-#                unbound_vars, code_gen = self.substitution_func_gen(args, 
-#                    h2u(f.name) + '(' + ", ".join(p(str(a)) for a in args) + ')' )
-#                
-#                if unbound_vars:
-#                    raise StopTranslating("unbound vars in %s" % repr(f))
-#                
-#                # create a mapping from the return value of f to its code
-#                self.external_vars.update( { f_return : code_gen() } )
-#                              
-#                # remove f from funcs:
-#                funcs = [func for func in funcs if func.name != f.name]
-#                
-#            elif len(count_funcs) > 1:
-#                raise StopTranslating("more than 1 count function invoked in a rule")
-            
             # handle constraints:
             
             for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
@@ -600,12 +580,11 @@ def generate_outline(rules):
                 role_name = h.args[1].name
         roles[role_name].isDacs.append( isDac(r) )
     
-    
     permits = [ r for r in rules if r.concl.name == 'permits' ]
     actions = { r.concl.args[1].name : r.concl.args[1] for r in permits }
     actions = { name : ActionClass(name, [str(prm) for prm in atom.args]) for name, atom in actions.items() }
     [actions[ r.concl.args[1].name ].add_permits(PermitsRule(r)) for r in permits]
-    #print(actions)
+    
     outline = []
     
     for rule in rules:
@@ -627,7 +606,6 @@ def generate_outline(rules):
         elif rule_type == SpecialPredicates.prmts:
             if rule.concl.args[1].name in actions:
                 action = actions[ rule.concl.args[1].name ]
-                print(action)
                 outline.append(action)
                 actions.pop(action.name)
         
