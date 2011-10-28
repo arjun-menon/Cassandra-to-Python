@@ -1,6 +1,5 @@
 from helpers import *
 from datetime import datetime
-from ehr.spine import hasActivated
 
 class Role(object):
     def __init__(self, name, args):
