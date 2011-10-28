@@ -112,7 +112,7 @@ class HypothesesTranslator(object):
                 return self.substitution_func_gen([cl, cr], p(cl) + ' ' + op + ' ' + p(cr))
             
             elif type(c.left) == Function and type(c.right) == Variable:
-                func_name, func_args = c.left.name, [str(a) for a in c.left.args]
+                func_name, func_args = h2u(c.left.name), [str(a) for a in c.left.args]
                 return self.substitution_func_gen([cr]+func_args, func_name + 
                             '(' + ", ".join(p(a) for a in func_args) + ') ' + op + ' ' + p(cr))
         
@@ -415,6 +415,26 @@ def {func_name}({func_args}): # {rule_name}
         
         return untranslated(self.rule)
 
+
+class PermitsRule(HypothesesTranslator):
+    def __init__(self, rule):
+        super().__init__(rule)
+        self.subject = str(self.rule.concl.args[0])
+    
+    def translate(self, action_params):
+        # build self.external_vars (for HypothesesTranslator)
+        self.external_vars = { p : 'self.'+p for p in action_params }
+        self.external_vars.update( { self.subject : self.subject } )
+        
+        return lambda number: """
+def permits{num}(self, {subject}): # {rule_name}
+{hypotheses_translation}""".format(
+             rule_name = self.rule.name
+            ,num = "" if number==0 else "_" + str(number)
+            ,subject = self.subject
+            ,hypotheses_translation = tab(self.translate_hypotheses())
+        )
+
 ####################
 
 class SpecialPredicates:
@@ -482,6 +502,46 @@ class {name_u}(Role):
         )
 
 
+class ActionClass(object):
+    def __init__(self, name, params):
+        self.name = name
+        self.params = params
+        self.permits = []
+    
+    def add_permits(self, r):
+        self.permits.append(r)
+    
+    def __str__(self):
+        r = 'Action: ' + self.name + "(" + ", ".join(self.params) + ")"
+        return r
+    
+    def permits_translator(self):
+        assert len(self.permits)
+        if len(self.permits) == 1:
+            translation = self.permits[0].translate(self.params)(0)
+        else:
+            translation = """
+def permits(self, subj):
+    return %s
+""" % " or ".join("self.permits_%d(subj)" % i for i in list(range(1, len(self.permits) + 1))) +\
+        "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(self.permits))), self.permits) )
+        
+        return tab(translation)
+    
+    def translate(self):
+        return """
+class {name_u}(Action):
+    def __init__(self, {params}):
+        super().__init__('{name}', **{params_dict})
+{permits}
+""".format(
+         name   =     self.name,
+         name_u = h2u(self.name)
+        ,params = ', '.join(self.params)
+        ,params_dict = '{' + ', '.join("'"+p+"':"+p for p in self.params) + '}'
+        ,permits = self.permits_translator()
+        )
+
 def generate_outline(rules):
     """
     Builds a dictionary mapping each unique role to RoleClass objects containing lists
@@ -510,7 +570,7 @@ def generate_outline(rules):
     
     roles = dict((rn, RoleClass(rn, rp)) for (rn, rp) in zip(role_names, role_params))
     
-    # grab the rules:
+    # add canAc, canDc, isDac rules to appropriate RoleClasses:
     
     for r in canAc_rules:
         roles[r.concl.args[1].name].canAcs.append( canAc(r) )
@@ -524,7 +584,12 @@ def generate_outline(rules):
                 role_name = h.args[1].name
         roles[role_name].isDacs.append( isDac(r) )
     
-    # non-role rules
+    
+    permits = [ r for r in rules if r.concl.name == 'permits' ]
+    actions = { r.concl.args[1].name : r.concl.args[1] for r in permits }
+    actions = { name : ActionClass(name, [str(prm) for prm in atom.args]) for name, atom in actions.items() }
+    [actions[ r.concl.args[1].name ].add_permits(PermitsRule(r)) for r in permits]
+    #print(actions)
     outline = []
     
     for rule in rules:
@@ -544,7 +609,12 @@ def generate_outline(rules):
             pass # handled by above
         
         elif rule_type == SpecialPredicates.prmts:
-            outline.append(rule)
+            if rule.concl.args[1].name in actions:
+                action = actions[ rule.concl.args[1].name ]
+                print(action)
+                outline.append(action)
+                actions.pop(action.name)
+        
         elif rule_type == SpecialPredicates.canRC:
             outline.append(rule)
         else: # func rule

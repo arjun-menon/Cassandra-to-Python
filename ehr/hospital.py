@@ -1380,82 +1380,180 @@ def count_concealed_by_patient2(a, b): # A4.2.8
     #Current-time() in [start, end]
     pass
 
-#untranslated:
-#'A5.1.1'
-#permits(cli, Add-record-item(pat)) <-
-#	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty))
+class Add_record_item(Action):
+    def __init__(self, pat):
+        super().__init__('Add-record-item', **{'pat':pat})
+    
+    def permits(self, subj):
+        return self.permits_1(subj) or self.permits_2(subj)
+    
+    def permits_1(self, cli): # A5.1.1
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	subj == cli and 
+        	canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
+        }
+    
+    def permits_2(self, cli): # A5.1.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Ext-treating-clinician" and 
+        	role.pat == self.pat and 
+        	subj == cli
+        }
 
-#untranslated:
-#'A5.1.2'
-#permits(cli, Add-record-item(pat)) <-
-#	hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty))
 
-#untranslated:
-#'A5.1.3'
-#permits(ag, Annotate-record-item(pat, id)) <-
-#	hasActivated(ag, Agent(pat))
+class Annotate_record_item(Action):
+    def __init__(self, pat, id):
+        super().__init__('Annotate-record-item', **{'pat':pat, 'id':id})
+    
+    def permits(self, subj):
+        return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj)
+    
+    def permits_1(self, ag): # A5.1.3
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Agent" and 
+        	role.pat == self.pat and 
+        	subj == ag
+        }
+    
+    def permits_2(self, pat): # A5.1.4
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Patient" and 
+        	subj == pat
+        }
+    
+    def permits_3(self, pat): # A5.1.5
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	canActivate(subj, ADB_treating_clinician(pat, Wildcard(), role.spcty))
+        }
 
-#untranslated:
-#'A5.1.4'
-#permits(pat, Annotate-record-item(pat, id)) <-
-#	hasActivated(pat, Patient())
 
-#untranslated:
-#'A5.1.5'
-#permits(pat, Annotate-record-item(pat, id)) <-
-#	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty))
+class Get_record_item_ids(Action):
+    def __init__(self, pat):
+        super().__init__('Get-record-item-ids', **{'pat':pat})
+    
+    def permits(self, subj):
+        return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj)
+    
+    def permits_1(self, pat): # A5.2.1
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Patient" and 
+        	subj == pat
+        }
+    
+    def permits_2(self, ag): # A5.2.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Agent" and 
+        	role.pat == self.pat and 
+        	subj == ag
+        }
+    
+    def permits_3(self, cli): # A5.2.3
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	subj == cli and 
+        	canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
+        }
 
-#untranslated:
-#'A5.2.1'
-#permits(pat, Get-record-item-ids(pat)) <-
-#	hasActivated(pat, Patient())
 
-#untranslated:
-#'A5.2.2'
-#permits(ag, Get-record-item-ids(pat)) <-
-#	hasActivated(ag, Agent(pat))
+class Read_record_item(Action):
+    def __init__(self, pat, id):
+        super().__init__('Read-record-item', **{'pat':pat, 'id':id})
+    
+    def permits(self, subj):
+        return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj) or self.permits_4(subj) or self.permits_5(subj) or self.permits_6(subj)
+    
+    def permits_1(self, ag): # A5.3.1
+        #todo: more than 1 count function invoked in a rule
+        #hasActivated(ag, Agent(pat))
+        #count-concealed-by-patient2(n, a, b)
+        #count-concealed-by-clinician(m, pat, id)
+        #third-party-consent(consenters, pat, id)
+        #a = (pat,id)
+        #b = ("No-org",ag,"No-group","No-spcty")
+        #n = 0
+        #m = 0
+        #Get-record-third-parties(pat, id) subseteq consenters
+        pass
+    
+    def permits_2(self, cli): # A5.3.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	subj == cli and 
+        	Get_record_author(self.pat, self.id) == subj
+        }
+    
+    def permits_3(self, cli): # A5.3.3
+        #todo: unable to bind vars {'team'} in constraint Get_record_group(self.pat, self.id) == team
+        #hasActivated(cli, Clinician(spcty))
+        #hasActivated(x, Register-team-member(cli, team, spcty))
+        #Get-record-group(pat, id) = team
+        pass
+    
+    def permits_4(self, cli): # A5.3.4
+        #todo: unbound vars in count-concealed-by-patient2(n, a, b)
+        #hasActivated(cli, Clinician(spcty))
+        #canActivate(cli, ADB-treating-clinician(pat, group, spcty))
+        #count-concealed-by-patient2(n, a, b)
+        #n = 0
+        #a = (pat,id)
+        #b = ("ADB",cli,group,spcty)
+        #Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
+        pass
+    
+    def permits_5(self, cli): # A5.3.5
+        #todo: unbound vars in count-concealed-by-patient2(n, a, b)
+        #hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty))
+        #count-concealed-by-patient2(n, a, b)
+        #n = 0
+        #a = (pat,id)
+        #b = (org,cli,"Ext-group",spcty)
+        #Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
+        pass
+    
+    def permits_6(self, pat): # A5.3.6
+        #todo: more than 1 count function invoked in a rule
+        #hasActivated(pat, Patient())
+        #count-concealed-by-patient2(n, a, b)
+        #count-concealed-by-clinician(m, pat, id)
+        #third-party-consent(consenters, pat, id)
+        #n = 0
+        #m = 0
+        #a = (pat,id)
+        #b = ("No-org",pat,"No-group","No-spcty")
+        #Get-record-third-parties(pat, id) subseteq consenters
+        pass
 
-#untranslated:
-#'A5.2.3'
-#permits(cli, Get-record-item-ids(pat)) <-
-#	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty))
 
-#untranslated:
-#'A5.3.1'
-#permits(ag, Read-record-item(pat, id)) <-
-#	hasActivated(ag, Agent(pat)), count-concealed-by-patient2(n, a, b), count-concealed-by-clinician(m, pat, id), third-party-consent(consenters, pat, id), a = (pat,id), b = ("No-org",ag,"No-group","No-spcty"), n = 0, m = 0, Get-record-third-parties(pat, id) subseteq consenters
+class Force_read_record_item(Action):
+    def __init__(self, pat, id):
+        super().__init__('Force-read-record-item', **{'pat':pat, 'id':id})
+    
+    def permits(self, subj):
+        return self.permits_1(subj) or self.permits_2(subj)
+    
+    def permits_1(self, cg): # A5.3.7
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Caldicott-guardian" and 
+        	subj == cg
+        }
+    
+    def permits_2(self, cli): # A5.3.8
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Clinician" and 
+        	subj == cli and 
+        	canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
+        }
 
-#untranslated:
-#'A5.3.2'
-#permits(cli, Read-record-item(pat, id)) <-
-#	hasActivated(cli, Clinician(spcty)), Get-record-author(pat, id) = cli
-
-#untranslated:
-#'A5.3.3'
-#permits(cli, Read-record-item(pat, id)) <-
-#	hasActivated(cli, Clinician(spcty)), hasActivated(x, Register-team-member(cli, team, spcty)), Get-record-group(pat, id) = team
-
-#untranslated:
-#'A5.3.4'
-#permits(cli, Read-record-item(pat, id)) <-
-#	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty)), count-concealed-by-patient2(n, a, b), n = 0, a = (pat,id), b = ("ADB",cli,group,spcty), Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
-
-#untranslated:
-#'A5.3.5'
-#permits(cli, Read-record-item(pat, id)) <-
-#	hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty)), count-concealed-by-patient2(n, a, b), n = 0, a = (pat,id), b = (org,cli,"Ext-group",spcty), Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
-
-#untranslated:
-#'A5.3.6'
-#permits(pat, Read-record-item(pat, id)) <-
-#	hasActivated(pat, Patient()), count-concealed-by-patient2(n, a, b), count-concealed-by-clinician(m, pat, id), third-party-consent(consenters, pat, id), n = 0, m = 0, a = (pat,id), b = ("No-org",pat,"No-group","No-spcty"), Get-record-third-parties(pat, id) subseteq consenters
-
-#untranslated:
-#'A5.3.7'
-#permits(cg, Force-read-record-item(pat, id)) <-
-#	hasActivated(cg, Caldicott-guardian())
-
-#untranslated:
-#'A5.3.8'
-#permits(cli, Force-read-record-item(pat, id)) <-
-#	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty))

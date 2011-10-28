@@ -1141,67 +1141,156 @@ def count_authenticated_express_consent(pat): # S4.3.8
     	role.pat == pat
     })
 
-#untranslated:
-#'S5.1.1'
-#permits(cli, Add-spine-record-item(pat)) <-
-#	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))
+class Add_spine_record_item(Action):
+    def __init__(self, pat):
+        super().__init__('Add-spine-record-item', **{'pat':pat})
+    
+    def permits(self, cli): # S5.1.1
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	subj == cli and 
+        	canActivate(subj, Treating_clinician(self.pat, role.org, role.spcty))
+        }
 
-#untranslated:
-#'S5.1.2'
-#permits(pat, Annotate-spine-record-item(pat, id)) <-
-#	hasActivated(pat, Patient())
 
-#untranslated:
-#'S5.1.3'
-#permits(ag, Annotate-spine-record-item(pat, id)) <-
-#	hasActivated(ag, Agent(pat))
+class Annotate_spine_record_item(Action):
+    def __init__(self, pat, id):
+        super().__init__('Annotate-spine-record-item', **{'pat':pat, 'id':id})
+    
+    def permits(self, subj):
+        return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj)
+    
+    def permits_1(self, pat): # S5.1.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Patient" and 
+        	subj == pat
+        }
+    
+    def permits_2(self, ag): # S5.1.3
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Agent" and 
+        	role.pat == self.pat and 
+        	subj == ag
+        }
+    
+    def permits_3(self, pat): # S5.1.4
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	canActivate(subj, Treating_clinician(pat, role.org, role.spcty))
+        }
 
-#untranslated:
-#'S5.1.4'
-#permits(pat, Annotate-spine-record-item(pat, id)) <-
-#	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))
 
-#untranslated:
-#'S5.2.1'
-#permits(pat, Get-spine-record-item-ids(pat)) <-
-#	hasActivated(pat, Patient())
+class Get_spine_record_item_ids(Action):
+    def __init__(self, pat):
+        super().__init__('Get-spine-record-item-ids', **{'pat':pat})
+    
+    def permits(self, subj):
+        return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj)
+    
+    def permits_1(self, pat): # S5.2.1
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Patient" and 
+        	subj == pat
+        }
+    
+    def permits_2(self, ag): # S5.2.2
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Agent" and 
+        	role.pat == self.pat and 
+        	subj == ag
+        }
+    
+    def permits_3(self, cli): # S5.2.3
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	subj == cli and 
+        	canActivate(subj, Treating_clinician(self.pat, role.org, role.spcty))
+        }
 
-#untranslated:
-#'S5.2.2'
-#permits(ag, Get-spine-record-item-ids(pat)) <-
-#	hasActivated(ag, Agent(pat))
 
-#untranslated:
-#'S5.2.3'
-#permits(cli, Get-spine-record-item-ids(pat)) <-
-#	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))
+class Read_spine_record_item(Action):
+    def __init__(self, pat, id):
+        super().__init__('Read-spine-record-item', **{'pat':pat, 'id':id})
+    
+    def permits(self, subj):
+        return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj) or self.permits_4(subj) or self.permits_5(subj)
+    
+    def permits_1(self, pat): # S5.3.1
+        #todo: more than 1 count function invoked in a rule
+        #hasActivated(pat, Patient())
+        #hasActivated(x, One-off-consent(pat))
+        #count-concealed-by-spine-patient(n, a, b)
+        #count-concealed-by-spine-clinician(m, pat, id)
+        #third-party-consent(consenters, pat, id)
+        #n = 0
+        #m = 0
+        #a = (pat,id)
+        #b = ("No-org",pat,"No-spcty")
+        #Get-spine-record-third-parties(pat, id) subseteq consenters
+        pass
+    
+    def permits_2(self, ag): # S5.3.2
+        #todo: more than 1 count function invoked in a rule
+        #hasActivated(ag, Agent(pat))
+        #hasActivated(x, One-off-consent(pat))
+        #count-concealed-by-spine-patient(n, a, b)
+        #count-concealed-by-spine-clinician(m, pat, id)
+        #third-party-consent(consenters, pat, id)
+        #n = 0
+        #m = 0
+        #a = (pat,id)
+        #b = ("No-org",ag,"No-spcty")
+        #Get-spine-record-third-parties(pat, id) subseteq consenters
+        pass
+    
+    def permits_3(self, cli): # S5.3.3
+        return {
+        	1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+        	role1.name == "Spine-clinician" and 
+        	role2.name == "One-off-consent" and 
+        	subj1 == cli and 
+        	Get_spine_record_org(self.pat, self.id) == role2.org and 
+        	Get_spine_record_author(self.pat, self.id) == subj1
+        }
+    
+    def permits_4(self, cli): # S5.3.4
+        #todo: unbound vars in count-concealed-by-spine-patient(n, a, b)
+        #hasActivated(cli, Spine-clinician(ra, org, spcty))
+        #hasActivated(x, One-off-consent(pat))
+        #canActivate(cli, Treating-clinician(pat, org, spcty))
+        #count-concealed-by-spine-patient(n, a, b)
+        #n = 0
+        #a = (pat,id)
+        #b = (org,cli,spcty)
+        #Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
+        pass
+    
+    def permits_5(self, cli): # S5.3.5
+        #todo: Not implemented: 3 hasAcs in a rule.
+        #hasActivated(cli, Spine-clinician(ra, org, spcty))
+        #hasActivated(x, One-off-consent(pat))
+        #canActivate(cli, Treating-clinician(pat, org, spcty))
+        #hasActivated(y, Authenticated-express-consent(pat, cli))
+        #Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
+        pass
 
-#untranslated:
-#'S5.3.1'
-#permits(pat, Read-spine-record-item(pat, id)) <-
-#	hasActivated(pat, Patient()), hasActivated(x, One-off-consent(pat)), count-concealed-by-spine-patient(n, a, b), count-concealed-by-spine-clinician(m, pat, id), third-party-consent(consenters, pat, id), n = 0, m = 0, a = (pat,id), b = ("No-org",pat,"No-spcty"), Get-spine-record-third-parties(pat, id) subseteq consenters
 
-#untranslated:
-#'S5.3.2'
-#permits(ag, Read-spine-record-item(pat, id)) <-
-#	hasActivated(ag, Agent(pat)), hasActivated(x, One-off-consent(pat)), count-concealed-by-spine-patient(n, a, b), count-concealed-by-spine-clinician(m, pat, id), third-party-consent(consenters, pat, id), n = 0, m = 0, a = (pat,id), b = ("No-org",ag,"No-spcty"), Get-spine-record-third-parties(pat, id) subseteq consenters
+class Force_read_spine_record_item(Action):
+    def __init__(self, pat, id):
+        super().__init__('Force-read-spine-record-item', **{'pat':pat, 'id':id})
+    
+    def permits(self, cli): # S5.3.6
+        return {
+        	1 for subj, role in hasActivated if 
+        	role.name == "Spine-clinician" and 
+        	subj == cli and 
+        	canActivate(subj, Treating_clinician(self.pat, role.org, role.spcty))
+        }
 
-#untranslated:
-#'S5.3.3'
-#permits(cli, Read-spine-record-item(pat, id)) <-
-#	hasActivated(cli, Spine-clinician(ra, org, spcty)), hasActivated(x, One-off-consent(pat)), Get-spine-record-org(pat, id) = org, Get-spine-record-author(pat, id) = cli
-
-#untranslated:
-#'S5.3.4'
-#permits(cli, Read-spine-record-item(pat, id)) <-
-#	hasActivated(cli, Spine-clinician(ra, org, spcty)), hasActivated(x, One-off-consent(pat)), canActivate(cli, Treating-clinician(pat, org, spcty)), count-concealed-by-spine-patient(n, a, b), n = 0, a = (pat,id), b = (org,cli,spcty), Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
-
-#untranslated:
-#'S5.3.5'
-#permits(cli, Read-spine-record-item(pat, id)) <-
-#	hasActivated(cli, Spine-clinician(ra, org, spcty)), hasActivated(x, One-off-consent(pat)), canActivate(cli, Treating-clinician(pat, org, spcty)), hasActivated(y, Authenticated-express-consent(pat, cli)), Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
-
-#untranslated:
-#'S5.3.6'
-#permits(cli, Force-read-spine-record-item(pat, id)) <-
-#	hasActivated(cli, Spine-clinician(ra, org, spcty)), canActivate(cli, Treating-clinician(pat, org, spcty))
