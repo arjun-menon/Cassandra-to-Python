@@ -495,7 +495,6 @@ def {cat}(self, *params):
         
         tr = ""
         for rule in self.isDacs:
-            #print(rule)
             assert rule.hypos[0].name == SpecialPredicates.isDac
             
             deac_role =     rule.concl.args[1]
