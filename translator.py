@@ -422,7 +422,7 @@ def {func_name}({func_args}): # {rule_name}
 class CanReqCredRule(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
-        #print(self.rule)
+        print(self.rule)
     
 
 class PermitsRule(HypothesesTranslator):
@@ -560,6 +560,17 @@ class {name_u}(Role):
         ,isDacs_trans = tab(self.isDac_translator()) #tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
         )
 
+class canReqCreds(object):
+    def __init__(self, canAcs, hasAcs):
+        self.canAcs = canAcs
+        self.hasAcs = hasAcs
+    
+    def translate(self):
+        #print(self.hasAcs)
+        
+        tr = "def canReqCred(subject, issuer, "
+        
+        return ""
 
 class ActionClass(object):
     def __init__(self, name, params):
@@ -648,6 +659,10 @@ def generate_outline(rules):
     actions = { name : ActionClass(name, [str(prm) for prm in atom.args]) for name, atom in actions.items() }
     [actions[ r.concl.args[1].name ].add_permits(PermitsRule(r)) for r in permits]
     
+    canRqs = [ r for r in rules if r.concl.name == 'canReqCred' ]
+    canRqs_canAcs = [r for r in canRqs if r.concl.args[1].name == SpecialPredicates.canAc]
+    canRqs_hasAcs = [r for r in canRqs if r.concl.args[1].name == SpecialPredicates.hasAc]
+    
     outline = []
     
     for rule in rules:
@@ -673,9 +688,11 @@ def generate_outline(rules):
                 actions.pop(action.name)
         
         elif rule_type == SpecialPredicates.canRC:
-            outline.append( CanReqCredRule(rule) )
+            pass # canRrs added at end
         else: # func rule
             outline.append( FuncRule(rule) )
+    
+    outline.append( canReqCreds(canRqs_canAcs, canRqs_hasAcs) )
     
     return outline
 
@@ -731,6 +748,7 @@ def translate_all():
         tr = translate_rules(rules, rule_set)
         write(tr, rule_set)
 
-#parse_rules()
-unpickle_rules()
-translate_all()
+if __name__ == "__main__":
+    #parse_rules()
+    unpickle_rules()
+    translate_all()

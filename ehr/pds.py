@@ -235,38 +235,3 @@ def patient_regs(pat): # P2.1.3
         role.name == "Register-patient" and 
         role.pat == pat
     })
-
-#untranslated:
-#'P2.2.1'
-#canReqCred(pat, "PDS".hasActivated(x, Register-patient(pat))) <-
-#	hasActivated(pat, Patient())
-
-#untranslated:
-#'P2.2.2'
-#canReqCred(ag, "PDS".hasActivated(x, Register-patient(pat))) <-
-#	hasActivated(ag, Agent(pat))
-
-#untranslated:
-#'P2.2.3'
-#canReqCred(usr, "PDS".hasActivated(x, Register-patient(pat))) <-
-#	hasActivated(usr, Professional-user(ra, org))
-
-#untranslated:
-#'P2.2.4'
-#canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
-#	ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority())
-
-#untranslated:
-#'P2.2.5'
-#canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
-#	org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority())
-
-#untranslated:
-#'P2.2.5'
-#canReqCred(ra, "PDS".hasActivated(x, Register-patient(pat))) <-
-#	canActivate(ra, Registration-authority())
-
-#untranslated:
-#'P2.2.5'
-#canReqCred(spine, "PDS".hasActivated(x, Register-patient(pat))) <-
-#	spine = "Spine"

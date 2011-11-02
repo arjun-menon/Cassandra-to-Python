@@ -223,21 +223,6 @@ def count_agent_activations(user): # S1.4.5
         subj == user
     })
 
-#untranslated:
-#'S1.4.6'
-#canReqCred(ag, "Spine".canActivate(ag, Agent(pat))) <-
-#	hasActivated(ag, Agent(pat))
-
-#untranslated:
-#'S1.4.7'
-#canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
-#	ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority()), Current-time() in [start, end]
-
-#untranslated:
-#'S1.4.8'
-#canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
-#	org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority()), Current-time() in [start, end]
-
 class Register_agent(Role):
     def __init__(self, agent, pat):
         super().__init__('Register-agent', ['agent', 'pat']) 

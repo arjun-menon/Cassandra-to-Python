@@ -3,10 +3,12 @@ import spine, pds, ra, hospital
 
 from cassandra import Role
 
-x = spine.Spine_clinician(1,2,3)
-y = spine.Spine_clinician(1,2,3)
+a = spine.Spine_clinician(1,2,3)
+b = spine.Spine_clinician(1,2,3)
 
-print(x==y)
+print(a==b)
+
+Role('ee', ['a'])
 
 # repl
 while True:

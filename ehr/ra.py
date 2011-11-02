@@ -50,11 +50,6 @@ class RA_manager(Role):
             mgr == mgr_
         )
 
-#untranslated:
-#'R1.2.1'
-#canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
-#	ra = "RA-ADB"
-
 class NHS_service(Role):
     def __init__(self):
         super().__init__('NHS-service', []) 
@@ -116,21 +111,6 @@ class NHS_clinician_cert(Role):
             subj == mgr
         }
 
-#untranslated:
-#'R2.1.4'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-#	hasActivated(y, NHS-health-org-cert(org, start2, end2)), e = org, Current-time() in [start2, end2]
-
-#untranslated:
-#'R2.1.5'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-#	canActivate(e, NHS-service())
-
-#untranslated:
-#'R2.1.6'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-#	e = cli
-
 class NHS_Caldicott_guardian_cert(Role):
     def __init__(self, org, cg, start, end):
         super().__init__('NHS-Caldicott-guardian-cert', ['org', 'cg', 'start', 'end']) 
@@ -151,21 +131,6 @@ class NHS_Caldicott_guardian_cert(Role):
             role.name == "RA-manager" and 
             subj == mgr
         }
-
-#untranslated:
-#'R2.2.4'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
-#	e = cg
-
-#untranslated:
-#'R2.2.5'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
-#	hasActivated(y, NHS-health-org-cert(org, start2, end2)), e = org, Current-time() in [start2, end2]
-
-#untranslated:
-#'R2.2.6'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
-#	canActivate(e, NHS-service())
 
 class NHS_health_org_cert(Role):
     def __init__(self, org, start, end):
@@ -237,36 +202,6 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
         end != role.end2
     })
 
-#untranslated:
-#'R2.3.4'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
-#	hasActivated(y, NHS-Caldicott-guardian-cert(org, cg, start2, end2)), Current-time() in [start2, end2], e = cg
-
-#untranslated:
-#'R2.3.5'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
-#	hasActivated(y, NHS-clinician-cert(org, cli, spcty, start2, end2)), Current-time() in [start2, end2], e = cli
-
-#untranslated:
-#'R2.3.6'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
-#	e = org
-
-#untranslated:
-#'R2.3.7'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org2, start, end))) <-
-#	ra.hasActivated(y, NHS-health-org-cert(org, start2, end2)), canActivate(ra, Registration-authority()), e = org
-
-#untranslated:
-#'R2.3.8'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org2, start, end))) <-
-#	org@ra.hasActivated(y, NHS-health-org-cert(org, start2, end2)), canActivate(ra, Registration-authority()), e = org
-
-#untranslated:
-#'R2.3.9'
-#canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
-#	canActivate(e, NHS-service())
-
 class Workgroup_member(Role):
     def __init__(self, org, group, spcty):
         super().__init__('Workgroup-member', ['org', 'group', 'spcty']) 
@@ -294,8 +229,3 @@ class Workgroup_member(Role):
             role2.org == self.org and 
             Current_time() in vrange(role2.start, role2.end)
         }
-
-#untranslated:
-#'R3.1.3'
-#canReqCred(spine, "RA-ADB".canActivate(cli, Workgroup-member(org, group, spcty))) <-
-#	spine = "Spine"

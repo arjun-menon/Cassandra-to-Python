@@ -434,11 +434,6 @@ class Registration_authority(Role):
             Current_time() in vrange(role.start, role.end)
         }
 
-#untranslated:
-#'A1.7.4'
-#canReqCred(x, "RA-ADB".hasActivated(y, NHS-health-org-cert(org, start, end))) <-
-#	org = "ADB"
-
 class Request_consent_to_referral(Role):
     def __init__(self, pat, ra, org, cli2, spcty2):
         super().__init__('Request-consent-to-referral', ['pat', 'ra', 'org', 'cli2', 'spcty2']) 
@@ -879,11 +874,6 @@ class Register_team_member(Role):
         deactivate(hasActivated, Wildcard(), Register_head_of_team(self.mem, self.team))  # A3.1.6
         
 
-#untranslated:
-#'A3.2.6'
-#canReqCred(ra, "ADB".Register-team-member(cli, tea, spcty)) <-
-#	ra = "RA-ADB"
-
 def team_member_regs(mem, team, spcty): # A3.2.7
     return len({
         1 for subj, role in hasActivated if 
@@ -1053,11 +1043,6 @@ class Register_ward_member(Role):
     def onDeactivate(self, subj):
         deactivate(hasActivated, Wildcard(), Register_head_of_ward(self.cli, self.ward))  # A3.4.6
         
-
-#untranslated:
-#'A3.5.5'
-#canReqCred(ra, "ADB".Register-ward-member(cli, ward, spcty)) <-
-#	ra = "RA-ADB"
 
 def ward_member_regs(cli, ward, spcty): # A3.5.7
     return len({
