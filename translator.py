@@ -419,12 +419,6 @@ def {func_name}({func_args}): # {rule_name}
         return untranslated(self.rule)
 
 
-class CanReqCredRule(HypothesesTranslator):
-    def __init__(self, rule):
-        super().__init__(rule)
-        print(self.rule)
-    
-
 class PermitsRule(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
@@ -567,6 +561,7 @@ class canReqCreds(object):
     
     def translate(self):
         #print(self.hasAcs)
+        list(map(print, self.canAcs))
         
         tr = "def canReqCred(subject, issuer, "
         
