@@ -556,12 +556,22 @@ class {name_u}(Role):
 
 class canReqCreds(object):
     def __init__(self, canAcs, hasAcs):
-        self.canAcs = canAcs
-        self.hasAcs = hasAcs
+        # going to ignore "issuer" here, because "issuer" is always same as the module its part of.
+        canAcRoleNames = {r.concl.args[1].args[1].name for r in canAcs}
+        hasAcRoleNames = {r.concl.args[1].args[1].name for r in hasAcs}
+        
+        self.canAcs = { name : [r for r in canAcs if name==r.concl.args[1].args[1].name] for name in canAcRoleNames }
+        self.hasAcs = { name : [r for r in hasAcs if name==r.concl.args[1].args[1].name] for name in hasAcRoleNames }
     
     def translate(self):
         #print(self.hasAcs)
-        list(map(print, self.canAcs))
+        print("\ncanAcs")
+        print(self.canAcs.items)
+        #list(map(print, self.canAcRoleNames))
+        
+        print("\nhasAcs")
+        print(self.hasAcs)
+        #list(map(print, self.hasAcRoleNames))
         
         tr = "def canReqCred(subject, issuer, "
         
