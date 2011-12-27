@@ -27,7 +27,7 @@ class HypothesesTranslator(object):
     def substitution_func_gen(self, variables, code):
         """ 'variables' is a list of variables that appear in 'code'.
         'code' is a format string on which string.format is invoked. """
-
+        
         ext, rest = separate(variables, lambda v: v in set(self.external_vars))
         
         substitution_dict = dict()
@@ -42,14 +42,14 @@ class HypothesesTranslator(object):
     def build_param_bindings(self, params: list_of(str)) -> list:
         """Returns a set of constraint code generation functions which binds role parameters to external variables"""
         constraints = []
-
+        
         for var_name in params:
-
+            
             def param_binding(vn):
                 return lambda vd = { vn : vn } : "%s == self.%s" % (vd[vn], vn)
-
+            
             constraints.append( ({var_name}, param_binding(var_name)) )
-
+        
         return constraints
     
     
@@ -61,9 +61,9 @@ class HypothesesTranslator(object):
             * vd is a dictionary where you can substitute these variable names with other variable names 
               of your choice (for example substitute "cli" with "self.cli"). The form of the vd is {"cli":"self.cli"}
         """
-
+        
         if c.op == 'in':
-
+            
             if type(c.right) == Range and type(c.right.start) == Variable and type(c.right.end) == Variable:
                 # it's of the form "something in [lower, upper]"
                 lower, upper = h2u(c.right.start.name), h2u(c.right.end.name)
@@ -71,7 +71,7 @@ class HypothesesTranslator(object):
                 # Current-time() in [lower, upper]
                 if type(c.left) == Function:
                     func_name = h2u(repr(c.left))
-
+                    
                     if len(c.left.args):
                         raise StopTranslating("can't handle 'in' operator - function with arguments: %r" % c.left)
                     
@@ -82,7 +82,7 @@ class HypothesesTranslator(object):
                     vn = h2u(repr(c.left))
                     
                     return self.substitution_func_gen([vn, lower, upper], "{%s} in vrange({%s}, {%s})" % (vn, lower, upper))
-                
+            
             elif type(c.right) == Function:
                 func_name = h2u(str(c.right.name))
                 func_args = [repr(arg) for arg in c.right.args]
@@ -566,7 +566,7 @@ class canReqCreds(object):
     def translate(self):
         #print(self.hasAcs)
         print("\ncanAcs")
-        print(self.canAcs.items)
+        print(self.canAcs)
         #list(map(print, self.canAcRoleNames))
         
         print("\nhasAcs")
