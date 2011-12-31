@@ -1,3 +1,4 @@
+
 import pickle, itertools
 from ehrparse import *
 from helpers import *
@@ -121,7 +122,6 @@ class HypothesesTranslator(object):
         subj, role = canAc.args
         
         bound_vars = [var.name for var in [subj] + role.args]
-        default_vd = {vn : vn for vn in bound_vars}
         
         loc = ''
         if canAc.issuer:
@@ -507,7 +507,7 @@ def {cat}(self, *params):
             bound_vars = [deac_subj] + [repr(p) for p in deac_role.args]
             code = "deactivate(hasActivated, {}, {}({}))  # {}\n".format(
                         p(deac_subj), h2u(deac_role.name),
-                        ', '.join(p(repr(a)) for a in deac_role.args),
+                        ', '.join(p(repr(a)) for a in deac_role.args), 
                         rule.name )
             
             unbound_vars, foo = ht.substitution_func_gen(bound_vars, code)
@@ -727,25 +727,27 @@ def translate_rules(rules, rule_set):
 
 ####################
 
+ehr_path = "ehr/"
+
 rule_sets = ['spine', 'pds', 'hospital', 'ra']
 rules_collections = None
 
 def parse_rules():
     global rules_collections, rule_sets
-    rules_collections = [ ( rule_set, parse_one("ehr/%s.txt" % rule_set) ) for rule_set in rule_sets ]
-    with open("ehr/parse_tree.pickle", "wb") as f:
+    rules_collections = [ ( rule_set, parse_one(ehr_path+"%s.txt" % rule_set) ) for rule_set in rule_sets ]
+    with open(ehr_path+"parse_tree.pickle", "wb") as f:
         pickle.dump(rules_collections, f)
 
 def unpickle_rules():
     global rules_collections
-    with open("ehr/parse_tree.pickle", "rb") as f:
+    with open(ehr_path+"parse_tree.pickle", "rb") as f:
         rules_collections = pickle.load(f)
 
 def translate_all():
     global rules_collections
     
     def write(tr, rule_set):
-        with open("ehr/%s.py" % rule_set, 'w') as f:
+        with open(ehr_path+"%s.py" % rule_set, 'w') as f:
             f.write(tr)
         print("Done. Wrote to %s.py\n" % rule_set)
         
