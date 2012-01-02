@@ -1244,3 +1244,27 @@ class Force_read_spine_record_item(Action):
             canActivate(subj, Treating_clinician(self.pat, role.org, role.spcty))
         }
 
+# Credential Request Restrictions# ===============================# These rules determine if certain predicates can be 
+# invoked, such as canActivate or hasActivated.
+
+# They restrict who can invoke such predicates.
+# These rules have not been translated.
+
+# Restrictions on canActivate
+
+# For the Role 'Agent'
+# 
+# 'S1.4.6'
+# canReqCred(ag, "Spine".canActivate(ag, Agent(pat))) <-
+# 	hasActivated(ag, Agent(pat))
+# 
+# 'S1.4.7'
+# canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
+# 	ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority()), Current-time() in [start, end]
+# 
+# 'S1.4.8'
+# canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
+# 	org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority()), Current-time() in [start, end]
+
+# Restrictions on hasActivate
+

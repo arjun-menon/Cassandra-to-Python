@@ -1,7 +1,7 @@
 
 from ehr import *
 
-
+print( spine.Spine_clinician(1,2,3).canActivate(1) )
 
 # REPL
 while True:

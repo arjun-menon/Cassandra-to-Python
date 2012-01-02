@@ -574,18 +574,30 @@ class canReqCreds(object):
         self.hasAcs = { name : [r for r in hasAcs if name==r.concl.args[1].args[1].name] for name in hasAcRoleNames }
     
     def translate(self):
-        #print(self.hasAcs)
-        print("\ncanAcs")
-        print(self.canAcs)
-        #list(map(print, self.canAcRoleNames))
+        #tr = "def canReqCred(subject, issuer, "
+        tr  = ""
+        tr += "# Credential Request Restrictions"
+        tr += "# ==============================="
+        tr += "# These rules determine if certain predicates can be \n"
+        tr += "# invoked, such as canActivate or hasActivated.\n\n"
+        tr += "# They restrict who can invoke such predicates.\n"
+        tr += "# These rules have not been translated.\n"
         
-        print("\nhasAcs")
-        print(self.hasAcs)
-        #list(map(print, self.hasAcRoleNames))
+        # canAcs
+        tr += "\n# Restrictions on canActivate\n\n"
+        for key, value in self.canAcs.items():
+            tr += "# For the Role '" + key + "'\n"
+            for rule in value:
+                tr += '# \n' + prefix_lines(repr(rule) + "\n", '# ')
         
-        tr = "def canReqCred(subject, issuer, "
+        # hasAcs
+        tr += "\n# Restrictions on hasActivate\n\n"
+        for key, value in self.hasAcs.items():
+            tr += "# For the Role '" + key + "'\n"
+            for rule in value:
+                tr += '# \n' + prefix_lines(repr(rule) + "\n", '# ')
         
-        return ""
+        return tr
 
 class ActionClass(object):
     def __init__(self, name, params):
@@ -654,7 +666,6 @@ def generate_outline(rules):
                 break
     
     roles = dict((rn, RoleClass(rn, rp)) for (rn, rp) in zip(role_names, role_params))
-    print(list(roles.keys()))
     
     # add canAc, canDc, isDac rules to appropriate RoleClasses:
     

@@ -1500,3 +1500,19 @@ class Force_read_record_item(Action):
             canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
         }
 
+# Credential Request Restrictions# ===============================# These rules determine if certain predicates can be 
+# invoked, such as canActivate or hasActivated.
+
+# They restrict who can invoke such predicates.
+# These rules have not been translated.
+
+# Restrictions on canActivate
+
+
+# Restrictions on hasActivate
+
+# For the Role 'NHS-health-org-cert'
+# 
+# 'A1.7.4'
+# canReqCred(x, "RA-ADB".hasActivated(y, NHS-health-org-cert(org, start, end))) <-
+# 	org = "ADB"

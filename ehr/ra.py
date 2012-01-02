@@ -231,3 +231,75 @@ class Workgroup_member(Role):
             role2.org == self.org and 
             Current_time() in vrange(role2.start, role2.end)
         }
+# Credential Request Restrictions# ===============================# These rules determine if certain predicates can be 
+# invoked, such as canActivate or hasActivated.
+
+# They restrict who can invoke such predicates.
+# These rules have not been translated.
+
+# Restrictions on canActivate
+
+# For the Role 'Workgroup-member'
+# 
+# 'R3.1.3'
+# canReqCred(spine, "RA-ADB".canActivate(cli, Workgroup-member(org, group, spcty))) <-
+# 	spine = "Spine"
+
+# Restrictions on hasActivate
+
+# For the Role 'NHS-Caldicott-guardian-cert'
+# 
+# 'R2.2.4'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
+# 	e = cg
+# 
+# 'R2.2.5'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
+# 	hasActivated(y, NHS-health-org-cert(org, start2, end2)), e = org, Current-time() in [start2, end2]
+# 
+# 'R2.2.6'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
+# 	canActivate(e, NHS-service())
+# For the Role 'NHS-health-org-cert'
+# 
+# 'R2.3.4'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
+# 	hasActivated(y, NHS-Caldicott-guardian-cert(org, cg, start2, end2)), Current-time() in [start2, end2], e = cg
+# 
+# 'R2.3.5'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
+# 	hasActivated(y, NHS-clinician-cert(org, cli, spcty, start2, end2)), Current-time() in [start2, end2], e = cli
+# 
+# 'R2.3.6'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
+# 	e = org
+# 
+# 'R2.3.7'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org2, start, end))) <-
+# 	ra.hasActivated(y, NHS-health-org-cert(org, start2, end2)), canActivate(ra, Registration-authority()), e = org
+# 
+# 'R2.3.8'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org2, start, end))) <-
+# 	org@ra.hasActivated(y, NHS-health-org-cert(org, start2, end2)), canActivate(ra, Registration-authority()), e = org
+# 
+# 'R2.3.9'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
+# 	canActivate(e, NHS-service())
+# For the Role 'NHS-registration-authority'
+# 
+# 'R1.2.1'
+# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
+# 	ra = "RA-ADB"
+# For the Role 'NHS-clinician-cert'
+# 
+# 'R2.1.4'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+# 	hasActivated(y, NHS-health-org-cert(org, start2, end2)), e = org, Current-time() in [start2, end2]
+# 
+# 'R2.1.5'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+# 	canActivate(e, NHS-service())
+# 
+# 'R2.1.6'
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+# 	e = cli
