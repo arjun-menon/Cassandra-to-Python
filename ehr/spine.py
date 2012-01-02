@@ -3,6 +3,8 @@ import hospital, pds, ra
 
 hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
 
+list_of_roles = ['Spine-clinician', 'Spine-admin', 'Register-spine-admin', 'Patient', 'Register-patient', 'Agent', 'Register-agent', 'Registration-authority', 'One-off-consent', 'Request-third-party-consent', 'Third-party', 'Third-party-consent', 'Request-consent-to-treatment', 'Consent-to-treatment', 'Request-consent-to-group-treatment', 'Consent-to-group-treatment', 'Referrer', 'Spine-emergency-clinician', 'Treating-clinician', 'General-practitioner', 'Group-treating-clinician', 'Concealed-by-spine-clinician', 'Conceal-request', 'Concealed-by-spine-patient', 'Authenticated-express-consent']
+
 class Spine_clinician(Role):
     def __init__(self, ra, org, spcty):
         super().__init__('Spine-clinician', ['ra', 'org', 'spcty']) 

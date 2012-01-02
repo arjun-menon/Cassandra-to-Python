@@ -3,6 +3,8 @@ import spine, hospital, pds
 
 hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
 
+list_of_roles = ['Register-RA-manager', 'RA-manager', 'NHS-service', 'Registration-authority', 'NHS-clinician-cert', 'NHS-Caldicott-guardian-cert', 'NHS-health-org-cert', 'Workgroup-member']
+
 class Register_RA_manager(Role):
     def __init__(self, mgr2):
         super().__init__('Register-RA-manager', ['mgr2']) 

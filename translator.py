@@ -644,6 +644,7 @@ def generate_outline(rules):
                 break
     
     roles = dict((rn, RoleClass(rn, rp)) for (rn, rp) in zip(role_names, role_params))
+    print(list(roles.keys()))
     
     # add canAc, canDc, isDac rules to appropriate RoleClasses:
     
@@ -669,6 +670,7 @@ def generate_outline(rules):
     canRqs_hasAcs = [r for r in canRqs if r.concl.args[1].name == SpecialPredicates.hasAc]
     
     outline = []
+    list_of_roles =[]
     
     for rule in rules:
         rule_type = rule.concl.name
@@ -680,6 +682,7 @@ def generate_outline(rules):
             if role_name in role_names:
                 outline.append(roles[role_name])
                 role_names.remove(role_name)
+                list_of_roles.append(role_name)
 
         elif rule_type == SpecialPredicates.isDac:
             pass # handled by above
@@ -699,7 +702,7 @@ def generate_outline(rules):
     
     outline.append( canReqCreds(canRqs_canAcs, canRqs_hasAcs) )
     
-    return outline
+    return outline, list_of_roles
 
 def untranslated(obj):
     return "\n" + prefix_lines("untranslated:\n" + repr(obj), "#")
@@ -713,7 +716,7 @@ def trans(obj, *args):
 
 def translate_rules(rules, rule_set):
     print("Translating %d rules in %s..." % (len(rules), rule_set) )
-    outline = generate_outline(rules)
+    outline, list_of_roles = generate_outline(rules)
     
     other_rule_sets = set(rule_sets) - set([rule_set])
     other_imports = "import " + ", ".join(rs for rs in other_rule_sets) + '\n'
@@ -721,6 +724,7 @@ def translate_rules(rules, rule_set):
     translation  = "from cassandra import *\n"
     translation += other_imports
     translation += "\nhasActivated = set()  # Set of (subject, role) pairs representing currently active roles.\n"
+    translation += "\nlist_of_roles = %s\n" % repr(list_of_roles)
     translation += "".join( map(trans, outline) )
 
     return translation

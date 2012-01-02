@@ -1,6 +1,14 @@
 
+Thoughts
+~~~~~~~~
+There's a whole bunch of roles, each role has something to do with who each person is and defines what he can do.
+ - Spine contains a bunch of roles - spine clinician, etc. So do the others.
+ - Generate a list of all roles in spine, hospital, etc.
+ * You need a REPL that will let you list these roles, 
+
+
+
 TODO
 ----
-
-isDac
-
+permits
+canReqCred
