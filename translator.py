@@ -17,6 +17,16 @@ def warn(message : str):
 class CountFunctions:
     funcs = []
 
+def loc_trans(loc):
+    if loc == '"PDS"':
+        loc = 'pds'
+    elif loc == '"Spine"':
+        loc = 'spine'
+    elif loc == '"RA-ADB"':
+        loc = 'ra'
+    
+    return 'ehr.'+loc
+
 class HypothesesTranslator(object):
     def __init__(self, rule):
         self.rule = rule
@@ -125,9 +135,9 @@ class HypothesesTranslator(object):
         
         loc = ''
         if canAc.issuer:
-            loc = repr(canAc.issuer)+'.'
+            loc = loc_trans( repr(canAc.issuer) )+'.'
         if canAc.location:
-            loc = repr(canAc.location)+'.' 
+            loc = loc_trans( repr(canAc.location) )+'.'
         
         return self.substitution_func_gen(bound_vars, "canActivate({}, {}{}({}))".format(
             p(bound_vars[0]), loc, h2u(role.name), ", ".join(p(v) for v in bound_vars[1:])
@@ -178,7 +188,7 @@ class HypothesesTranslator(object):
                     conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
                 self.external_vars.update( { hasAc_subj : 'subj' } )
                 
-                loc = repr(hasAc.location)+'.' if hasAc.location else ''
+                loc = loc_trans( repr(hasAc.location) ) +'.' if hasAc.location else ''
                 
                 tr = "return %s{\n    $group_key for subj, role in %shasActivated if \n    " % (wrapper[0], loc)
                 ending = "\n}" + wrapper[1]
@@ -205,8 +215,8 @@ class HypothesesTranslator(object):
                 self.external_vars.update( { rp : "role1."+rp for rp in role1_args } )
                 self.external_vars.update( { rp : "role2."+rp for rp in role2_args } )
                 
-                loc1 = repr(h1.location)+'.' if h1.location else ''
-                loc2 = repr(h2.location)+'.' if h2.location else ''
+                loc1 = loc_trans( repr(h1.location) )+'.' if h1.location else ''
+                loc2 = loc_trans( repr(h2.location) )+'.' if h2.location else ''
                 
                 tr = "return %s{\n    1 for (subj1, role1) in %shasActivated for (subj2, role2) in %shasActivated if \n    " % (wrapper[0], loc1, loc2)
                 ending = "\n}" + wrapper[1]
@@ -719,7 +729,7 @@ def translate_rules(rules, rule_set):
     outline, list_of_roles = generate_outline(rules)
     
     other_rule_sets = set(rule_sets) - set([rule_set])
-    other_imports = "import " + ", ".join(rs for rs in other_rule_sets) + '\n'
+    other_imports = "import " + ", ".join('ehr.'+rs for rs in other_rule_sets) + '\n'
 
     translation  = "from cassandra import *\n"
     translation += other_imports

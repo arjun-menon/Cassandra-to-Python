@@ -1,5 +1,5 @@
 from cassandra import *
-import spine, hospital, ra
+import ehr.spine, ehr.hospital, ehr.ra
 
 hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -94,7 +94,7 @@ class Agent(Role):
             1 for subj, role in hasActivated if 
             role.name == "Register-patient" and 
             role.ag == ag and 
-            canActivate(role.ag, "Spine".Agent(self.pat)) and 
+            canActivate(role.ag, ehr.spine.Agent(self.pat)) and 
             no_main_role_active(role.ag)
         }
     
@@ -131,7 +131,7 @@ class Professional_user(Role):
     
     def canActivate_2(self, x): # P1.4.2
         return {
-            1 for subj, role in ra.hasActivated if 
+            1 for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-clinician-cert" and 
             role.org == self.org and 
             subj == x and 
@@ -153,7 +153,7 @@ class Professional_user(Role):
     
     def canActivate_4(self, x): # P1.4.4
         return {
-            1 for subj, role in ra.hasActivated if 
+            1 for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-Caldicott-guardian-cert" and 
             role.org == self.org and 
             subj == x and 
@@ -197,7 +197,7 @@ class Registration_authority(Role):
     
     def canActivate_2(self, ra): # P1.5.3
         return {
-            1 for subj, role in ra.hasActivated if 
+            1 for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)

@@ -1,5 +1,5 @@
 from cassandra import *
-import hospital, pds, ra
+import ehr.hospital, ehr.pds, ehr.ra
 
 hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -27,7 +27,7 @@ class Spine_clinician(Role):
     
     def canActivate_2(self, cli): # S1.1.2
         return {
-            1 for subj, role in ra.hasActivated if 
+            1 for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-clinician-cert" and 
             role.spcty == self.spcty and 
             role.org == self.org and 
@@ -114,7 +114,7 @@ class Patient(Role):
     
     def canActivate(self, pat): # S1.3.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in "PDS".hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
             role1.name == "Register-patient" and 
             role2.name == "Register-patient" and 
             role1.pat == pat and 
@@ -194,7 +194,7 @@ class Agent(Role):
     
     def canActivate(self, ag): # S1.4.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in "PDS".hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
             role1.name == "Register-agent" and 
             role2.name == "Register-patient" and 
             role1.pat == self.pat and 
@@ -297,7 +297,7 @@ class Registration_authority(Role):
     
     def canActivate_2(self, ra): # S1.5.2
         return {
-            1 for subj, role in ra.hasActivated if 
+            1 for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -453,7 +453,7 @@ class Third_party(Role):
     
     def canActivate(self, x): # S2.2.10
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in "PDS".hasActivated if 
+            1 for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
             role1.name == "Request-third-party-consent" and 
             role2.name == "Register-patient" and 
             role1.x == x and 
@@ -673,7 +673,7 @@ class Request_consent_to_group_treatment(Role):
             role.name == "Spine-clinician" and 
             role.org == self.org and 
             subj == cli and 
-            canActivate(subj, ra.Workgroup_member(role.org, self.group, role.spcty))
+            canActivate(subj, ehr.ra.Workgroup_member(role.org, self.group, role.spcty))
         }
     
     def onDeactivate(self, subj):
@@ -843,7 +843,7 @@ class Group_treating_clinician(Role):
             role.org == self.org and 
             role.pat == self.pat and 
             role.group == self.group and 
-            canActivate(cli, ra.Workgroup_member(role.org, role.group, self.spcty)) and 
+            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty)) and 
             canActivate(self.ra, Registration_authority())
         }
     
@@ -854,7 +854,7 @@ class Group_treating_clinician(Role):
             role.org == self.org and 
             role.pat == self.pat and 
             role.group == self.group and 
-            canActivate(cli, ra.Workgroup_member(role.org, role.group, self.spcty)) and 
+            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty)) and 
             canActivate(self.ra, Registration_authority())
         }
 
@@ -1000,8 +1000,8 @@ class Concealed_by_spine_patient(Role):
             1 for subj, role in hasActivated if 
             role.name == "Spine-clinician" and 
             subj == cli1 and 
-            canActivate(subj, ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), role.spcty1)) and 
-            canActivate(cli2, ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), Wildcard()))
+            canActivate(subj, ehr.ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), role.spcty1)) and 
+            canActivate(cli2, ehr.ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), Wildcard()))
         }
 
 def count_concealed_by_spine_patient(a, b): # S4.2.12
