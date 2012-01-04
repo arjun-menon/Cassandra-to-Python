@@ -16,14 +16,14 @@ from ehr.spine import Spine_clinician
 # Current-time() in [start, end]
 
 # First create a NHS-clinician-cert and add it to hasActivated:
-new_role = Role('NHS-clinician-cert', ['org', 'cli', 'spcty', 'start', 'end'])
-new_role.org = 'GPs'
-new_role.cli = 'Dr.Bob'
-new_role.spcty = 'Dermatologist'
-new_role.start = MINYEAR
-new_role.end = MAXYEAR
+new_role = RoleAction('NHS-clinician-cert', 
+                    **{'org':'GPs', 
+                       'cli':'Dr.Bob', 
+                       'spcty':'Dermatologist', 
+                       'start':MINYEAR, 
+                       'end':MAXYEAR })
 
-spine.hasActivated.add(new_role)
+spine.hasActivated.append(new_role)
 
 # The second hypothesis depends on rule S1.5.1 shown below:
 #
@@ -32,15 +32,16 @@ spine.hasActivated.add(new_role)
 # Current-time() in [start, end]
 
 # Let's create a new registration authority and add it as well
-new_role = Role('NHS-registration-authority', ['ra', 'start', 'end'])
-new_role.ra = 'Bar'
-new_role.start = MINYEAR
-new_role.end = MAXYEAR
+new_role = RoleAction('NHS-registration-authority', 
+                    **{'ra':'Bar', 
+                       'start':MINYEAR, 
+                       'end':MAXYEAR })
 
-spine.hasActivated.add(new_role)
+spine.hasActivated.append(new_role)
 
 # no-main-role should work fine, since no other roel has been activated.
-print(spine.hasActivated.list_of_objects)
+
+#print(ActionRole('Force-read-spine-record-item', **{'pat':1, 'id':2}))
 
 # Testing it:
 result = canActivate('Dr. Bob', Spine_clinician('Bar', 'GPs', 'Dermatologist'))

@@ -56,7 +56,7 @@ def p(s):
 # Helper Classes
 ##################
 
-class anyset(object): # because python sets don't allow dicts
+class anyset(object): # because python sets don't allow dicts/objs
     def __init__(self):
         self.list_of_objects = []
     def add(self, obj):
@@ -82,6 +82,12 @@ class anyset(object): # because python sets don't allow dicts
                     self.pos += 1
                     return item
         return ListIterator(self.list_of_objects)
+
+class bla(object):
+    pass
+
+d = set()
+d.add(bla())
 
 #x = anyset()
 #x.add({'a':'b'})
