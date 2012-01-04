@@ -576,8 +576,9 @@ class canReqCreds(object):
     def translate(self):
         #tr = "def canReqCred(subject, issuer, "
         tr  = ""
-        tr += "# Credential Request Restrictions"
-        tr += "# ==============================="
+        
+        tr += "# Credential Request Restrictions\n"
+        tr += "# ===============================\n"
         tr += "# These rules determine if certain predicates can be \n"
         tr += "# invoked, such as canActivate or hasActivated.\n\n"
         tr += "# They restrict who can invoke such predicates.\n"

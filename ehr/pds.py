@@ -237,7 +237,9 @@ def patient_regs(pat): # P2.1.3
         role.name == "Register-patient" and 
         role.pat == pat
     })
-# Credential Request Restrictions# ===============================# These rules determine if certain predicates can be 
+# Credential Request Restrictions
+# ===============================
+# These rules determine if certain predicates can be 
 # invoked, such as canActivate or hasActivated.
 
 # They restrict who can invoke such predicates.

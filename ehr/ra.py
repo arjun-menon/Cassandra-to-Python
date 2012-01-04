@@ -231,7 +231,9 @@ class Workgroup_member(Role):
             role2.org == self.org and 
             Current_time() in vrange(role2.start, role2.end)
         }
-# Credential Request Restrictions# ===============================# These rules determine if certain predicates can be 
+# Credential Request Restrictions
+# ===============================
+# These rules determine if certain predicates can be 
 # invoked, such as canActivate or hasActivated.
 
 # They restrict who can invoke such predicates.

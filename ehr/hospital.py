@@ -1500,7 +1500,9 @@ class Force_read_record_item(Action):
             canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
         }
 
-# Credential Request Restrictions# ===============================# These rules determine if certain predicates can be 
+# Credential Request Restrictions
+# ===============================
+# These rules determine if certain predicates can be 
 # invoked, such as canActivate or hasActivated.
 
 # They restrict who can invoke such predicates.

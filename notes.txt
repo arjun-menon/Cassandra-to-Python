@@ -7,6 +7,10 @@ There's a whole bunch of roles, each role has something to do with who each pers
  * You need a REPL that will let you list these roles, 
 
 
+interpreter that executes this code with a same interface as translator
+possible easy switchability betw. interpretered/compiled mode
+build a new data structure with 'function's trees containing operators+operands
+
 
 TODO
 ----
