@@ -1,14 +1,13 @@
 from cassandra import *
 import ehr.spine, ehr.hospital, ehr.pds
 
-hasActivated = anyset()  # Set of (subject, role) pairs representing currently active roles.
+hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
 list_of_roles = ['Register-RA-manager', 'RA-manager', 'NHS-service', 'Registration-authority', 'NHS-clinician-cert', 'NHS-Caldicott-guardian-cert', 'NHS-health-org-cert', 'Workgroup-member']
 
-class Register_RA_manager(Role):
+class Register_RA_manager(RoleAction):
     def __init__(self, mgr2):
-        super().__init__('Register-RA-manager', ['mgr2']) 
-        self.mgr2 = mgr2
+        super().__init__('Register-RA-manager', **{'mgr2':mgr2})
     
     def canActivate(self, mgr): # R1.1.1
         return {
@@ -36,9 +35,9 @@ def RA_manager_regs(mgr): # R1.1.3
         role.mgr == mgr
     })
 
-class RA_manager(Role):
-    def __init__(self):
-        super().__init__('RA-manager', []) 
+class RA_manager(RoleAction):
+    def __init__(self, ):
+        super().__init__('RA-manager', **{})
     
     def canActivate(self, mgr): # R1.1.4
         return {
@@ -52,9 +51,9 @@ class RA_manager(Role):
             mgr == mgr_
         )
 
-class NHS_service(Role):
-    def __init__(self):
-        super().__init__('NHS-service', []) 
+class NHS_service(RoleAction):
+    def __init__(self, ):
+        super().__init__('NHS-service', **{})
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -69,9 +68,9 @@ class NHS_service(Role):
             srv == "Spine"
         )
 
-class Registration_authority(Role):
-    def __init__(self):
-        super().__init__('Registration-authority', []) 
+class Registration_authority(RoleAction):
+    def __init__(self, ):
+        super().__init__('Registration-authority', **{})
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -92,10 +91,9 @@ class Registration_authority(Role):
             Current_time() in vrange(role.start, role.end)
         }
 
-class NHS_clinician_cert(Role):
+class NHS_clinician_cert(RoleAction):
     def __init__(self, org, cli, spcty, start, end):
-        super().__init__('NHS-clinician-cert', ['org', 'cli', 'spcty', 'start', 'end']) 
-        self.org, self.cli, self.spcty, self.start, self.end = org, cli, spcty, start, end
+        super().__init__('NHS-clinician-cert', **{'org':org, 'cli':cli, 'spcty':spcty, 'start':start, 'end':end})
     
     def canActivate(self, mgr): # R2.1.1
         #R2.1.1 todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
@@ -113,10 +111,9 @@ class NHS_clinician_cert(Role):
             subj == mgr
         }
 
-class NHS_Caldicott_guardian_cert(Role):
+class NHS_Caldicott_guardian_cert(RoleAction):
     def __init__(self, org, cg, start, end):
-        super().__init__('NHS-Caldicott-guardian-cert', ['org', 'cg', 'start', 'end']) 
-        self.org, self.cg, self.start, self.end = org, cg, start, end
+        super().__init__('NHS-Caldicott-guardian-cert', **{'org':org, 'cg':cg, 'start':start, 'end':end})
     
     def canActivate(self, mgr): # R2.2.1
         #R2.2.1 todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
@@ -134,10 +131,9 @@ class NHS_Caldicott_guardian_cert(Role):
             subj == mgr
         }
 
-class NHS_health_org_cert(Role):
+class NHS_health_org_cert(RoleAction):
     def __init__(self, org, start, end):
-        super().__init__('NHS-health-org-cert', ['org', 'start', 'end']) 
-        self.org, self.start, self.end = org, start, end
+        super().__init__('NHS-health-org-cert', **{'org':org, 'start':start, 'end':end})
     
     def canActivate(self, mgr): # R2.3.1
         return {
@@ -204,10 +200,9 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
         end != role.end2
     })
 
-class Workgroup_member(Role):
+class Workgroup_member(RoleAction):
     def __init__(self, org, group, spcty):
-        super().__init__('Workgroup-member', ['org', 'group', 'spcty']) 
-        self.org, self.group, self.spcty = org, group, spcty
+        super().__init__('Workgroup-member', **{'org':org, 'group':group, 'spcty':spcty})
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)

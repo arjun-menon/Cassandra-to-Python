@@ -551,6 +551,20 @@ def onDeactivate(self, subj):
     
     def translate(self):
         return """
+class {name_u}(RoleAction):
+    def __init__(self, {params}):
+        super().__init__('{name}', **{params_dict})
+{canAcs_trans}{canDcs_trans}{isDacs_trans}""".format(
+         name   =     self.name
+        ,name_u = h2u(self.name)
+        ,params = ', '.join(map(repr, self.params))
+        ,params_dict = '{' + ', '.join("'"+repr(p)+"':"+repr(p) for p in self.params) + '}'
+
+        ,canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
+        ,canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
+        ,isDacs_trans = tab(self.isDac_translator()) #tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
+        )
+        return """
 class {name_u}(Role):
     def __init__(self{optional_front_comma}{params_comma}):
         super().__init__('{name}', [{params_quote}]) {optional_self_assignment_newline_tab}{self_assignment}{params_comma}
@@ -634,7 +648,7 @@ def permits(self, subj):
     
     def translate(self):
         return """
-class {name_u}(Action):
+class {name_u}(RoleAction):
     def __init__(self, {params}):
         super().__init__('{name}', **{params_dict})
 {permits}
@@ -751,7 +765,7 @@ def translate_rules(rules, rule_set):
 
     translation  = "from cassandra import *\n"
     translation += other_imports
-    translation += "\nhasActivated = anyset()  # Set of (subject, role) pairs representing currently active roles.\n"
+    translation += "\nhasActivated = list()  # Set of (subject, role) pairs representing currently active roles.\n"
     translation += "\nlist_of_roles = %s\n" % repr(list_of_roles)
     translation += "".join( map(trans, outline) )
 

@@ -1,13 +1,13 @@
 from cassandra import *
 import ehr.spine, ehr.hospital, ehr.ra
 
-hasActivated = anyset()  # Set of (subject, role) pairs representing currently active roles.
+hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
 list_of_roles = ['PDS-manager', 'Register-PDS-manager', 'Patient', 'Agent', 'Professional-user', 'Registration-authority', 'Register-patient']
 
-class PDS_manager(Role):
-    def __init__(self):
-        super().__init__('PDS-manager', []) 
+class PDS_manager(RoleAction):
+    def __init__(self, ):
+        super().__init__('PDS-manager', **{})
     
     def canActivate(self, adm): # P1.1.1
         return {
@@ -29,10 +29,9 @@ def count_PDS_manager_activations(user): # P1.1.4
         subj == user
     })
 
-class Register_PDS_manager(Role):
+class Register_PDS_manager(RoleAction):
     def __init__(self, adm2):
-        super().__init__('Register-PDS-manager', ['adm2']) 
-        self.adm2 = adm2
+        super().__init__('Register-PDS-manager', **{'adm2':adm2})
     
     def canActivate(self, adm1): # P1.1.5
         return {
@@ -60,9 +59,9 @@ def pds_admin_regs(adm): # P1.1.7
         role.adm == adm
     })
 
-class Patient(Role):
-    def __init__(self):
-        super().__init__('Patient', []) 
+class Patient(RoleAction):
+    def __init__(self, ):
+        super().__init__('Patient', **{})
     
     def canActivate(self, pat): # P1.2.1
         return {
@@ -84,10 +83,9 @@ def count_patient_activations(user): # P1.2.4
         subj == user
     })
 
-class Agent(Role):
+class Agent(RoleAction):
     def __init__(self, pat):
-        super().__init__('Agent', ['pat']) 
-        self.pat = pat
+        super().__init__('Agent', **{'pat':pat})
     
     def canActivate(self, ag): # P1.3.1
         return {
@@ -110,10 +108,9 @@ def count_agent_activations(user): # P1.3.5
         subj == user
     })
 
-class Professional_user(Role):
+class Professional_user(RoleAction):
     def __init__(self, ra, org):
-        super().__init__('Professional-user', ['ra', 'org']) 
-        self.ra, self.org = ra, org
+        super().__init__('Professional-user', **{'ra':ra, 'org':org})
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
@@ -180,9 +177,9 @@ def no_main_role_active(user): # P1.5.1
             count_PDS_manager_activations(user) == 0 and \
             count_professional_user_activations(user) == 0
 
-class Registration_authority(Role):
-    def __init__(self):
-        super().__init__('Registration-authority', []) 
+class Registration_authority(RoleAction):
+    def __init__(self, ):
+        super().__init__('Registration-authority', **{})
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -203,10 +200,9 @@ class Registration_authority(Role):
             Current_time() in vrange(role.start, role.end)
         }
 
-class Register_patient(Role):
+class Register_patient(RoleAction):
     def __init__(self, pat):
-        super().__init__('Register-patient', ['pat']) 
-        self.pat = pat
+        super().__init__('Register-patient', **{'pat':pat})
     
     def canActivate(self, adm): # P2.1.1
         return {
