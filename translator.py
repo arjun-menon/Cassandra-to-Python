@@ -5,10 +5,13 @@ from helpers import *
 from string import Template
 
 class StopTranslating(Exception):
-    def __init__(self, reason):
-        self.reason = reason
+    def __init__(self, rn, reason):
+        self.rn, self.reason = rn, reason
+        self.msg = "%s todo: " % self.rn + self.reason
+        print(self.msg)
+        print()
     def __repr__(self):
-        return "todo: " + self.reason
+        return self.msg
 
 @typecheck
 def warn(message : str):
@@ -34,6 +37,9 @@ class HypothesesTranslator(object):
     
     def __repr__(self):
         return repr(self.rule)
+    
+    def stopTranslating(self, reason):
+        return StopTranslating(self.rule.name, reason)
     
     def substitution_func_gen(self, variables, code):
         """ 'variables' is a list of variables that appear in 'code'.
@@ -84,7 +90,7 @@ class HypothesesTranslator(object):
                     func_name = h2u(repr(c.left))
                     
                     if len(c.left.args):
-                        raise StopTranslating("can't handle 'in' operator - function with arguments: %r" % c.left)
+                        raise self.stopTranslating("can't handle 'in' operator - function with arguments: %r" % c.left)
                     
                     return self.substitution_func_gen([lower, upper],"%s in vrange({%s}, {%s})" % (func_name, lower, upper))
                 
@@ -125,7 +131,7 @@ class HypothesesTranslator(object):
                 return self.substitution_func_gen([cr]+func_args, func_name + 
                             '(' + ", ".join(p(a) for a in func_args) + ') ' + op + ' ' + p(cr))
         
-        raise StopTranslating("could not translate constraint: " + repr(c))
+        raise self.stopTranslating("could not translate constraint: " + repr(c))
     
     
     def build_canAc_bindings(self, canAc):
@@ -169,7 +175,7 @@ class HypothesesTranslator(object):
                 
                 # turn role_params into a set
                 if len(role_params) != len(set(role_params)):
-                    raise StopTranslating("duplicate role params in %s" + repr(role_params))
+                    raise self.stopTranslating("duplicate role params in %s" + repr(role_params))
                 else:
                     role_params = set(role_params)
                 
@@ -226,10 +232,10 @@ class HypothesesTranslator(object):
             elif len(hasAcs) == 0:
                 tr = "return (\n    "
                 ending = "\n)"
-                #raise StopTranslating("a rule with no hasActivates")
+                #raise self.stopTranslating("a rule with no hasActivates")
             
             else:
-                raise StopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
+                raise self.stopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
             
             
             # handle canActivated:
@@ -255,7 +261,7 @@ class HypothesesTranslator(object):
                     if countf_wildcard:
                         self.external_vars.update( { v : "Wildcard()" for v in unbound_vars } )
                     else:
-                        raise StopTranslating("unbound vars %r in %r" % (unbound_vars, f))
+                        raise self.stopTranslating("unbound vars %r in %r" % (unbound_vars, f))
                 
                 # create a mapping from the return value of f to its code
                 self.external_vars.update( { f_return : code_gen() } )
@@ -271,7 +277,7 @@ class HypothesesTranslator(object):
             
             for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
                 if(ctr_vars):
-                    raise StopTranslating("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func()))
+                    raise self.stopTranslating("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func()))
                 else:
                     conditionals.append( ctr_cond_func() )
             
@@ -284,7 +290,7 @@ class HypothesesTranslator(object):
                     h2u(f.name) + '(' + ", ".join(p(str(a)) for a in f_args) + ')' )
                 
                 if unbound_vars:
-                    raise StopTranslating("unbound vars in %s" % repr(f))
+                    raise self.stopTranslating("unbound vars in %s" % repr(f))
                 
                 conditionals.append( code_gen() )
             
@@ -292,7 +298,7 @@ class HypothesesTranslator(object):
             if group_key:
                 group_key = str(group_key)
                 if not group_key in set(self.external_vars):
-                    raise StopTranslating("could not find %s in %s" % (group_key, set(self.external_vars)))
+                    raise self.stopTranslating("could not find %s in %s" % (group_key, set(self.external_vars)))
                 group_key = self.external_vars[group_key]
             else:
                 group_key = 1
@@ -745,7 +751,7 @@ def translate_rules(rules, rule_set):
 
     translation  = "from cassandra import *\n"
     translation += other_imports
-    translation += "\nhasActivated = set()  # Set of (subject, role) pairs representing currently active roles.\n"
+    translation += "\nhasActivated = anyset()  # Set of (subject, role) pairs representing currently active roles.\n"
     translation += "\nlist_of_roles = %s\n" % repr(list_of_roles)
     translation += "".join( map(trans, outline) )
 

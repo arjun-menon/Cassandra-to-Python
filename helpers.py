@@ -52,3 +52,48 @@ def separate(alist, *conds):
 def p(s):
     return '{' + s + '}'
 
+##################
+# Helper Classes
+##################
+
+class anyset(object): # because python sets don't allow dicts
+    def __init__(self):
+        self.list_of_objects = []
+    def add(self, obj):
+        if not any_eq(obj, self.list_of_objects):
+            self.list_of_objects.append(obj)
+#    def __iter__(self):
+#        return self
+#    def __next__(self):
+#        for i in self.list_of_objects:
+#            yield i
+    def __iter__(self):
+        class ListIterator:
+            def __init__(self, me):
+                self.me = me
+                self.pos = 0
+            def __iter__(self):
+                return self
+            def __next__(self):
+                if self.pos == len(self.me):
+                    raise StopIteration
+                else:
+                    item = self.me[self.pos]
+                    self.pos += 1
+                    return item
+        return ListIterator(self.list_of_objects)
+
+#x = anyset()
+#x.add({'a':'b'})
+#x.add('foo')
+#for i in x:
+#    print(i)
+
+class vrange(object):
+    def __init__(self, start, end):
+        self.start, self.end = start, end
+    def __contains__(self, val):
+        if not (val >= self.start and val <= self.end):
+            #raise CassandraException("test failed: %r is not in [%r, %r]" % (val, self.start, self.end))
+            return False
+        return True

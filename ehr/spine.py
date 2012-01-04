@@ -1,7 +1,7 @@
 from cassandra import *
 import ehr.hospital, ehr.pds, ehr.ra
 
-hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
+hasActivated = anyset()  # Set of (subject, role) pairs representing currently active roles.
 
 list_of_roles = ['Spine-clinician', 'Spine-admin', 'Register-spine-admin', 'Patient', 'Register-patient', 'Agent', 'Register-agent', 'Registration-authority', 'One-off-consent', 'Request-third-party-consent', 'Third-party', 'Third-party-consent', 'Request-consent-to-treatment', 'Consent-to-treatment', 'Request-consent-to-group-treatment', 'Consent-to-group-treatment', 'Referrer', 'Spine-emergency-clinician', 'Treating-clinician', 'General-practitioner', 'Group-treating-clinician', 'Concealed-by-spine-clinician', 'Conceal-request', 'Concealed-by-spine-patient', 'Authenticated-express-consent']
 
@@ -173,7 +173,7 @@ class Register_patient(Role):
         
         deactivate(hasActivated, Wildcard(), Concealed_by_spine_clinician(self.pat, Wildcard(), Wildcard(), Wildcard()))  # S4.1.5
         
-        #todo: unable to bind vars {'what'} in constraint pi7_1(what) == self.pat
+        #S4.2.6 todo: unable to bind vars {'what'} in constraint pi7_1(what) == self.pat
         #pi7_1(what) = pat
         deactivate(hasActivated, Wildcard(), Conceal_request(Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # S4.2.6
         
@@ -823,7 +823,7 @@ class General_practitioner(Role):
         self.pat = pat
     
     def canActivate(self, cli): # S3.3.5
-        #todo: unable to bind vars {'spcty'} in constraint spcty == "GP"
+        #S3.3.5 todo: unable to bind vars {'spcty'} in constraint spcty == "GP"
         #canActivate(cli, Treating-clinician(pat, org, spcty))
         #spcty = "GP"
         pass
@@ -918,7 +918,7 @@ class Conceal_request(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # S4.2.1
-        #todo: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+        #S4.2.1 todo: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
         #hasActivated(pat, Patient())
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
@@ -926,7 +926,7 @@ class Conceal_request(Role):
         pass
     
     def canActivate_2(self, ag): # S4.2.2
-        #todo: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+        #S4.2.2 todo: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
         #hasActivated(ag, Agent(pat))
         #count-conceal-requests(n, pat)
         #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
@@ -953,7 +953,7 @@ class Conceal_request(Role):
         }
     
     def canDeactivate_3(self, cli, x): # S4.2.5
-        #todo: unable to bind vars {'pat'} in constraint pi7_1(self.what) == pat
+        #S4.2.5 todo: unable to bind vars {'pat'} in constraint pi7_1(self.what) == pat
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #canActivate(cli, General-practitioner(pat))
         #pi7_1(what) = pat
@@ -964,7 +964,7 @@ class Conceal_request(Role):
         
 
 def count_conceal_requests(pat): # S4.2.7
-    #todo: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+    #S4.2.7 todo: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
     #hasActivated(x, Conceal-request(y))
     #(what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
     #y = (what,who,start,end)
@@ -1005,7 +1005,7 @@ class Concealed_by_spine_patient(Role):
         }
 
 def count_concealed_by_spine_patient(a, b): # S4.2.12
-    #todo: could not translate constraint: a = (pat,id)
+    #S4.2.12 todo: could not translate constraint: a = (pat,id)
     #hasActivated(x, Concealed-by-spine-patient(what, who, start, end))
     #a = (pat,id)
     #b = (org,reader,spcty)
@@ -1173,7 +1173,7 @@ class Read_spine_record_item(Action):
         return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj) or self.permits_4(subj) or self.permits_5(subj)
     
     def permits_1(self, pat): # S5.3.1
-        #todo: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
+        #S5.3.1 todo: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
         #hasActivated(pat, Patient())
         #hasActivated(x, One-off-consent(pat))
         #count-concealed-by-spine-patient(n, a, b)
@@ -1187,7 +1187,7 @@ class Read_spine_record_item(Action):
         pass
     
     def permits_2(self, ag): # S5.3.2
-        #todo: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
+        #S5.3.2 todo: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
         #hasActivated(ag, Agent(pat))
         #hasActivated(x, One-off-consent(pat))
         #count-concealed-by-spine-patient(n, a, b)
@@ -1211,7 +1211,7 @@ class Read_spine_record_item(Action):
         }
     
     def permits_4(self, cli): # S5.3.4
-        #todo: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
+        #S5.3.4 todo: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #hasActivated(x, One-off-consent(pat))
         #canActivate(cli, Treating-clinician(pat, org, spcty))
@@ -1223,7 +1223,7 @@ class Read_spine_record_item(Action):
         pass
     
     def permits_5(self, cli): # S5.3.5
-        #todo: Not implemented: 3 hasAcs in a rule.
+        #S5.3.5 todo: Not implemented: 3 hasAcs in a rule.
         #hasActivated(cli, Spine-clinician(ra, org, spcty))
         #hasActivated(x, One-off-consent(pat))
         #canActivate(cli, Treating-clinician(pat, org, spcty))

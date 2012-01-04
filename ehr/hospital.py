@@ -1,7 +1,7 @@
 from cassandra import *
 import ehr.spine, ehr.pds, ehr.ra
 
-hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
+hasActivated = anyset()  # Set of (subject, role) pairs representing currently active roles.
 
 list_of_roles = ['Register-clinician', 'Clinician', 'Register-Caldicott-guardian', 'Caldicott-guardian', 'Register-HR-mgr', 'HR-mgr', 'Register-receptionist', 'Receptionist', 'Register-patient', 'Patient', 'Agent', 'Register-agent', 'Registration-authority', 'Request-consent-to-referral', 'Consent-to-referral', 'Ext-treating-clinician', 'Request-third-party-consent', 'Third-party', 'Third-party-consent', 'Head-of-team', 'Register-head-of-team', 'Register-team-member', 'Register-team-episode', 'Head-of-ward', 'Register-head-of-ward', 'Register-ward-member', 'Register-ward-episode', 'Emergency-clinician', 'ADB-treating-clinician', 'Concealed-by-clinician', 'Concealed-by-patient']
 
@@ -274,7 +274,7 @@ class Register_patient(Role):
         
         deactivate(hasActivated, Wildcard(), Concealed_by_clinician(self.pat, Wildcard(), Wildcard(), Wildcard()))  # A4.1.5
         
-        #todo: unable to bind vars {'what'} in constraint pi7_1(what) == self.pat
+        #A4.2.6 todo: unable to bind vars {'what'} in constraint pi7_1(what) == self.pat
         #pi7_1(what) = pat
         deactivate(hasActivated, Wildcard(), Concealed_by_patient(Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # A4.2.6
         
@@ -1252,7 +1252,7 @@ class Concealed_by_patient(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # A4.2.1
-        #todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
+        #A4.2.1 todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
         #hasActivated(pat, Patient())
         #count-concealed-by-patient(n, pat)
         #what = (pat,ids,authors,groups,subjects,from-time,to-time)
@@ -1261,7 +1261,7 @@ class Concealed_by_patient(Role):
         pass
     
     def canActivate_2(self, ag): # A4.2.2
-        #todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
+        #A4.2.2 todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
         #hasActivated(ag, Agent(pat))
         #count-concealed-by-patient(n, pat)
         #what = (pat,ids,authors,groups,subjects,from-time,to-time)
@@ -1296,7 +1296,7 @@ class Concealed_by_patient(Role):
         }
 
 def count_concealed_by_patient(pat): # A4.2.7
-    #todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
+    #A4.2.7 todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
     #hasActivated(x, Concealed-by-patient(y))
     #what = (pat,ids,authors,groups,subjects,from-time,to-time)
     #who = (orgs1,readers1,groups1,spctys1)
@@ -1304,7 +1304,7 @@ def count_concealed_by_patient(pat): # A4.2.7
     pass
 
 def count_concealed_by_patient2(a, b): # A4.2.8
-    #todo: could not translate constraint: a = (pat,id)
+    #A4.2.8 todo: could not translate constraint: a = (pat,id)
     #hasActivated(x, Concealed-by-patient(what, whom, start, end))
     #a = (pat,id)
     #b = (org,reader,group,spcty)
@@ -1416,7 +1416,7 @@ class Read_record_item(Action):
         return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj) or self.permits_4(subj) or self.permits_5(subj) or self.permits_6(subj)
     
     def permits_1(self, ag): # A5.3.1
-        #todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
+        #A5.3.1 todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #hasActivated(ag, Agent(pat))
         #count-concealed-by-patient2(n, a, b)
         #count-concealed-by-clinician(m, pat, id)
@@ -1437,14 +1437,14 @@ class Read_record_item(Action):
         }
     
     def permits_3(self, cli): # A5.3.3
-        #todo: unable to bind vars {'team'} in constraint Get_record_group(self.pat, self.id) == team
+        #A5.3.3 todo: unable to bind vars {'team'} in constraint Get_record_group(self.pat, self.id) == team
         #hasActivated(cli, Clinician(spcty))
         #hasActivated(x, Register-team-member(cli, team, spcty))
         #Get-record-group(pat, id) = team
         pass
     
     def permits_4(self, cli): # A5.3.4
-        #todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
+        #A5.3.4 todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #hasActivated(cli, Clinician(spcty))
         #canActivate(cli, ADB-treating-clinician(pat, group, spcty))
         #count-concealed-by-patient2(n, a, b)
@@ -1455,7 +1455,7 @@ class Read_record_item(Action):
         pass
     
     def permits_5(self, cli): # A5.3.5
-        #todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
+        #A5.3.5 todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty))
         #count-concealed-by-patient2(n, a, b)
         #n = 0
@@ -1465,7 +1465,7 @@ class Read_record_item(Action):
         pass
     
     def permits_6(self, pat): # A5.3.6
-        #todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
+        #A5.3.6 todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #hasActivated(pat, Patient())
         #count-concealed-by-patient2(n, a, b)
         #count-concealed-by-clinician(m, pat, id)

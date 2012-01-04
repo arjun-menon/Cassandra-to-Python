@@ -1,5 +1,5 @@
 from helpers import *
-from datetime import datetime
+from datetime import *
 
 class Role(object):
     def __init__(self, name, args):
@@ -46,11 +46,3 @@ def pi7_1(obj):
 def Current_time():
     return datetime.utcnow()
 
-class vrange(object):
-    def __init__(self, start, end):
-        self.start, self.end = start, end
-    def __contains__(self, val):
-        if not (val >= self.start and val <= self.end):
-            #raise CassandraException("test failed: %r is not in [%r, %r]" % (val, self.start, self.end))
-            return False
-        return True

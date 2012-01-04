@@ -1,7 +1,7 @@
 from cassandra import *
 import ehr.spine, ehr.hospital, ehr.ra
 
-hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
+hasActivated = anyset()  # Set of (subject, role) pairs representing currently active roles.
 
 list_of_roles = ['PDS-manager', 'Register-PDS-manager', 'Patient', 'Agent', 'Professional-user', 'Registration-authority', 'Register-patient']
 

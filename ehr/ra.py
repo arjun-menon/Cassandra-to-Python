@@ -1,7 +1,7 @@
 from cassandra import *
 import ehr.spine, ehr.hospital, ehr.pds
 
-hasActivated = set()  # Set of (subject, role) pairs representing currently active roles.
+hasActivated = anyset()  # Set of (subject, role) pairs representing currently active roles.
 
 list_of_roles = ['Register-RA-manager', 'RA-manager', 'NHS-service', 'Registration-authority', 'NHS-clinician-cert', 'NHS-Caldicott-guardian-cert', 'NHS-health-org-cert', 'Workgroup-member']
 
@@ -98,7 +98,7 @@ class NHS_clinician_cert(Role):
         self.org, self.cli, self.spcty, self.start, self.end = org, cli, spcty, start, end
     
     def canActivate(self, mgr): # R2.1.1
-        #todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
+        #R2.1.1 todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
         #hasActivated(mgr, RA-manager())
         #hasActivated(y, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
@@ -119,7 +119,7 @@ class NHS_Caldicott_guardian_cert(Role):
         self.org, self.cg, self.start, self.end = org, cg, start, end
     
     def canActivate(self, mgr): # R2.2.1
-        #todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
+        #R2.2.1 todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
         #hasActivated(mgr, RA-manager())
         #hasActivated(x, NHS-health-org-cert(org, start2, end2))
         #start in [start2, end2]
@@ -154,7 +154,7 @@ class NHS_health_org_cert(Role):
         }
     
     def onDeactivate(self, subj):
-        #todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
+        #R2.1.3 todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
         #other-NHS-health-org-regs(n, x, org, start2, end2)
         #n = 0
         #start in [start2, end2]
@@ -162,7 +162,7 @@ class NHS_health_org_cert(Role):
         #start < end
         deactivate(hasActivated, Wildcard(), NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # R2.1.3
         
-        #todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
+        #R2.2.3 todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
         #other-NHS-health-org-regs(n, x, org, start2, end2)
         #start in [start2, end2]
         #end in [start2, end2]
