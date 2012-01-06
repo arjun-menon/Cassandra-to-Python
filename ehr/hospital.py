@@ -11,7 +11,7 @@ class Register_clinician(RoleAction):
     
     def canActivate(self, mgr): # A1.1.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr and 
             clinician_regs(self.cli, self.spcty) == 0
@@ -19,7 +19,7 @@ class Register_clinician(RoleAction):
     
     def canDeactivate(self, mgr, x): # A1.1.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr
         }
@@ -34,7 +34,7 @@ class Register_clinician(RoleAction):
 
 def clinician_regs(cli, spcty): # A1.1.3
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-clinician" and 
         role.spcty == spcty and 
         role.cli == cli
@@ -46,7 +46,7 @@ class Clinician(RoleAction):
     
     def canActivate(self, cli): # A1.1.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-clinician" and 
             role.spcty == self.spcty and 
             role.cli == cli and 
@@ -64,7 +64,7 @@ class Clinician(RoleAction):
 
 def count_clinician_activations(user): # A1.1.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Clinician" and 
         subj == user
     })
@@ -75,7 +75,7 @@ class Register_Caldicott_guardian(RoleAction):
     
     def canActivate(self, mgr): # A1.2.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr and 
             cg_regs(self.cg) == 0
@@ -83,7 +83,7 @@ class Register_Caldicott_guardian(RoleAction):
     
     def canDeactivate(self, mgr, x): # A1.2.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr
         }
@@ -94,7 +94,7 @@ class Register_Caldicott_guardian(RoleAction):
 
 def cg_regs(cg): # A1.2.3
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-Caldicott-guardian" and 
         role.cg == cg
     })
@@ -105,7 +105,7 @@ class Caldicott_guardian(RoleAction):
     
     def canActivate(self, cg): # A1.2.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-Caldicott-guardian" and 
             role.cg == cg and 
             no_main_role_active(role.cg)
@@ -118,7 +118,7 @@ class Caldicott_guardian(RoleAction):
 
 def count_caldicott_guardian_activations(user): # A1.2.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Caldicott-guardian" and 
         subj == user
     })
@@ -129,7 +129,7 @@ class Register_HR_mgr(RoleAction):
     
     def canActivate(self, mgr): # A1.3.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr and 
             hr_manager_regs(subj) == 0
@@ -137,7 +137,7 @@ class Register_HR_mgr(RoleAction):
     
     def canDeactivate(self, mgr, x): # A1.3.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr
         }
@@ -148,7 +148,7 @@ class Register_HR_mgr(RoleAction):
 
 def hr_manager_regs(mgr): # A1.3.3
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-HR-mgr" and 
         role.mgr == mgr
     })
@@ -159,7 +159,7 @@ class HR_mgr(RoleAction):
     
     def canActivate(self, mgr): # A1.3.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-HR-mgr" and 
             role.mgr == mgr and 
             no_main_role_active(role.mgr)
@@ -172,7 +172,7 @@ class HR_mgr(RoleAction):
 
 def count_hr_mgr_activations(user): # A1.3.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "HR-mgr" and 
         subj == user
     })
@@ -183,7 +183,7 @@ class Register_receptionist(RoleAction):
     
     def canActivate(self, mgr): # A1.4.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr and 
             receptionist_regs(self.rec) == 0
@@ -191,7 +191,7 @@ class Register_receptionist(RoleAction):
     
     def canDeactivate(self, mgr, x): # A1.4.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr
         }
@@ -202,7 +202,7 @@ class Register_receptionist(RoleAction):
 
 def receptionist_regs(rec): # A1.4.3
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-receptionist" and 
         role.rec == rec
     })
@@ -213,7 +213,7 @@ class Receptionist(RoleAction):
     
     def canActivate(self, rec): # A1.4.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-receptionist" and 
             role.rec == rec
         }
@@ -225,7 +225,7 @@ class Receptionist(RoleAction):
 
 def count_receptionist_activations(user): # A1.4.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Receptionist" and 
         subj == user
     })
@@ -236,7 +236,7 @@ class Register_patient(RoleAction):
     
     def canActivate(self, rec): # A1.5.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Receptionist" and 
             subj == rec and 
             patient_regs(self.pat) == 0
@@ -244,7 +244,7 @@ class Register_patient(RoleAction):
     
     def canDeactivate(self, rec, x): # A1.5.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Receptionist" and 
             subj == rec
         }
@@ -275,7 +275,7 @@ class Register_patient(RoleAction):
 
 def patient_regs(pat): # A1.5.3
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-patient" and 
         role.pat == pat
     })
@@ -286,7 +286,7 @@ class Patient(RoleAction):
     
     def canActivate(self, pat): # A1.5.4
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
             role1.name == "Register-patient" and 
             role2.name == "Register-patient" and 
             role1.pat == pat and 
@@ -301,7 +301,7 @@ class Patient(RoleAction):
 
 def count_patient_activations(user): # A1.5.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Patient" and 
         subj == user
     })
@@ -315,7 +315,7 @@ class Agent(RoleAction):
     
     def canActivate_1(self, agent): # A1.6.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
             role1.name == "Register-agent" and 
             role2.name == "Register-patient" and 
             role1.pat == self.pat and 
@@ -327,7 +327,7 @@ class Agent(RoleAction):
     
     def canActivate_2(self, agent): # A1.6.2
         return {
-            1 for subj, role in ehr.pds.hasActivated if 
+            True for subj, role in ehr.pds.hasActivated if 
             role.name == "Register-patient" and 
             role.agent == agent and 
             canActivate(self.pat, Patient()) and 
@@ -337,7 +337,7 @@ class Agent(RoleAction):
 
 def count_agent_activations(user): # A1.6.4
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Agent" and 
         subj == user
     })
@@ -351,14 +351,14 @@ class Register_agent(RoleAction):
     
     def canActivate_1(self, pat): # A1.6.5
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Patient" and 
             subj == pat
         }
     
     def canActivate_2(self, cg): # A1.6.6
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg and 
             canActivate(self.pat, Patient())
@@ -369,7 +369,7 @@ class Register_agent(RoleAction):
     
     def canDeactivate_1(self, pat, pat_): # A1.6.7
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             pat == pat_ and 
             role.name == "Patient" and 
             subj == pat
@@ -377,7 +377,7 @@ class Register_agent(RoleAction):
     
     def canDeactivate_2(self, cg, x): # A1.6.8
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
@@ -388,7 +388,7 @@ class Register_agent(RoleAction):
 
 def other_agent_regs(x, ag, pat): # A1.6.10
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-agent" and 
         role.pat == pat and 
         role.ag == ag and 
@@ -414,7 +414,7 @@ class Registration_authority(RoleAction):
     
     def canActivate_1(self, ra): # A1.7.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -422,7 +422,7 @@ class Registration_authority(RoleAction):
     
     def canActivate_2(self, ra): # A1.7.3
         return {
-            1 for subj, role in ehr.ra.hasActivated if 
+            True for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -434,7 +434,7 @@ class Request_consent_to_referral(RoleAction):
     
     def canActivate(self, cli1): # A2.1.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli1 and 
             canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty1))
@@ -445,7 +445,7 @@ class Request_consent_to_referral(RoleAction):
     
     def canDeactivate_1(self, cli, cli_): # A2.1.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             cli == cli_ and 
             role.name == "Clinician" and 
             subj == cli
@@ -453,14 +453,14 @@ class Request_consent_to_referral(RoleAction):
     
     def canDeactivate_2(self, pat, x): # A2.1.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Patient" and 
             subj == pat
         }
     
     def canDeactivate_3(self, ag, x): # A2.1.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Agent" and 
             role.pat == self.pat and 
             subj == ag
@@ -468,7 +468,7 @@ class Request_consent_to_referral(RoleAction):
     
     def canDeactivate_4(self, cg, x): # A2.1.5
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
@@ -479,7 +479,7 @@ class Request_consent_to_referral(RoleAction):
 
 def other_consent_to_referral_requests(x, pat, ra, org, cli, spcty): # A2.1.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Request-consent-to-referral" and 
         role.spcty == spcty and 
         role.org == org and 
@@ -498,7 +498,7 @@ class Consent_to_referral(RoleAction):
     
     def canActivate_1(self, pat): # A2.1.8
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Patient" and 
             role2.name == "Request-consent-to-referral" and 
             subj1 == pat
@@ -506,7 +506,7 @@ class Consent_to_referral(RoleAction):
     
     def canActivate_2(self, pat): # A2.1.9
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Agent" and 
             role2.name == "Request-consent-to-referral" and 
             subj1 == pat and 
@@ -516,7 +516,7 @@ class Consent_to_referral(RoleAction):
     
     def canActivate_3(self, cg): # A2.1.10
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Caldicott-guardian" and 
             role2.name == "Request-consent-to-referral" and 
             subj1 == cg
@@ -528,7 +528,7 @@ class Consent_to_referral(RoleAction):
 
 def other_referral_consents(x, pat, ra, org, cli, spcty): # A2.1.12
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Consent-to-referral" and 
         role.spcty == spcty and 
         role.org == org and 
@@ -547,7 +547,7 @@ class Ext_treating_clinician(RoleAction):
     
     def canActivate_1(self, cli): # A2.2.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Consent-to-referral" and 
             role2.name == "NHS-clinician-cert" and 
             role1.spcty == self.spcty and 
@@ -566,7 +566,7 @@ class Ext_treating_clinician(RoleAction):
     
     def canActivate_2(self, cli): # A2.2.2
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in ehr.ra.hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.ra.hasActivated if 
             role1.name == "Consent-to-referral" and 
             role2.name == "NHS-clinician-cert" and 
             role1.spcty == self.spcty and 
@@ -590,7 +590,7 @@ class Ext_treating_clinician(RoleAction):
 
 def count_ext_treating_clinician_activations(user): # A2.2.5
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Ext-treating-clinician" and 
         subj == user
     })
@@ -604,7 +604,7 @@ class Request_third_party_consent(RoleAction):
     
     def canActivate_1(self, pat): # A2.3.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Patient" and 
             subj == pat and 
             self.x in Get_record_third_parties(subj, self.id)
@@ -612,7 +612,7 @@ class Request_third_party_consent(RoleAction):
     
     def canActivate_2(self, ag): # A2.3.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Agent" and 
             role.pat == self.pat and 
             subj == ag and 
@@ -621,7 +621,7 @@ class Request_third_party_consent(RoleAction):
     
     def canActivate_3(self, cli): # A2.3.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli and 
             self.x in Get_record_third_parties(self.pat, self.id)
@@ -629,7 +629,7 @@ class Request_third_party_consent(RoleAction):
     
     def canActivate_4(self, cg): # A2.3.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg and 
             self.x in Get_record_third_parties(self.pat, self.id)
@@ -640,7 +640,7 @@ class Request_third_party_consent(RoleAction):
     
     def canDeactivate_1(self, pat, pat_): # A2.3.5
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             pat == pat_ and 
             role.name == "Patient" and 
             subj == pat
@@ -648,7 +648,7 @@ class Request_third_party_consent(RoleAction):
     
     def canDeactivate_2(self, ag, ag_): # A2.3.6
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             ag == ag_ and 
             role.name == "Agent" and 
             role.pat == self.pat and 
@@ -657,7 +657,7 @@ class Request_third_party_consent(RoleAction):
     
     def canDeactivate_3(self, cli, cli_): # A2.3.7
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             cli == cli_ and 
             role.name == "Clinician" and 
             subj == cli
@@ -665,14 +665,14 @@ class Request_third_party_consent(RoleAction):
     
     def canDeactivate_4(self, cg, x): # A2.3.8
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
     
     def canDeactivate_5(self, x, y): # A2.3.9
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Third-party" and 
             subj == x
         }
@@ -683,7 +683,7 @@ class Request_third_party_consent(RoleAction):
 
 def count_third_party_activations(user): # A2.3.11
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Third-party" and 
         subj == user
     })
@@ -694,7 +694,7 @@ class Third_party(RoleAction):
     
     def canActivate(self, x): # A2.3.12
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
             role1.name == "Request-third-party-consent" and 
             role2.name == "Register-patient" and 
             role1.x == x and 
@@ -709,7 +709,7 @@ class Third_party(RoleAction):
 
 def other_third_party_requests(x, third_party): # A2.3.14
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Request-third-party-consent" and 
         x != subj
     })
@@ -723,7 +723,7 @@ class Third_party_consent(RoleAction):
     
     def canActivate_1(self, x): # A2.3.16
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Third-party" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == x
@@ -731,7 +731,7 @@ class Third_party_consent(RoleAction):
     
     def canActivate_2(self, cg): # A2.3.17
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Caldicott-guardian" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == cg
@@ -742,7 +742,7 @@ class Third_party_consent(RoleAction):
     
     def canDeactivate_1(self, x, x_): # A2.3.18
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             x == x_ and 
             role.name == "Third-party" and 
             subj == x
@@ -750,7 +750,7 @@ class Third_party_consent(RoleAction):
     
     def canDeactivate_2(self, cg, x): # A2.3.19
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
@@ -769,7 +769,7 @@ class Head_of_team(RoleAction):
     
     def canActivate(self, hd): # A3.1.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-head-of-team" and 
             role.hd == hd and 
             role.team == self.team
@@ -786,7 +786,7 @@ class Register_head_of_team(RoleAction):
     
     def canActivate(self, mgr): # A3.1.4
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "HR-mgr" and 
             role2.name == "Register-team-member" and 
             subj1 == mgr and 
@@ -795,7 +795,7 @@ class Register_head_of_team(RoleAction):
     
     def canDeactivate(self, mgr, x): # A3.1.5
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr
         }
@@ -806,7 +806,7 @@ class Register_head_of_team(RoleAction):
 
 def head_of_team_regs(hd, team): # A3.1.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-head-of-team" and 
         role.hd == hd and 
         role.team == team
@@ -821,7 +821,7 @@ class Register_team_member(RoleAction):
     
     def canActivate_1(self, mgr): # A3.2.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr and 
             canActivate(self.mem, Clinician(self.spcty)) and 
@@ -830,7 +830,7 @@ class Register_team_member(RoleAction):
     
     def canActivate_2(self, hd): # A3.2.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == hd and 
             canActivate(subj, Head_of_team(self.team)) and 
@@ -843,14 +843,14 @@ class Register_team_member(RoleAction):
     
     def canDeactivate_1(self, mgr, x): # A3.2.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr
         }
     
     def canDeactivate_2(self, hd, x): # A3.2.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == hd and 
             canActivate(subj, Head_of_team(self.team))
@@ -862,7 +862,7 @@ class Register_team_member(RoleAction):
 
 def team_member_regs(mem, team, spcty): # A3.2.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-team-member" and 
         role.mem == mem and 
         role.spcty == spcty and 
@@ -878,7 +878,7 @@ class Register_team_episode(RoleAction):
     
     def canActivate_1(self, rec): # A3.3.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Receptionist" and 
             subj == rec and 
             canActivate(self.pat, Patient()) and 
@@ -887,7 +887,7 @@ class Register_team_episode(RoleAction):
     
     def canActivate_2(self, cli): # A3.3.2
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Clinician" and 
             role2.name == "Register-team-member" and 
             subj1 == cli and 
@@ -900,21 +900,21 @@ class Register_team_episode(RoleAction):
     
     def canDeactivate_1(self, cg, x): # A3.3.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
     
     def canDeactivate_2(self, rec, x): # A3.3.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Receptionist" and 
             subj == rec
         }
     
     def canDeactivate_3(self, cli, x): # A3.3.5
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Clinician" and 
             role2.name == "Register-team-member" and 
             subj1 == cli and 
@@ -923,7 +923,7 @@ class Register_team_episode(RoleAction):
 
 def team_episode_regs(pat, team): # A3.3.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-team-episode" and 
         role.pat == pat and 
         role.team == team
@@ -935,7 +935,7 @@ class Head_of_ward(RoleAction):
     
     def canActivate(self, cli): # A3.4.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-head-of-ward" and 
             role.ward == self.ward and 
             role.cli == cli
@@ -952,7 +952,7 @@ class Register_head_of_ward(RoleAction):
     
     def canActivate(self, mgr): # A3.4.4
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "HR-mgr" and 
             role2.name == "Register-ward-member" and 
             subj1 == mgr and 
@@ -961,7 +961,7 @@ class Register_head_of_ward(RoleAction):
     
     def canDeactivate(self, mgr, x): # A3.4.5
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr
         }
@@ -972,7 +972,7 @@ class Register_head_of_ward(RoleAction):
 
 def head_of_ward_regs(cli, ward): # A3.4.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-head-of-ward" and 
         role.ward == ward and 
         role.cli == cli
@@ -987,7 +987,7 @@ class Register_ward_member(RoleAction):
     
     def canActivate_1(self, mgr): # A3.5.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr and 
             canActivate(self.cli, Clinician(self.spcty)) and 
@@ -996,7 +996,7 @@ class Register_ward_member(RoleAction):
     
     def canActivate_2(self, hd): # A3.5.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == self.cli and 
             canActivate(hd, Head_of_ward(self.ward)) and 
@@ -1009,14 +1009,14 @@ class Register_ward_member(RoleAction):
     
     def canDeactivate_1(self, mgr, x): # A3.5.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "HR-mgr" and 
             subj == mgr
         }
     
     def canDeactivate_2(self, hd, x): # A3.5.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == hd and 
             canActivate(subj, Head_of_ward(self.ward))
@@ -1028,7 +1028,7 @@ class Register_ward_member(RoleAction):
 
 def ward_member_regs(cli, ward, spcty): # A3.5.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-ward-member" and 
         role.spcty == spcty and 
         role.ward == ward and 
@@ -1044,7 +1044,7 @@ class Register_ward_episode(RoleAction):
     
     def canActivate_1(self, rec): # A3.6.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Receptionist" and 
             subj == rec and 
             canActivate(self.pat, Patient()) and 
@@ -1053,7 +1053,7 @@ class Register_ward_episode(RoleAction):
     
     def canActivate_2(self, hd): # A3.6.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == hd and 
             canActivate(subj, Head_of_ward(self.ward)) and 
@@ -1066,21 +1066,21 @@ class Register_ward_episode(RoleAction):
     
     def canDeactivate_1(self, cg, x): # A3.6.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
     
     def canDeactivate_2(self, rec, x): # A3.6.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Receptionist" and 
             subj == rec
         }
     
     def canDeactivate_3(self, hd, x): # A3.6.5
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == hd and 
             canActivate(subj, Head_of_ward(self.ward))
@@ -1088,7 +1088,7 @@ class Register_ward_episode(RoleAction):
 
 def ward_episode_regs(pat, ward): # A3.6.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-ward-episode" and 
         role.ward == ward and 
         role.pat == pat
@@ -1100,7 +1100,7 @@ class Emergency_clinician(RoleAction):
     
     def canActivate(self, cli): # A3.7.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli and 
             canActivate(self.pat, Patient())
@@ -1116,7 +1116,7 @@ class Emergency_clinician(RoleAction):
     
     def canDeactivate_2(self, cg, cli): # A3.7.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
@@ -1137,7 +1137,7 @@ class ADB_treating_clinician(RoleAction):
     
     def canActivate_1(self, cli): # A3.8.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Register-team-member" and 
             role2.name == "Register-team-episode" and 
             role1.spcty == self.spcty and 
@@ -1150,7 +1150,7 @@ class ADB_treating_clinician(RoleAction):
     
     def canActivate_2(self, cli): # A3.8.2
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Register-ward-member" and 
             role2.name == "Register-ward-episode" and 
             role1.spcty == self.spcty and 
@@ -1163,7 +1163,7 @@ class ADB_treating_clinician(RoleAction):
     
     def canActivate_3(self, cli): # A3.8.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Emergency-clinician" and 
             role.pat == self.pat and 
             subj == cli and 
@@ -1177,7 +1177,7 @@ class Concealed_by_clinician(RoleAction):
     
     def canActivate(self, cli): # A4.1.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli and 
             canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
@@ -1188,7 +1188,7 @@ class Concealed_by_clinician(RoleAction):
     
     def canDeactivate_1(self, cli, cli_): # A4.1.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             cli == cli_ and 
             role.name == "Clinician" and 
             subj == cli
@@ -1196,7 +1196,7 @@ class Concealed_by_clinician(RoleAction):
     
     def canDeactivate_2(self, cli1, cli2): # A4.1.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli1 and 
             canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty1)) and 
@@ -1205,14 +1205,14 @@ class Concealed_by_clinician(RoleAction):
     
     def canDeactivate_3(self, cg, cli): # A4.1.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
 
 def count_concealed_by_clinician(pat, id): # A4.1.6
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Concealed-by-clinician" and 
         role.pat == pat and 
         role.id == id and 
@@ -1249,7 +1249,7 @@ class Concealed_by_patient(RoleAction):
     
     def canDeactivate_1(self, pat, x): # A4.2.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Patient" and 
             subj == pat and 
             pi7_1(self.what) == subj
@@ -1257,7 +1257,7 @@ class Concealed_by_patient(RoleAction):
     
     def canDeactivate_2(self, ag, x): # A4.2.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Agent" and 
             subj == ag and 
             pi7_1(self.what) == role.pat
@@ -1265,7 +1265,7 @@ class Concealed_by_patient(RoleAction):
     
     def canDeactivate_3(self, cg, x): # A4.2.5
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
@@ -1307,7 +1307,7 @@ class Add_record_item(RoleAction):
     
     def permits_1(self, cli): # A5.1.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli and 
             canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
@@ -1315,7 +1315,7 @@ class Add_record_item(RoleAction):
     
     def permits_2(self, cli): # A5.1.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Ext-treating-clinician" and 
             role.pat == self.pat and 
             subj == cli
@@ -1331,7 +1331,7 @@ class Annotate_record_item(RoleAction):
     
     def permits_1(self, ag): # A5.1.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Agent" and 
             role.pat == self.pat and 
             subj == ag
@@ -1339,14 +1339,14 @@ class Annotate_record_item(RoleAction):
     
     def permits_2(self, pat): # A5.1.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Patient" and 
             subj == pat
         }
     
     def permits_3(self, pat): # A5.1.5
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             canActivate(subj, ADB_treating_clinician(pat, Wildcard(), role.spcty))
         }
@@ -1361,14 +1361,14 @@ class Get_record_item_ids(RoleAction):
     
     def permits_1(self, pat): # A5.2.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Patient" and 
             subj == pat
         }
     
     def permits_2(self, ag): # A5.2.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Agent" and 
             role.pat == self.pat and 
             subj == ag
@@ -1376,7 +1376,7 @@ class Get_record_item_ids(RoleAction):
     
     def permits_3(self, cli): # A5.2.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli and 
             canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))
@@ -1405,7 +1405,7 @@ class Read_record_item(RoleAction):
     
     def permits_2(self, cli): # A5.3.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli and 
             Get_record_author(self.pat, self.id) == subj
@@ -1462,14 +1462,14 @@ class Force_read_record_item(RoleAction):
     
     def permits_1(self, cg): # A5.3.7
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Caldicott-guardian" and 
             subj == cg
         }
     
     def permits_2(self, cli): # A5.3.8
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli and 
             canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty))

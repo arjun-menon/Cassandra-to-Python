@@ -11,7 +11,7 @@ class PDS_manager(RoleAction):
     
     def canActivate(self, adm): # P1.1.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-PDS-manager" and 
             role.adm == adm and 
             no_main_role_active(role.adm)
@@ -24,7 +24,7 @@ class PDS_manager(RoleAction):
 
 def count_PDS_manager_activations(user): # P1.1.4
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "PDS-manager" and 
         subj == user
     })
@@ -35,7 +35,7 @@ class Register_PDS_manager(RoleAction):
     
     def canActivate(self, adm1): # P1.1.5
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "PDS-manager" and 
             subj == adm1 and 
             pds_admin_regs(self.adm2) == 0
@@ -43,7 +43,7 @@ class Register_PDS_manager(RoleAction):
     
     def canDeactivate(self, adm1, x): # P1.1.6
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "PDS-manager" and 
             subj == adm1
         }
@@ -54,7 +54,7 @@ class Register_PDS_manager(RoleAction):
 
 def pds_admin_regs(adm): # P1.1.7
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-PDS-manager" and 
         role.adm == adm
     })
@@ -65,7 +65,7 @@ class Patient(RoleAction):
     
     def canActivate(self, pat): # P1.2.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-patient" and 
             role.pat == pat and 
             no_main_role_active(role.pat)
@@ -78,7 +78,7 @@ class Patient(RoleAction):
 
 def count_patient_activations(user): # P1.2.4
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Patient" and 
         subj == user
     })
@@ -89,7 +89,7 @@ class Agent(RoleAction):
     
     def canActivate(self, ag): # P1.3.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-patient" and 
             role.ag == ag and 
             canActivate(role.ag, ehr.spine.Agent(self.pat)) and 
@@ -103,7 +103,7 @@ class Agent(RoleAction):
 
 def count_agent_activations(user): # P1.3.5
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Agent" and 
         subj == user
     })
@@ -117,7 +117,7 @@ class Professional_user(RoleAction):
     
     def canActivate_1(self, x): # P1.4.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "NHS-clinician-cert" and 
             role.org == self.org and 
             subj == x and 
@@ -128,7 +128,7 @@ class Professional_user(RoleAction):
     
     def canActivate_2(self, x): # P1.4.2
         return {
-            1 for subj, role in ehr.ra.hasActivated if 
+            True for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-clinician-cert" and 
             role.org == self.org and 
             subj == x and 
@@ -139,7 +139,7 @@ class Professional_user(RoleAction):
     
     def canActivate_3(self, x): # P1.4.3
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "NHS-Caldicott-guardian-cert" and 
             role.org == self.org and 
             subj == x and 
@@ -150,7 +150,7 @@ class Professional_user(RoleAction):
     
     def canActivate_4(self, x): # P1.4.4
         return {
-            1 for subj, role in ehr.ra.hasActivated if 
+            True for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-Caldicott-guardian-cert" and 
             role.org == self.org and 
             subj == x and 
@@ -166,7 +166,7 @@ class Professional_user(RoleAction):
 
 def count_professional_user_activations(user): # P1.4.6
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Professional-user" and 
         subj == user
     })
@@ -186,7 +186,7 @@ class Registration_authority(RoleAction):
     
     def canActivate_1(self, ra): # P1.5.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -194,7 +194,7 @@ class Registration_authority(RoleAction):
     
     def canActivate_2(self, ra): # P1.5.3
         return {
-            1 for subj, role in ehr.ra.hasActivated if 
+            True for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -206,7 +206,7 @@ class Register_patient(RoleAction):
     
     def canActivate(self, adm): # P2.1.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "PDS-manager" and 
             subj == adm and 
             patient_regs(self.pat) == 0
@@ -214,7 +214,7 @@ class Register_patient(RoleAction):
     
     def canDeactivate(self, adm, x): # P2.1.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "PDS-manager" and 
             subj == adm
         }
@@ -229,7 +229,7 @@ class Register_patient(RoleAction):
 
 def patient_regs(pat): # P2.1.3
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-patient" and 
         role.pat == pat
     })

@@ -11,7 +11,7 @@ class Register_RA_manager(RoleAction):
     
     def canActivate(self, mgr): # R1.1.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "RA-manager" and 
             subj == mgr and 
             RA_manager_regs(self.mgr2) == 0
@@ -19,7 +19,7 @@ class Register_RA_manager(RoleAction):
     
     def canDeactivate(self, mgr, x): # R1.1.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "RA-manager" and 
             subj == mgr
         }
@@ -30,7 +30,7 @@ class Register_RA_manager(RoleAction):
 
 def RA_manager_regs(mgr): # R1.1.3
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "Register-RA-manager" and 
         role.mgr == mgr
     })
@@ -41,7 +41,7 @@ class RA_manager(RoleAction):
     
     def canActivate(self, mgr): # R1.1.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "Register-RA-manager" and 
             role.mgr == mgr
         }
@@ -77,7 +77,7 @@ class Registration_authority(RoleAction):
     
     def canActivate_1(self, ra): # R1.2.4
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -85,7 +85,7 @@ class Registration_authority(RoleAction):
     
     def canActivate_2(self, ra): # R1.2.5
         return {
-            1 for subj, role in ehr.ra.hasActivated if 
+            True for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-registration-authority" and 
             role.ra == ra and 
             Current_time() in vrange(role.start, role.end)
@@ -106,7 +106,7 @@ class NHS_clinician_cert(RoleAction):
     
     def canDeactivate(self, mgr, x): # R2.1.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "RA-manager" and 
             subj == mgr
         }
@@ -126,7 +126,7 @@ class NHS_Caldicott_guardian_cert(RoleAction):
     
     def canDeactivate(self, mgr, x): # R2.2.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "RA-manager" and 
             subj == mgr
         }
@@ -137,14 +137,14 @@ class NHS_health_org_cert(RoleAction):
     
     def canActivate(self, mgr): # R2.3.1
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "RA-manager" and 
             subj == mgr
         }
     
     def canDeactivate(self, mgr, x): # R2.3.2
         return {
-            1 for subj, role in hasActivated if 
+            True for subj, role in hasActivated if 
             role.name == "RA-manager" and 
             subj == mgr
         }
@@ -169,7 +169,7 @@ class NHS_health_org_cert(RoleAction):
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "NHS-health-org-cert" and 
         role.org == org and 
         start in vrange(role.start2, role.end2) and 
@@ -180,7 +180,7 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3ii
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "NHS-health-org-cert" and 
         role.org == org and 
         start in vrange(role.start2, role.end2) and 
@@ -191,7 +191,7 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3ii
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
     return len({
-        1 for subj, role in hasActivated if 
+        True for subj, role in hasActivated if 
         role.name == "NHS-health-org-cert" and 
         role.org == org and 
         start in vrange(role.start2, role.end2) and 
@@ -209,7 +209,7 @@ class Workgroup_member(RoleAction):
     
     def canActivate_1(self, cli): # R3.1.1
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in ehr.org.hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.org.hasActivated if 
             role1.name == "NHS-health-org-cert" and 
             role2.name == "Register-team-member" and 
             role1.org == self.org and 
@@ -219,7 +219,7 @@ class Workgroup_member(RoleAction):
     
     def canActivate_2(self, cli): # R3.1.2
         return {
-            1 for (subj1, role1) in hasActivated for (subj2, role2) in ehr.org.hasActivated if 
+            True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.org.hasActivated if 
             role1.name == "NHS-health-org-cert" and 
             role2.name == "Register-ward-member" and 
             role1.org == self.org and 

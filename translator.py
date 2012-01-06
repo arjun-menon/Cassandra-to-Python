@@ -224,7 +224,7 @@ class HypothesesTranslator(object):
                 loc1 = loc_trans( repr(h1.location) )+'.' if h1.location else ''
                 loc2 = loc_trans( repr(h2.location) )+'.' if h2.location else ''
                 
-                tr = "return %s{\n    1 for (subj1, role1) in %shasActivated for (subj2, role2) in %shasActivated if \n    " % (wrapper[0], loc1, loc2)
+                tr = "return %s{\n    $group_key for (subj1, role1) in %shasActivated for (subj2, role2) in %shasActivated if \n    " % (wrapper[0], loc1, loc2)
                 ending = "\n}" + wrapper[1]
                 
                 #print("Rule with 2 hasActivates:", self.rule.name)
@@ -301,7 +301,7 @@ class HypothesesTranslator(object):
                     raise self.stopTranslating("could not find %s in %s" % (group_key, set(self.external_vars)))
                 group_key = self.external_vars[group_key]
             else:
-                group_key = 1
+                group_key = True
             
             tr = Template(tr).safe_substitute(group_key = group_key)
             
