@@ -19,14 +19,14 @@ from datetime import *
 #    def __repr__(self):
 #        return self.name + '(' + ', '.join(map(repr, self.args)) + ')'
 
-class  RoleAction(object):
+class  Role(object):
     def __init__(self, name, **params):
         self.name = name
         self.__dict__.update(params)
         self.prms = list(params)
     
     def __repr__(self):
-        r = 'Action(name = ' + repr(self.name)
+        r = 'Role(name = ' + repr(self.name)
         a = ', '.join( prm + ' = ' + repr(self.__dict__[prm]) for prm in self.prms )
         return ( (r + ', ' + a) if a else r ) + ')'
 

@@ -13,7 +13,7 @@ from ehr.spine import Spine_clinician
 # Current-time() in [start, end]
 
 # First create a NHS-clinician-cert and add it to hasActivated:
-new_role = RoleAction('NHS-clinician-cert', 
+new_role = Role('NHS-clinician-cert', 
                     **{'org' : 'GPs', 
                        'cli' : 'Dr. Bob', 
                        'spcty' : 'Dermatologist', 
@@ -29,7 +29,7 @@ spine.hasActivated.append((None, new_role))
 # Current-time() in [start, end]
 
 # Let's create a new registration authority and add it as well
-new_role = RoleAction('NHS-registration-authority', 
+new_role = Role('NHS-registration-authority', 
                     **{'ra' : 'Bar', 
                        'start' : datetime(1990, 1, 1), 
                        'end' : datetime(2020, 1, 1) })

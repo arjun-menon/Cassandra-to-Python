@@ -5,7 +5,7 @@ hasActivated = list()  # Set of (subject, role) pairs representing currently act
 
 list_of_roles = ['Register-clinician', 'Clinician', 'Register-Caldicott-guardian', 'Caldicott-guardian', 'Register-HR-mgr', 'HR-mgr', 'Register-receptionist', 'Receptionist', 'Register-patient', 'Patient', 'Agent', 'Register-agent', 'Registration-authority', 'Request-consent-to-referral', 'Consent-to-referral', 'Ext-treating-clinician', 'Request-third-party-consent', 'Third-party', 'Third-party-consent', 'Head-of-team', 'Register-head-of-team', 'Register-team-member', 'Register-team-episode', 'Head-of-ward', 'Register-head-of-ward', 'Register-ward-member', 'Register-ward-episode', 'Emergency-clinician', 'ADB-treating-clinician', 'Concealed-by-clinician', 'Concealed-by-patient']
 
-class Register_clinician(RoleAction):
+class Register_clinician(Role):
     def __init__(self, cli, spcty):
         super().__init__('Register-clinician', **{'cli':cli, 'spcty':spcty})
     
@@ -40,7 +40,7 @@ def clinician_regs(cli, spcty): # A1.1.3
         role.cli == cli
     })
 
-class Clinician(RoleAction):
+class Clinician(Role):
     def __init__(self, spcty):
         super().__init__('Clinician', **{'spcty':spcty})
     
@@ -69,7 +69,7 @@ def count_clinician_activations(user): # A1.1.7
         subj == user
     })
 
-class Register_Caldicott_guardian(RoleAction):
+class Register_Caldicott_guardian(Role):
     def __init__(self, cg):
         super().__init__('Register-Caldicott-guardian', **{'cg':cg})
     
@@ -99,7 +99,7 @@ def cg_regs(cg): # A1.2.3
         role.cg == cg
     })
 
-class Caldicott_guardian(RoleAction):
+class Caldicott_guardian(Role):
     def __init__(self, ):
         super().__init__('Caldicott-guardian', **{})
     
@@ -123,7 +123,7 @@ def count_caldicott_guardian_activations(user): # A1.2.7
         subj == user
     })
 
-class Register_HR_mgr(RoleAction):
+class Register_HR_mgr(Role):
     def __init__(self, mgr2):
         super().__init__('Register-HR-mgr', **{'mgr2':mgr2})
     
@@ -153,7 +153,7 @@ def hr_manager_regs(mgr): # A1.3.3
         role.mgr == mgr
     })
 
-class HR_mgr(RoleAction):
+class HR_mgr(Role):
     def __init__(self, ):
         super().__init__('HR-mgr', **{})
     
@@ -177,7 +177,7 @@ def count_hr_mgr_activations(user): # A1.3.7
         subj == user
     })
 
-class Register_receptionist(RoleAction):
+class Register_receptionist(Role):
     def __init__(self, rec):
         super().__init__('Register-receptionist', **{'rec':rec})
     
@@ -207,7 +207,7 @@ def receptionist_regs(rec): # A1.4.3
         role.rec == rec
     })
 
-class Receptionist(RoleAction):
+class Receptionist(Role):
     def __init__(self, ):
         super().__init__('Receptionist', **{})
     
@@ -230,7 +230,7 @@ def count_receptionist_activations(user): # A1.4.7
         subj == user
     })
 
-class Register_patient(RoleAction):
+class Register_patient(Role):
     def __init__(self, pat):
         super().__init__('Register-patient', **{'pat':pat})
     
@@ -280,7 +280,7 @@ def patient_regs(pat): # A1.5.3
         role.pat == pat
     })
 
-class Patient(RoleAction):
+class Patient(Role):
     def __init__(self, ):
         super().__init__('Patient', **{})
     
@@ -306,7 +306,7 @@ def count_patient_activations(user): # A1.5.7
         subj == user
     })
 
-class Agent(RoleAction):
+class Agent(Role):
     def __init__(self, pat):
         super().__init__('Agent', **{'pat':pat})
     
@@ -342,7 +342,7 @@ def count_agent_activations(user): # A1.6.4
         subj == user
     })
 
-class Register_agent(RoleAction):
+class Register_agent(Role):
     def __init__(self, agent, pat):
         super().__init__('Register-agent', **{'agent':agent, 'pat':pat})
     
@@ -405,7 +405,7 @@ def no_main_role_active(user): # A1.7.1
             count_receptionist_activations(user) == 0 and \
             count_third_party_activations(user) == 0
 
-class Registration_authority(RoleAction):
+class Registration_authority(Role):
     def __init__(self, ):
         super().__init__('Registration-authority', **{})
     
@@ -428,7 +428,7 @@ class Registration_authority(RoleAction):
             Current_time() in vrange(role.start, role.end)
         }
 
-class Request_consent_to_referral(RoleAction):
+class Request_consent_to_referral(Role):
     def __init__(self, pat, ra, org, cli2, spcty2):
         super().__init__('Request-consent-to-referral', **{'pat':pat, 'ra':ra, 'org':org, 'cli2':cli2, 'spcty2':spcty2})
     
@@ -489,7 +489,7 @@ def other_consent_to_referral_requests(x, pat, ra, org, cli, spcty): # A2.1.7
         x != subj
     })
 
-class Consent_to_referral(RoleAction):
+class Consent_to_referral(Role):
     def __init__(self, pat, ra, org, cli, spcty):
         super().__init__('Consent-to-referral', **{'pat':pat, 'ra':ra, 'org':org, 'cli':cli, 'spcty':spcty})
     
@@ -538,7 +538,7 @@ def other_referral_consents(x, pat, ra, org, cli, spcty): # A2.1.12
         x != subj
     })
 
-class Ext_treating_clinician(RoleAction):
+class Ext_treating_clinician(Role):
     def __init__(self, pat, ra, org, spcty):
         super().__init__('Ext-treating-clinician', **{'pat':pat, 'ra':ra, 'org':org, 'spcty':spcty})
     
@@ -595,7 +595,7 @@ def count_ext_treating_clinician_activations(user): # A2.2.5
         subj == user
     })
 
-class Request_third_party_consent(RoleAction):
+class Request_third_party_consent(Role):
     def __init__(self, x, pat, id):
         super().__init__('Request-third-party-consent', **{'x':x, 'pat':pat, 'id':id})
     
@@ -688,7 +688,7 @@ def count_third_party_activations(user): # A2.3.11
         subj == user
     })
 
-class Third_party(RoleAction):
+class Third_party(Role):
     def __init__(self, ):
         super().__init__('Third-party', **{})
     
@@ -714,7 +714,7 @@ def other_third_party_requests(x, third_party): # A2.3.14
         x != subj
     })
 
-class Third_party_consent(RoleAction):
+class Third_party_consent(Role):
     def __init__(self, x, pat, id):
         super().__init__('Third-party-consent', **{'x':x, 'pat':pat, 'id':id})
     
@@ -763,7 +763,7 @@ def third_party_consent(pat, id): # A2.3.21
         role.id == id
     }
 
-class Head_of_team(RoleAction):
+class Head_of_team(Role):
     def __init__(self, team):
         super().__init__('Head-of-team', **{'team':team})
     
@@ -780,7 +780,7 @@ class Head_of_team(RoleAction):
             hd == hd_
         )
 
-class Register_head_of_team(RoleAction):
+class Register_head_of_team(Role):
     def __init__(self, hd, team):
         super().__init__('Register-head-of-team', **{'hd':hd, 'team':team})
     
@@ -812,7 +812,7 @@ def head_of_team_regs(hd, team): # A3.1.7
         role.team == team
     })
 
-class Register_team_member(RoleAction):
+class Register_team_member(Role):
     def __init__(self, mem, team, spcty):
         super().__init__('Register-team-member', **{'mem':mem, 'team':team, 'spcty':spcty})
     
@@ -869,7 +869,7 @@ def team_member_regs(mem, team, spcty): # A3.2.7
         role.team == team
     })
 
-class Register_team_episode(RoleAction):
+class Register_team_episode(Role):
     def __init__(self, pat, team):
         super().__init__('Register-team-episode', **{'pat':pat, 'team':team})
     
@@ -929,7 +929,7 @@ def team_episode_regs(pat, team): # A3.3.7
         role.team == team
     })
 
-class Head_of_ward(RoleAction):
+class Head_of_ward(Role):
     def __init__(self, ward):
         super().__init__('Head-of-ward', **{'ward':ward})
     
@@ -946,7 +946,7 @@ class Head_of_ward(RoleAction):
             cli == cli_
         )
 
-class Register_head_of_ward(RoleAction):
+class Register_head_of_ward(Role):
     def __init__(self, cli, ward):
         super().__init__('Register-head-of-ward', **{'cli':cli, 'ward':ward})
     
@@ -978,7 +978,7 @@ def head_of_ward_regs(cli, ward): # A3.4.7
         role.cli == cli
     })
 
-class Register_ward_member(RoleAction):
+class Register_ward_member(Role):
     def __init__(self, cli, ward, spcty):
         super().__init__('Register-ward-member', **{'cli':cli, 'ward':ward, 'spcty':spcty})
     
@@ -1035,7 +1035,7 @@ def ward_member_regs(cli, ward, spcty): # A3.5.7
         role.cli == cli
     })
 
-class Register_ward_episode(RoleAction):
+class Register_ward_episode(Role):
     def __init__(self, pat, ward):
         super().__init__('Register-ward-episode', **{'pat':pat, 'ward':ward})
     
@@ -1094,7 +1094,7 @@ def ward_episode_regs(pat, ward): # A3.6.7
         role.pat == pat
     })
 
-class Emergency_clinician(RoleAction):
+class Emergency_clinician(Role):
     def __init__(self, pat):
         super().__init__('Emergency-clinician', **{'pat':pat})
     
@@ -1128,7 +1128,7 @@ def is_emergency_clinician(pat): # A3.7.6
         role.pat == pat
     }
 
-class ADB_treating_clinician(RoleAction):
+class ADB_treating_clinician(Role):
     def __init__(self, pat, group, spcty):
         super().__init__('ADB-treating-clinician', **{'pat':pat, 'group':group, 'spcty':spcty})
     
@@ -1171,7 +1171,7 @@ class ADB_treating_clinician(RoleAction):
             self.spcty == "A_and_E"
         }
 
-class Concealed_by_clinician(RoleAction):
+class Concealed_by_clinician(Role):
     def __init__(self, pat, id, start, end):
         super().__init__('Concealed-by-clinician', **{'pat':pat, 'id':id, 'start':start, 'end':end})
     
@@ -1219,7 +1219,7 @@ def count_concealed_by_clinician(pat, id): # A4.1.6
         Current_time() in vrange(role.start, role.end)
     })
 
-class Concealed_by_patient(RoleAction):
+class Concealed_by_patient(Role):
     def __init__(self, what, who, start, end):
         super().__init__('Concealed-by-patient', **{'what':what, 'who':who, 'start':start, 'end':end})
     
@@ -1298,7 +1298,7 @@ def count_concealed_by_patient2(a, b): # A4.2.8
     #Current-time() in [start, end]
     pass
 
-class Add_record_item(RoleAction):
+class Add_record_item(Role):
     def __init__(self, pat):
         super().__init__('Add-record-item', **{'pat':pat})
     
@@ -1322,7 +1322,7 @@ class Add_record_item(RoleAction):
         }
 
 
-class Annotate_record_item(RoleAction):
+class Annotate_record_item(Role):
     def __init__(self, pat, id):
         super().__init__('Annotate-record-item', **{'pat':pat, 'id':id})
     
@@ -1352,7 +1352,7 @@ class Annotate_record_item(RoleAction):
         }
 
 
-class Get_record_item_ids(RoleAction):
+class Get_record_item_ids(Role):
     def __init__(self, pat):
         super().__init__('Get-record-item-ids', **{'pat':pat})
     
@@ -1383,7 +1383,7 @@ class Get_record_item_ids(RoleAction):
         }
 
 
-class Read_record_item(RoleAction):
+class Read_record_item(Role):
     def __init__(self, pat, id):
         super().__init__('Read-record-item', **{'pat':pat, 'id':id})
     
@@ -1453,7 +1453,7 @@ class Read_record_item(RoleAction):
         pass
 
 
-class Force_read_record_item(RoleAction):
+class Force_read_record_item(Role):
     def __init__(self, pat, id):
         super().__init__('Force-read-record-item', **{'pat':pat, 'id':id})
     

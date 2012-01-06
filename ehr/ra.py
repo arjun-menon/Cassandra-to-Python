@@ -5,7 +5,7 @@ hasActivated = list()  # Set of (subject, role) pairs representing currently act
 
 list_of_roles = ['Register-RA-manager', 'RA-manager', 'NHS-service', 'Registration-authority', 'NHS-clinician-cert', 'NHS-Caldicott-guardian-cert', 'NHS-health-org-cert', 'Workgroup-member']
 
-class Register_RA_manager(RoleAction):
+class Register_RA_manager(Role):
     def __init__(self, mgr2):
         super().__init__('Register-RA-manager', **{'mgr2':mgr2})
     
@@ -35,7 +35,7 @@ def RA_manager_regs(mgr): # R1.1.3
         role.mgr == mgr
     })
 
-class RA_manager(RoleAction):
+class RA_manager(Role):
     def __init__(self, ):
         super().__init__('RA-manager', **{})
     
@@ -51,7 +51,7 @@ class RA_manager(RoleAction):
             mgr == mgr_
         )
 
-class NHS_service(RoleAction):
+class NHS_service(Role):
     def __init__(self, ):
         super().__init__('NHS-service', **{})
     
@@ -68,7 +68,7 @@ class NHS_service(RoleAction):
             srv == "Spine"
         )
 
-class Registration_authority(RoleAction):
+class Registration_authority(Role):
     def __init__(self, ):
         super().__init__('Registration-authority', **{})
     
@@ -91,7 +91,7 @@ class Registration_authority(RoleAction):
             Current_time() in vrange(role.start, role.end)
         }
 
-class NHS_clinician_cert(RoleAction):
+class NHS_clinician_cert(Role):
     def __init__(self, org, cli, spcty, start, end):
         super().__init__('NHS-clinician-cert', **{'org':org, 'cli':cli, 'spcty':spcty, 'start':start, 'end':end})
     
@@ -111,7 +111,7 @@ class NHS_clinician_cert(RoleAction):
             subj == mgr
         }
 
-class NHS_Caldicott_guardian_cert(RoleAction):
+class NHS_Caldicott_guardian_cert(Role):
     def __init__(self, org, cg, start, end):
         super().__init__('NHS-Caldicott-guardian-cert', **{'org':org, 'cg':cg, 'start':start, 'end':end})
     
@@ -131,7 +131,7 @@ class NHS_Caldicott_guardian_cert(RoleAction):
             subj == mgr
         }
 
-class NHS_health_org_cert(RoleAction):
+class NHS_health_org_cert(Role):
     def __init__(self, org, start, end):
         super().__init__('NHS-health-org-cert', **{'org':org, 'start':start, 'end':end})
     
@@ -200,7 +200,7 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
         end != role.end2
     })
 
-class Workgroup_member(RoleAction):
+class Workgroup_member(Role):
     def __init__(self, org, group, spcty):
         super().__init__('Workgroup-member', **{'org':org, 'group':group, 'spcty':spcty})
     

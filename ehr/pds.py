@@ -5,7 +5,7 @@ hasActivated = list()  # Set of (subject, role) pairs representing currently act
 
 list_of_roles = ['PDS-manager', 'Register-PDS-manager', 'Patient', 'Agent', 'Professional-user', 'Registration-authority', 'Register-patient']
 
-class PDS_manager(RoleAction):
+class PDS_manager(Role):
     def __init__(self, ):
         super().__init__('PDS-manager', **{})
     
@@ -29,7 +29,7 @@ def count_PDS_manager_activations(user): # P1.1.4
         subj == user
     })
 
-class Register_PDS_manager(RoleAction):
+class Register_PDS_manager(Role):
     def __init__(self, adm2):
         super().__init__('Register-PDS-manager', **{'adm2':adm2})
     
@@ -59,7 +59,7 @@ def pds_admin_regs(adm): # P1.1.7
         role.adm == adm
     })
 
-class Patient(RoleAction):
+class Patient(Role):
     def __init__(self, ):
         super().__init__('Patient', **{})
     
@@ -83,7 +83,7 @@ def count_patient_activations(user): # P1.2.4
         subj == user
     })
 
-class Agent(RoleAction):
+class Agent(Role):
     def __init__(self, pat):
         super().__init__('Agent', **{'pat':pat})
     
@@ -108,7 +108,7 @@ def count_agent_activations(user): # P1.3.5
         subj == user
     })
 
-class Professional_user(RoleAction):
+class Professional_user(Role):
     def __init__(self, ra, org):
         super().__init__('Professional-user', **{'ra':ra, 'org':org})
     
@@ -177,7 +177,7 @@ def no_main_role_active(user): # P1.5.1
             count_PDS_manager_activations(user) == 0 and \
             count_professional_user_activations(user) == 0
 
-class Registration_authority(RoleAction):
+class Registration_authority(Role):
     def __init__(self, ):
         super().__init__('Registration-authority', **{})
     
@@ -200,7 +200,7 @@ class Registration_authority(RoleAction):
             Current_time() in vrange(role.start, role.end)
         }
 
-class Register_patient(RoleAction):
+class Register_patient(Role):
     def __init__(self, pat):
         super().__init__('Register-patient', **{'pat':pat})
     

@@ -551,7 +551,7 @@ def onDeactivate(self, subj):
     
     def translate(self):
         return """
-class {name_u}(RoleAction):
+class {name_u}(Role):
     def __init__(self, {params}):
         super().__init__('{name}', **{params_dict})
 {canAcs_trans}{canDcs_trans}{isDacs_trans}""".format(
@@ -648,7 +648,7 @@ def permits(self, subj):
     
     def translate(self):
         return """
-class {name_u}(RoleAction):
+class {name_u}(Role):
     def __init__(self, {params}):
         super().__init__('{name}', **{params_dict})
 {permits}
