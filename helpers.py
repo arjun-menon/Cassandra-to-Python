@@ -21,12 +21,12 @@ def any_eq(val, seq):
     return False
 
 @typecheck
-def str_substitue(s: str, char_to_sub: lambda s: len(s)==1, sub_with: str):
+def str_substitute(s: str, char_to_sub: lambda s: len(s)==1, sub_with: str):
     if type(s) != str: raise TypeError("s must be of type str")
     return "".join(sub_with if c == char_to_sub else c for c in s)
 
 def h2u(s): # convert hyphens to underscores
-    return str_substitue(s, '-', '_')
+    return str_substitute(s, '-', '_')
 
 @typecheck
 def prefix_lines(s: str, prefix: str):

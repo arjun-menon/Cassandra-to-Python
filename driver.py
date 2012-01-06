@@ -2,9 +2,6 @@
 from ehr import *
 from ehr.spine import Spine_clinician
 
-#print( spine.Spine_clinician(1,2,3).canActivate('Dr. Bob') )
-#print( canActivate('Dr. Bob', Spine_clinician(1,2,3)) )
-
 # The following test attempts to satisfy/
 # successfully execute the rule S1.1.1
 # The rule is shown below for reference:
@@ -17,13 +14,13 @@ from ehr.spine import Spine_clinician
 
 # First create a NHS-clinician-cert and add it to hasActivated:
 new_role = RoleAction('NHS-clinician-cert', 
-                    **{'org':'GPs', 
-                       'cli':'Dr.Bob', 
-                       'spcty':'Dermatologist', 
-                       'start':MINYEAR, 
-                       'end':MAXYEAR })
+                    **{'org' : 'GPs', 
+                       'cli' : 'Dr. Bob', 
+                       'spcty' : 'Dermatologist', 
+                       'start' : datetime(1995, 1, 1), 
+                       'end': datetime(2015, 1, 1)})
 
-spine.hasActivated.append(new_role)
+spine.hasActivated.append((None, new_role))
 
 # The second hypothesis depends on rule S1.5.1 shown below:
 #
@@ -33,29 +30,32 @@ spine.hasActivated.append(new_role)
 
 # Let's create a new registration authority and add it as well
 new_role = RoleAction('NHS-registration-authority', 
-                    **{'ra':'Bar', 
-                       'start':MINYEAR, 
-                       'end':MAXYEAR })
+                    **{'ra' : 'Bar', 
+                       'start' : datetime(1990, 1, 1), 
+                       'end' : datetime(2020, 1, 1) })
 
-spine.hasActivated.append(new_role)
+spine.hasActivated.append((None, new_role))
 
-# no-main-role should work fine, since no other roel has been activated.
-
-#print(ActionRole('Force-read-spine-record-item', **{'pat':1, 'id':2}))
+# no-main-role should work fine, since no other role has been activated.
 
 # Testing it:
 result = canActivate('Dr. Bob', Spine_clinician('Bar', 'GPs', 'Dermatologist'))
-print('Result = ', result)
+print('Result = ', repr(result))
 
 # REPL
-while True:
-    print('>', end = '')
-    x = input()
-    if not len(x):
-        continue
-    try:
-        y = eval(x)
-        print(y)
-    except Exception as e:
-        print((e.message))
+repl = False
 
+if repl:
+    while True:
+        print('>', end = '')
+        x = input()
+        if not len(x):
+            continue
+        try:
+            y = eval(x)
+            print(y)
+        except Exception as e:
+            print("Exception occured: ", e)
+
+if __name__ == "__main__":
+    pass

@@ -35,7 +35,7 @@ class Wildcard(object):
         return True
 
 def canActivate(subject, role):
-    role.canActivate(subject)
+    return role.canActivate(subject)
 
 def deactivate(hasActivated, subj, role):
     hasActivated -= {(s, r) for (s, r) in hasActivated if s == subj and r == role}
