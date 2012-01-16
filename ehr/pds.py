@@ -6,8 +6,8 @@ hasActivated = list()  # Set of (subject, role) pairs representing currently act
 list_of_roles = ['PDS-manager', 'Register-PDS-manager', 'Patient', 'Agent', 'Professional-user', 'Registration-authority', 'Register-patient']
 
 class PDS_manager(Role):
-    def __init__(self, ):
-        super().__init__('PDS-manager', )
+    def __init__(self):
+        super().__init__('PDS-manager')
     
     def canActivate(self, adm): # P1.1.1
         return {
@@ -60,8 +60,8 @@ def pds_admin_regs(adm): # P1.1.7
     })
 
 class Patient(Role):
-    def __init__(self, ):
-        super().__init__('Patient', )
+    def __init__(self):
+        super().__init__('Patient')
     
     def canActivate(self, pat): # P1.2.1
         return {
@@ -178,8 +178,8 @@ def no_main_role_active(user): # P1.5.1
             count_professional_user_activations(user) == 0
 
 class Registration_authority(Role):
-    def __init__(self, ):
-        super().__init__('Registration-authority', )
+    def __init__(self):
+        super().__init__('Registration-authority')
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)

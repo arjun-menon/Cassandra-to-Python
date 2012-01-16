@@ -552,11 +552,13 @@ def onDeactivate(self, subj):
     def translate(self):
         return """
 class {name_u}(Role):
-    def __init__(self, {params}):
-        super().__init__('{name}', {params_dict})
+    def __init__(self{optional_comma}{params}):
+        super().__init__('{name}'{optional_comma}{params_dict})
 {canAcs_trans}{canDcs_trans}{isDacs_trans}""".format(
          name   =     self.name
         ,name_u = h2u(self.name)
+        
+        ,optional_comma = ", " if len(self.params) else ""
         ,params = ', '.join(map(repr, self.params))
         ,params_dict = ', '.join(str(p) + ' = ' + repr(p) for p in self.params)
 

@@ -36,8 +36,8 @@ def RA_manager_regs(mgr): # R1.1.3
     })
 
 class RA_manager(Role):
-    def __init__(self, ):
-        super().__init__('RA-manager', )
+    def __init__(self):
+        super().__init__('RA-manager')
     
     def canActivate(self, mgr): # R1.1.4
         return {
@@ -52,8 +52,8 @@ class RA_manager(Role):
         )
 
 class NHS_service(Role):
-    def __init__(self, ):
-        super().__init__('NHS-service', )
+    def __init__(self):
+        super().__init__('NHS-service')
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -69,8 +69,8 @@ class NHS_service(Role):
         )
 
 class Registration_authority(Role):
-    def __init__(self, ):
-        super().__init__('Registration-authority', )
+    def __init__(self):
+        super().__init__('Registration-authority')
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)

@@ -100,8 +100,8 @@ def cg_regs(cg): # A1.2.3
     })
 
 class Caldicott_guardian(Role):
-    def __init__(self, ):
-        super().__init__('Caldicott-guardian', )
+    def __init__(self):
+        super().__init__('Caldicott-guardian')
     
     def canActivate(self, cg): # A1.2.4
         return {
@@ -154,8 +154,8 @@ def hr_manager_regs(mgr): # A1.3.3
     })
 
 class HR_mgr(Role):
-    def __init__(self, ):
-        super().__init__('HR-mgr', )
+    def __init__(self):
+        super().__init__('HR-mgr')
     
     def canActivate(self, mgr): # A1.3.4
         return {
@@ -208,8 +208,8 @@ def receptionist_regs(rec): # A1.4.3
     })
 
 class Receptionist(Role):
-    def __init__(self, ):
-        super().__init__('Receptionist', )
+    def __init__(self):
+        super().__init__('Receptionist')
     
     def canActivate(self, rec): # A1.4.4
         return {
@@ -281,8 +281,8 @@ def patient_regs(pat): # A1.5.3
     })
 
 class Patient(Role):
-    def __init__(self, ):
-        super().__init__('Patient', )
+    def __init__(self):
+        super().__init__('Patient')
     
     def canActivate(self, pat): # A1.5.4
         return {
@@ -406,8 +406,8 @@ def no_main_role_active(user): # A1.7.1
             count_third_party_activations(user) == 0
 
 class Registration_authority(Role):
-    def __init__(self, ):
-        super().__init__('Registration-authority', )
+    def __init__(self):
+        super().__init__('Registration-authority')
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -689,8 +689,8 @@ def count_third_party_activations(user): # A2.3.11
     })
 
 class Third_party(Role):
-    def __init__(self, ):
-        super().__init__('Third-party', )
+    def __init__(self):
+        super().__init__('Third-party')
     
     def canActivate(self, x): # A2.3.12
         return {

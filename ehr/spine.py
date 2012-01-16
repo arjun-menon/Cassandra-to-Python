@@ -53,8 +53,8 @@ def count_spine_clinician_activations(user): # S1.1.4
     })
 
 class Spine_admin(Role):
-    def __init__(self, ):
-        super().__init__('Spine-admin', )
+    def __init__(self):
+        super().__init__('Spine-admin')
     
     def canActivate(self, adm): # S1.2.1
         return {
@@ -107,8 +107,8 @@ def spine_admin_regs(adm): # S1.2.7
     })
 
 class Patient(Role):
-    def __init__(self, ):
-        super().__init__('Patient', )
+    def __init__(self):
+        super().__init__('Patient')
     
     def canActivate(self, pat): # S1.3.1
         return {
@@ -276,8 +276,8 @@ def agent_regs(pat): # S1.4.14
     })
 
 class Registration_authority(Role):
-    def __init__(self, ):
-        super().__init__('Registration-authority', )
+    def __init__(self):
+        super().__init__('Registration-authority')
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -441,8 +441,8 @@ def other_third_party_consent_requests(y, z): # S2.2.9
     })
 
 class Third_party(Role):
-    def __init__(self, ):
-        super().__init__('Third-party', )
+    def __init__(self):
+        super().__init__('Third-party')
     
     def canActivate(self, x): # S2.2.10
         return {
