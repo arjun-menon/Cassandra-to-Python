@@ -7,7 +7,7 @@ list_of_roles = ['Spine-clinician', 'Spine-admin', 'Register-spine-admin', 'Pati
 
 class Spine_clinician(Role):
     def __init__(self, ra, org, spcty):
-        super().__init__('Spine-clinician', **{'ra':ra, 'org':org, 'spcty':spcty})
+        super().__init__('Spine-clinician', ra = ra, org = org, spcty = spcty)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -54,7 +54,7 @@ def count_spine_clinician_activations(user): # S1.1.4
 
 class Spine_admin(Role):
     def __init__(self, ):
-        super().__init__('Spine-admin', **{})
+        super().__init__('Spine-admin', )
     
     def canActivate(self, adm): # S1.2.1
         return {
@@ -78,7 +78,7 @@ def count_spine_admin_activations(user): # S1.2.4
 
 class Register_spine_admin(Role):
     def __init__(self, adm2):
-        super().__init__('Register-spine-admin', **{'adm2':adm2})
+        super().__init__('Register-spine-admin', adm2 = adm2)
     
     def canActivate(self, adm): # S1.2.5
         return {
@@ -108,7 +108,7 @@ def spine_admin_regs(adm): # S1.2.7
 
 class Patient(Role):
     def __init__(self, ):
-        super().__init__('Patient', **{})
+        super().__init__('Patient', )
     
     def canActivate(self, pat): # S1.3.1
         return {
@@ -134,7 +134,7 @@ def count_patient_activations(user): # S1.3.4
 
 class Register_patient(Role):
     def __init__(self, pat):
-        super().__init__('Register-patient', **{'pat':pat})
+        super().__init__('Register-patient', pat = pat)
     
     def canActivate(self, adm): # S1.3.5
         return {
@@ -186,7 +186,7 @@ def patient_regs(pat): # S1.3.7
 
 class Agent(Role):
     def __init__(self, pat):
-        super().__init__('Agent', **{'pat':pat})
+        super().__init__('Agent', pat = pat)
     
     def canActivate(self, ag): # S1.4.1
         return {
@@ -223,7 +223,7 @@ def count_agent_activations(user): # S1.4.5
 
 class Register_agent(Role):
     def __init__(self, agent, pat):
-        super().__init__('Register-agent', **{'agent':agent, 'pat':pat})
+        super().__init__('Register-agent', agent = agent, pat = pat)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -277,7 +277,7 @@ def agent_regs(pat): # S1.4.14
 
 class Registration_authority(Role):
     def __init__(self, ):
-        super().__init__('Registration-authority', **{})
+        super().__init__('Registration-authority', )
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -307,7 +307,7 @@ def no_main_role_active(user): # S1.5.3
 
 class One_off_consent(Role):
     def __init__(self, pat):
-        super().__init__('One-off-consent', **{'pat':pat})
+        super().__init__('One-off-consent', pat = pat)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
@@ -363,7 +363,7 @@ class One_off_consent(Role):
 
 class Request_third_party_consent(Role):
     def __init__(self, x, pat, id):
-        super().__init__('Request-third-party-consent', **{'x':x, 'pat':pat, 'id':id})
+        super().__init__('Request-third-party-consent', x = x, pat = pat, id = id)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
@@ -442,7 +442,7 @@ def other_third_party_consent_requests(y, z): # S2.2.9
 
 class Third_party(Role):
     def __init__(self, ):
-        super().__init__('Third-party', **{})
+        super().__init__('Third-party', )
     
     def canActivate(self, x): # S2.2.10
         return {
@@ -468,7 +468,7 @@ def count_third_party_activations(user): # S2.2.13
 
 class Third_party_consent(Role):
     def __init__(self, x, pat, id):
-        super().__init__('Third-party-consent', **{'x':x, 'pat':pat, 'id':id})
+        super().__init__('Third-party-consent', x = x, pat = pat, id = id)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -500,7 +500,7 @@ def third_party_consent(pat, id): # S2.2.17
 
 class Request_consent_to_treatment(Role):
     def __init__(self, pat, org2, cli2, spcty2):
-        super().__init__('Request-consent-to-treatment', **{'pat':pat, 'org2':org2, 'cli2':cli2, 'spcty2':spcty2})
+        super().__init__('Request-consent-to-treatment', pat = pat, org2 = org2, cli2 = cli2, spcty2 = spcty2)
     
     def canActivate(self, cli1): # S2.3.1
         return {
@@ -571,7 +571,7 @@ def other_consent_to_treatment_requests(x, pat, org, cli, spcty): # S2.3.8
 
 class Consent_to_treatment(Role):
     def __init__(self, pat, org, cli, spcty):
-        super().__init__('Consent-to-treatment', **{'pat':pat, 'org':org, 'cli':cli, 'spcty':spcty})
+        super().__init__('Consent-to-treatment', pat = pat, org = org, cli = cli, spcty = spcty)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
@@ -609,7 +609,7 @@ class Consent_to_treatment(Role):
 
 class Request_consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
-        super().__init__('Request-consent-to-group-treatment', **{'pat':pat, 'org':org, 'group':group})
+        super().__init__('Request-consent-to-group-treatment', pat = pat, org = org, group = group)
     
     def canActivate(self, cli): # S2.4.1
         return {
@@ -681,7 +681,7 @@ def other_consent_to_group_treatment_requests(x, pat, org, group): # S2.4.8
 
 class Consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
-        super().__init__('Consent-to-group-treatment', **{'pat':pat, 'org':org, 'group':group})
+        super().__init__('Consent-to-group-treatment', pat = pat, org = org, group = group)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
@@ -717,7 +717,7 @@ class Consent_to_group_treatment(Role):
 
 class Referrer(Role):
     def __init__(self, pat, org, cli2, spcty1):
-        super().__init__('Referrer', **{'pat':pat, 'org':org, 'cli2':cli2, 'spcty1':spcty1})
+        super().__init__('Referrer', pat = pat, org = org, cli2 = cli2, spcty1 = spcty1)
     
     def canActivate(self, cli1): # S3.1.1
         return {
@@ -743,7 +743,7 @@ class Referrer(Role):
 
 class Spine_emergency_clinician(Role):
     def __init__(self, org, pat):
-        super().__init__('Spine-emergency-clinician', **{'org':org, 'pat':pat})
+        super().__init__('Spine-emergency-clinician', org = org, pat = pat)
     
     def canActivate(self, cli): # S3.2.1
         return {
@@ -761,7 +761,7 @@ class Spine_emergency_clinician(Role):
 
 class Treating_clinician(Role):
     def __init__(self, pat, org, spcty):
-        super().__init__('Treating-clinician', **{'pat':pat, 'org':org, 'spcty':spcty})
+        super().__init__('Treating-clinician', pat = pat, org = org, spcty = spcty)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
@@ -804,7 +804,7 @@ class Treating_clinician(Role):
 
 class General_practitioner(Role):
     def __init__(self, pat):
-        super().__init__('General-practitioner', **{'pat':pat})
+        super().__init__('General-practitioner', pat = pat)
     
     def canActivate(self, cli): # S3.3.5
         #S3.3.5 todo: unable to bind vars {'spcty'} in constraint spcty == "GP"
@@ -814,7 +814,7 @@ class General_practitioner(Role):
 
 class Group_treating_clinician(Role):
     def __init__(self, pat, ra, org, group, spcty):
-        super().__init__('Group-treating-clinician', **{'pat':pat, 'ra':ra, 'org':org, 'group':group, 'spcty':spcty})
+        super().__init__('Group-treating-clinician', pat = pat, ra = ra, org = org, group = group, spcty = spcty)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -843,7 +843,7 @@ class Group_treating_clinician(Role):
 
 class Concealed_by_spine_clinician(Role):
     def __init__(self, pat, ids, start, end):
-        super().__init__('Concealed-by-spine-clinician', **{'pat':pat, 'ids':ids, 'start':start, 'end':end})
+        super().__init__('Concealed-by-spine-clinician', pat = pat, ids = ids, start = start, end = end)
     
     def canActivate(self, cli): # S4.1.1
         return {
@@ -893,7 +893,7 @@ def count_concealed_by_spine_clinician(pat, id): # S4.1.6
 
 class Conceal_request(Role):
     def __init__(self, what, who, start, end):
-        super().__init__('Conceal-request', **{'what':what, 'who':who, 'start':start, 'end':end})
+        super().__init__('Conceal-request', what = what, who = who, start = start, end = end)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -953,7 +953,7 @@ def count_conceal_requests(pat): # S4.2.7
 
 class Concealed_by_spine_patient(Role):
     def __init__(self, what, who, start, end):
-        super().__init__('Concealed-by-spine-patient', **{'what':what, 'who':who, 'start':start, 'end':end})
+        super().__init__('Concealed-by-spine-patient', what = what, who = who, start = start, end = end)
     
     def canActivate(self, cli): # S4.2.8
         return {
@@ -1007,7 +1007,7 @@ def count_concealed_by_spine_patient(a, b): # S4.2.12
 
 class Authenticated_express_consent(Role):
     def __init__(self, pat, cli):
-        super().__init__('Authenticated-express-consent', **{'pat':pat, 'cli':cli})
+        super().__init__('Authenticated-express-consent', pat = pat, cli = cli)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params)
@@ -1070,9 +1070,9 @@ def count_authenticated_express_consent(pat): # S4.3.8
         role.pat == pat
     })
 
-class Add_spine_record_item(Role):
+class Add_spine_record_item(Role): # Action
     def __init__(self, pat):
-        super().__init__('Add-spine-record-item', **{'pat':pat})
+        super().__init__('Add-spine-record-item', pat = 'pat')
     
     def permits(self, cli): # S5.1.1
         return {
@@ -1083,9 +1083,9 @@ class Add_spine_record_item(Role):
         }
 
 
-class Annotate_spine_record_item(Role):
+class Annotate_spine_record_item(Role): # Action
     def __init__(self, pat, id):
-        super().__init__('Annotate-spine-record-item', **{'pat':pat, 'id':id})
+        super().__init__('Annotate-spine-record-item', pat = 'pat', id = 'id')
     
     def permits(self, subj):
         return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj)
@@ -1113,9 +1113,9 @@ class Annotate_spine_record_item(Role):
         }
 
 
-class Get_spine_record_item_ids(Role):
+class Get_spine_record_item_ids(Role): # Action
     def __init__(self, pat):
-        super().__init__('Get-spine-record-item-ids', **{'pat':pat})
+        super().__init__('Get-spine-record-item-ids', pat = 'pat')
     
     def permits(self, subj):
         return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj)
@@ -1144,9 +1144,9 @@ class Get_spine_record_item_ids(Role):
         }
 
 
-class Read_spine_record_item(Role):
+class Read_spine_record_item(Role): # Action
     def __init__(self, pat, id):
-        super().__init__('Read-spine-record-item', **{'pat':pat, 'id':id})
+        super().__init__('Read-spine-record-item', pat = 'pat', id = 'id')
     
     def permits(self, subj):
         return self.permits_1(subj) or self.permits_2(subj) or self.permits_3(subj) or self.permits_4(subj) or self.permits_5(subj)
@@ -1211,9 +1211,9 @@ class Read_spine_record_item(Role):
         pass
 
 
-class Force_read_spine_record_item(Role):
+class Force_read_spine_record_item(Role): # Action
     def __init__(self, pat, id):
-        super().__init__('Force-read-spine-record-item', **{'pat':pat, 'id':id})
+        super().__init__('Force-read-spine-record-item', pat = 'pat', id = 'id')
     
     def permits(self, cli): # S5.3.6
         return {

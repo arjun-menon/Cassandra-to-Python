@@ -7,7 +7,7 @@ list_of_roles = ['PDS-manager', 'Register-PDS-manager', 'Patient', 'Agent', 'Pro
 
 class PDS_manager(Role):
     def __init__(self, ):
-        super().__init__('PDS-manager', **{})
+        super().__init__('PDS-manager', )
     
     def canActivate(self, adm): # P1.1.1
         return {
@@ -31,7 +31,7 @@ def count_PDS_manager_activations(user): # P1.1.4
 
 class Register_PDS_manager(Role):
     def __init__(self, adm2):
-        super().__init__('Register-PDS-manager', **{'adm2':adm2})
+        super().__init__('Register-PDS-manager', adm2 = adm2)
     
     def canActivate(self, adm1): # P1.1.5
         return {
@@ -61,7 +61,7 @@ def pds_admin_regs(adm): # P1.1.7
 
 class Patient(Role):
     def __init__(self, ):
-        super().__init__('Patient', **{})
+        super().__init__('Patient', )
     
     def canActivate(self, pat): # P1.2.1
         return {
@@ -85,7 +85,7 @@ def count_patient_activations(user): # P1.2.4
 
 class Agent(Role):
     def __init__(self, pat):
-        super().__init__('Agent', **{'pat':pat})
+        super().__init__('Agent', pat = pat)
     
     def canActivate(self, ag): # P1.3.1
         return {
@@ -110,7 +110,7 @@ def count_agent_activations(user): # P1.3.5
 
 class Professional_user(Role):
     def __init__(self, ra, org):
-        super().__init__('Professional-user', **{'ra':ra, 'org':org})
+        super().__init__('Professional-user', ra = ra, org = org)
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params) or self.canActivate_3(*params) or self.canActivate_4(*params)
@@ -179,7 +179,7 @@ def no_main_role_active(user): # P1.5.1
 
 class Registration_authority(Role):
     def __init__(self, ):
-        super().__init__('Registration-authority', **{})
+        super().__init__('Registration-authority', )
     
     def canActivate(self, *params):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
@@ -202,7 +202,7 @@ class Registration_authority(Role):
 
 class Register_patient(Role):
     def __init__(self, pat):
-        super().__init__('Register-patient', **{'pat':pat})
+        super().__init__('Register-patient', pat = pat)
     
     def canActivate(self, adm): # P2.1.1
         return {

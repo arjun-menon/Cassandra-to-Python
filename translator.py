@@ -553,36 +553,36 @@ def onDeactivate(self, subj):
         return """
 class {name_u}(Role):
     def __init__(self, {params}):
-        super().__init__('{name}', **{params_dict})
+        super().__init__('{name}', {params_dict})
 {canAcs_trans}{canDcs_trans}{isDacs_trans}""".format(
          name   =     self.name
         ,name_u = h2u(self.name)
         ,params = ', '.join(map(repr, self.params))
-        ,params_dict = '{' + ', '.join("'"+repr(p)+"':"+repr(p) for p in self.params) + '}'
+        ,params_dict = ', '.join(str(p) + ' = ' + repr(p) for p in self.params)
 
         ,canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
         ,canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
         ,isDacs_trans = tab(self.isDac_translator()) #tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
         )
-        return """
-class {name_u}(Role):
-    def __init__(self{optional_front_comma}{params_comma}):
-        super().__init__('{name}', [{params_quote}]) {optional_self_assignment_newline_tab}{self_assignment}{params_comma}
-{canAcs_trans}{canDcs_trans}{isDacs_trans}""".format(
-        name   =     self.name,
-        name_u = h2u(self.name)
-
-        ,optional_front_comma = ", " if len(self.params) else ""
-        ,params_comma= ", ".join(map(repr, self.params))
-        ,params_quote = ", ".join("'" + repr(p) + "'" for p in self.params) if len(self.params) else ""
-
-        ,optional_self_assignment_newline_tab = "\n        " if len(self.params) else ""
-        ,self_assignment = ", ".join("self."+repr(s) for s in self.params) + " = " if len(self.params) else ""
-
-        ,canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
-        ,canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
-        ,isDacs_trans = tab(self.isDac_translator()) #tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
-        )
+#        return """
+#class {name_u}(Role):
+#    def __init__(self{optional_front_comma}{params_comma}):
+#        super().__init__('{name}', [{params_quote}]) {optional_self_assignment_newline_tab}{self_assignment}{params_comma}
+#{canAcs_trans}{canDcs_trans}{isDacs_trans}""".format(
+#        name   =     self.name,
+#        name_u = h2u(self.name)
+#
+#        ,optional_front_comma = ", " if len(self.params) else ""
+#        ,params_comma= ", ".join(map(repr, self.params))
+#        ,params_quote = ", ".join("'" + repr(p) + "'" for p in self.params) if len(self.params) else ""
+#
+#        ,optional_self_assignment_newline_tab = "\n        " if len(self.params) else ""
+#        ,self_assignment = ", ".join("self."+repr(s) for s in self.params) + " = " if len(self.params) else ""
+#
+#        ,canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
+#        ,canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
+#        ,isDacs_trans = tab(self.isDac_translator()) #tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
+#        )
 
 class canReqCreds(object):
     def __init__(self, canAcs, hasAcs):
@@ -648,15 +648,15 @@ def permits(self, subj):
     
     def translate(self):
         return """
-class {name_u}(Role):
+class {name_u}(Role): # Action
     def __init__(self, {params}):
-        super().__init__('{name}', **{params_dict})
+        super().__init__('{name}', {params_dict})
 {permits}
 """.format(
          name   =     self.name,
          name_u = h2u(self.name)
         ,params = ', '.join(self.params)
-        ,params_dict = '{' + ', '.join("'"+p+"':"+p for p in self.params) + '}'
+        ,params_dict = ', '.join(str(p) + ' = ' + repr(p) for p in self.params)
         ,permits = self.permits_translator()
         )
 
