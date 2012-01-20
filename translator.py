@@ -5,11 +5,10 @@ from helpers import *
 from string import Template
 
 class StopTranslating(Exception):
-    def __init__(self, rn, reason):
-        self.rn, self.reason = rn, reason
-        self.msg = "%s todo: " % self.rn + self.reason
-        print(self.msg)
-        print()
+    def __init__(self, rule, reason):
+        self.rule, self.reason = rule, reason
+        self.msg = "%s todo: " % self.rule.name + self.reason
+        print(self.rule, '\n\n', self.msg, '\n\n')
     def __repr__(self):
         return self.msg
 
@@ -39,7 +38,7 @@ class HypothesesTranslator(object):
         return repr(self.rule)
     
     def stopTranslating(self, reason):
-        return StopTranslating(self.rule.name, reason)
+        return StopTranslating(self.rule, reason)
     
     def substitution_func_gen(self, variables, code):
         """ 'variables' is a list of variables that appear in 'code'.
