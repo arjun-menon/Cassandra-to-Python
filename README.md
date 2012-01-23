@@ -7,7 +7,7 @@ Usage
 -----
 Run translator.py
 
-You can select which file to translate by changing the value of the variable *rule_set* which appears towards the of *translator.py*.
+The generated rules will appear in the directory `ehr`.
 
 Paper Abstract
 --------------
