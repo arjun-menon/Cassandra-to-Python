@@ -563,27 +563,8 @@ class {name_u}(Role):
 
         ,canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
         ,canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
-        ,isDacs_trans = tab(self.isDac_translator()) #tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
+        ,isDacs_trans = tab(self.isDac_translator())
         )
-#        return """
-#class {name_u}(Role):
-#    def __init__(self{optional_front_comma}{params_comma}):
-#        super().__init__('{name}', [{params_quote}]) {optional_self_assignment_newline_tab}{self_assignment}{params_comma}
-#{canAcs_trans}{canDcs_trans}{isDacs_trans}""".format(
-#        name   =     self.name,
-#        name_u = h2u(self.name)
-#
-#        ,optional_front_comma = ", " if len(self.params) else ""
-#        ,params_comma= ", ".join(map(repr, self.params))
-#        ,params_quote = ", ".join("'" + repr(p) + "'" for p in self.params) if len(self.params) else ""
-#
-#        ,optional_self_assignment_newline_tab = "\n        " if len(self.params) else ""
-#        ,self_assignment = ", ".join("self."+repr(s) for s in self.params) + " = " if len(self.params) else ""
-#
-#        ,canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
-#        ,canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
-#        ,isDacs_trans = tab(self.isDac_translator()) #tab(''.join(map(lambda isDac: trans(isDac), self.isDacs)))
-#        )
 
 class canReqCreds(object):
     def __init__(self, canAcs, hasAcs):
