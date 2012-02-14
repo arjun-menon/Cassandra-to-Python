@@ -542,29 +542,29 @@ def {cat}(self, *params):
                 tr += "if " + cond + ":\n    " + deac
             else:
                 tr += deac + '\n'
-            
-            
+        
         return """
 def onDeactivate(self, subj):
 """+tab(tr)
     
     def translate(self):
+        name   =     self.name
+        name_u = h2u(self.name)
+        
+        optional_comma = ", " if len(self.params) else ""
+        params = ', '.join(map(repr, self.params))
+        params_dict = ', '.join(str(p) + ' = ' + repr(p) for p in self.params)
+
+        canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
+        canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
+        isDacs_trans = tab(self.isDac_translator())
+        
         return """
 class {name_u}(Role):
     def __init__(self{optional_comma}{params}):
         super().__init__('{name}'{optional_comma}{params_dict})
-{canAcs_trans}{canDcs_trans}{isDacs_trans}""".format(
-         name   =     self.name
-        ,name_u = h2u(self.name)
-        
-        ,optional_comma = ", " if len(self.params) else ""
-        ,params = ', '.join(map(repr, self.params))
-        ,params_dict = ', '.join(str(p) + ' = ' + repr(p) for p in self.params)
+{canAcs_trans}{canDcs_trans}{isDacs_trans}""".format( **locals() )
 
-        ,canAcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canAc, self.canAcs)
-        ,canDcs_trans = self.canAcs_canDcs_translator(SpecialPredicates.canDc, self.canDcs)
-        ,isDacs_trans = tab(self.isDac_translator())
-        )
 
 class canReqCreds(object):
     def __init__(self, canAcs, hasAcs):
