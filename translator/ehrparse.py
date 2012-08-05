@@ -1,4 +1,4 @@
-import tpg
+from . import tpg
 
 class EhrParser(tpg.Parser):
     r"""
