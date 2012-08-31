@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from translator.translate import parse_rules, translate
 
 if __name__ == "__main__":
