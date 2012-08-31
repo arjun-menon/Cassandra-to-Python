@@ -5,7 +5,5 @@ Translates from Datalog-C to Python. The Datalog-C is specific to the Cassandra 
 
 Usage
 -----
-Run translator.py
-
-The generated rules will appear in the directory `ehr`.
+Run `main.py`. The generated Python rules will appear in the directory `ehr`.
 
