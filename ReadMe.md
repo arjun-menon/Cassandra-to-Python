@@ -35,6 +35,6 @@ October 2005.
 
 Usage
 -----
-The `ehr` contains both the raw Cassandra rules and the generated Python policy. The files containing the Cassandra rules end with `.txt` and the files with the corresponding generated Python code end with `.py`
+The `ehr` directory contains both the input Cassandra Datalog-C rules as well as the corresponding generated Python code. The files containing the original rules end with `.txt` and the generated corresponding files end with `.py`. Some rules that have not been translated are marked with a `TODO` in the generated Python code. Those rules need to be translated manually.
 
-To re-run the translator run the translator, run `main.py`. (The source code for the translator is in the folder `translator`.)
+The source code for the translator is contained in the module `translator`. To re-run the translator, call `translator.translate()` or execute `main.py`.
