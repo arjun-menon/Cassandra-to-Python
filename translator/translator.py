@@ -416,9 +416,6 @@ def generate_outline(rules):
     
     return outline, list_of_roles
 
-def untranslated(obj):
-    return "\n" + prefix_lines("untranslated:\n" + repr(obj), "#")
-
 def trans(obj, *args):
     """Translate object by invoking the translate() method."""
     if hasattr(obj, "translate"):

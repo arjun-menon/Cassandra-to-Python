@@ -52,6 +52,9 @@ def separate(alist, *conds):
 def p(s):
     return '{' + s + '}'
 
+def untranslated(obj):
+    return "\n" + prefix_lines("untranslated:\n" + repr(obj), "#")
+
 ##################
 # Helper Classes
 ##################
