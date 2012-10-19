@@ -1,19 +1,25 @@
-Cassandra Translator
-====================
+Datalog to Python Translator
+============================
 
 Overview
 --------
-Moritz Y. Becker [in his PhD dissertation](http://www.cs.sunysb.edu/~stoller/cse592/becker05cassandra-thesis.pdf) presents a novel role-based access control system (RBAC) called Cassandra for the United Kingdom National Health Service' proposed new Electronic Health Record (EHR) system. The role-based access control is defined in this system, using a set of rules written in a domain specific language (DSL) designed explicity for Cassandra. The DSL is based on a dialect of Datalog known as Datalog with Constraints. Datalog with Constraints (shortened hereby to Datalog-C) differs from Datalog in that it allows limited computation (non-Turing complete), that allows us to introduce some intelligence into the rules describing the RBAC.
+Moritz Y. Becker [in his PhD dissertation](http://www.cs.sunysb.edu/~stoller/cse592/becker05cassandra-thesis.pdf) presents a novel role-based access control system (RBAC) called Cassandra for the United Kingdom National Health Service' proposed new Electronic Health Record (EHR) system. The role-based access control is defined in this system, using a set of rules written in a domain specific language (DSL) designed explicity for Cassandra. The DSL is based on a dialect of Datalog known as Datalog with Constraints. Datalog with Constraints (shortened hereby to Datalog-C) differs from Datalog in that it allows limited non-Turing complete computation that permits the user to include more intelligence in the policy rules than have traditionally been permitted by RBACs.
 
-The goal of this project is to translate the 375 some rules describing the UK's EHR into an idiomatic executable Python policy. In order to assist with the translation I wrote a translation tool that automatically translates about 90% of the Cassandra rules. Among other techniques, the translator detects common patterns in the rules and collates them into objects in the produced Python code.
+### The Translator
 
-This project is being done in collaboration with [Annie Liu](http://www.cs.sunysb.edu/~liu/), a Professor in Computer Science at Stony Brook University.
+The goal of this project is to translate the 375 some rules describing the EHR into an idiomatic executable Python policy. In order to achieve a "flexible translation", ie. one that can be modified holistically without exerting effort that amounts to a re-write, I wrote this tool that automatically translates about 90% of the rules. A key strength of the translator is that it generates object-oriented idiomatic Python code based on certain patterns it detects in the input EHR code.
+
+Usage
+-----
+The `ehr` directory contains both the input Datalog rules as well as the corresponding generated Python code. The files containing the original EHR rules end with `.txt` and the corresponding generated files end with `.py`. Some rules that are not automatically translated are marked with `todo` in the generated Python code. These rules need to be translated manually.
+
+The source code for the translator itself is contained in the module `translator`. To run the translator, execute `main.py`. On some systems, it may be necessary to reparse the rules owing to nuances of the Python `pickle` module. To reparse the rules, un-comment `parse_rules()` in `main.py`.
 
 Paper Abstract
 --------------
 __Improving the Specification and Implementation of EHR Policy Rules__
 
-Arjun G. Menon and Yanhong A. Liu
+[Arjun G. Menon](http://arjungmenon.com/) and [Yanhong A. Liu](http://www.cs.sunysb.edu/~liu/)
 
 Trust management policies are essential in decentralized systems in general and health care systems in particular, to preserve privacy of information and control access to resources.  [Moritz Becker's dissertation](http://www.cs.sunysb.edu/~stoller/cse592/becker05cassandra-thesis.pdf) [1] describes a system for distributed role-based access control for the UK's Electronic Health Record (EHR) service. In this system, sensitive user data and resources at every node in the network of hospitals and clinics are protected by certain entities which form a "protective layers" around those resources and controls access to them based on a policy defined using a policy definition language called Cassandra. Cassandra is a high-level logic rule language based on Datalog with constraints. The expressiveness of particular rules in Cassandra can be fine tuned by means of constraints.
 
@@ -30,11 +36,5 @@ Overall, this work provides important improvements to this large EHR policy that
 [1]  Moritz Y. Becker, Cassandra: flexible trust management and its application to electronic health records. Ph.D. Dissertation, University of Cambridge, Trinity College,
 October 2005.
 
-[Arjun G. Menon](http://arjungmenon.com/) is an alumnus of Stony Brook University who majored in Computer Science.
+[Arjun G. Menon](http://arjungmenon.com/) is an alumnus of Stony Brook University who majored in Computer Science.  
 [Y. Annie Liu](http://www.cs.sunysb.edu/~liu/) is a Professor in [Computer Science at Stony Brook University](http://www.cs.sunysb.edu/).
-
-Usage
------
-The `ehr` directory contains both the input Cassandra Datalog-C rules as well as the corresponding generated Python code. The files containing the original rules end with `.txt` and the generated corresponding files end with `.py`. Some rules that have not been translated are marked with a `TODO` in the generated Python code. Those rules need to be translated manually.
-
-The source code for the translator is contained in the module `translator`. To re-run the translator, call `translator.translate()` or execute `main.py`.
