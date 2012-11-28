@@ -27,19 +27,27 @@ from . ehrparse import *
 from . helpers import *
 
 class StopTranslating(Exception):
+    count = 0
+    
     def __init__(self, rule, reason):
         self.rule, self.reason = rule, reason
-        self.msg = "%s todo: " % self.rule.name + self.reason
-        print(self.rule, '\n\n', self.msg, '\n\n')
+        self.msg = self.rule.name + " todo: " + self.reason
+        
+        StopTranslating.count += 1
+        print(StopTranslating.count, "TODO: ", self.reason, "\n", self.rule, "\n")
+    
     def __repr__(self):
         return self.msg
+
 
 @typecheck
 def warn(message : str):
     print(message)
 
+
 class CountFunctions:
     funcs = []
+
 
 def loc_trans(loc):
     if loc == '"PDS"':
@@ -51,6 +59,7 @@ def loc_trans(loc):
     
     return 'ehr.'+loc
 
+
 class HypothesesTranslator(object):
     def __init__(self, rule):
         self.rule = rule
@@ -61,20 +70,6 @@ class HypothesesTranslator(object):
     
     def stopTranslating(self, reason):
         return StopTranslating(self.rule, reason)
-    
-    def substitution_func_gen(self, variables, code):
-        """ 'variables' is a list of variables that appear in 'code'.
-        'code' is a format string on which string.format is invoked. """
-        
-        ext, rest = separate(variables, lambda v: v in set(self.external_vars))
-        
-        substitution_dict = dict()
-        substitution_dict.update( { e : self.external_vars[e] for e in ext } )
-        substitution_dict.update( { r : p(r) for r in rest } )
-        
-        new_format_string = code.format(**substitution_dict)
-        
-        return ( set(rest), lambda vd = { r : r for r in rest }: new_format_string.format(**vd) )
     
     @typecheck
     def build_param_bindings(self, params: list_of(str)) -> list:
@@ -90,6 +85,20 @@ class HypothesesTranslator(object):
         
         return constraints
     
+    def substitution_func_gen(self, variables, code):
+        """ 'variables' is a list of variables that appear in 'code'.
+        'code' is a format string on which string.format is invoked. """
+        
+        print(self.rule.name, self.external_vars)
+        ext, rest = separate(variables, lambda v: v in set(self.external_vars))
+        
+        substitution_dict = dict()
+        substitution_dict.update( { e : self.external_vars[e] for e in ext } )
+        substitution_dict.update( { r : p(r) for r in rest } )
+        
+        new_format_string = code.format(**substitution_dict)
+        
+        return ( set(rest), lambda vd = { r : r for r in rest }: new_format_string.format(**vd) )
     
     @typecheck
     def build_constraint_bindings(self, c: Constraint):
