@@ -110,7 +110,7 @@ def trans(obj, *args):
         return untranslated(obj)
 
 def translate_rules(rules, rule_sets, rule_set):
-    print("Translating %d rules in %s..." % (len(rules), rule_set) )
+    print("Translating %d rules in %s...\n" % (len(rules), rule_set) )
     outline, list_of_roles = generate_outline(rules)
     
     other_rule_sets = set(rule_sets) - set([rule_set])
@@ -133,6 +133,7 @@ rules_collections = None
 
 def parse_rules():
     global rules_collections, rule_sets
+    print("Parsing rules...")
     rules_collections = [ ( rule_set, parse_one(ehr_path+"%s.txt" % rule_set) ) for rule_set in rule_sets ]
     with open(ehr_path+"parse_tree.pickle", "wb") as f:
         pickle.dump(rules_collections, f)
@@ -148,7 +149,7 @@ def translate_all():
     def write(tr, rule_set):
         with open(ehr_path+"%s.py" % rule_set, 'w') as f:
             f.write(tr)
-        print("Done. Wrote to %s.py\n" % rule_set)
+        print("Done. Wrote to %s.py\n\n" % rule_set)
         
     for (rule_set, rules) in rules_collections:
         tr = translate_rules(rules, rule_sets, rule_set)
