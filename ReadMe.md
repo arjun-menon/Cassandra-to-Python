@@ -36,12 +36,14 @@ Mortiz Becker adapted the Datalog language to his needs, enhancing it with two n
 
 The second addition Becker made to Datalog are **constraints**. Constraints introduce a limited form of computation into the language. In *Cassandra*, a constraint is a predicate (usually appearing at the end of the horn clause), and it imposes mathematical constraint on variables appearing anywhere else in the horn clause. The kinds of constraints that can be imposed are equality, inequality, greater-than, less-than and membership in a range or a set. This piece of code from the Spine EHR module shows a *Cassandra* rule that is used to check if a user can activate the `Spine-clinician` role (the user is bound to the ‘cli’ atom in the rule) with a constraint that checks if the current time falls within a certain range:
 
-	(S1.1.1)
-	canActivate(cli, Spine-clinician(ra, org, spcty)) <-
-	ra.hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end)),
-	canActivate(ra, Registration-authority()),
-	no-main-role-active(cli),
-	Current-time() in [start, end]
+```
+(S1.1.1)
+canActivate(cli, Spine-clinician(ra, org, spcty)) <-
+ra.hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end)),
+canActivate(ra, Registration-authority()),
+no-main-role-active(cli),
+Current-time() in [start, end]
+```
 
 Another addition Becker made to Datalog, to allow for the access of predicates and credentials on other entities (over the network if necessary) can be seen in the rule above. The `ra.` preceding `hasActivated` makes it a remote atom – one that needs to be accessed from the Registration Authority (RA) entity. Further description of the Cassandra language and its guarantees on computational complexity and termination can be found in *chapters 4 and 5* of [Becker’s dissertation](http://www.cs.sunysb.edu/~stoller/cse592/becker05cassandra-thesis.pdf).
 
@@ -64,6 +66,67 @@ TPG is an easy-to-use parser generator for Python that Annie and her PhD student
 One thing that I don't really like about Python is [duck typing](https://en.wikipedia.org/wiki/Duck_typing) (I think it's lame) –  which is why I decided to have atleast runtime type checking, and Py3k's function annotations let you accomplish this in a rather elegant and natural manner. In addition, Dmitry's typechecking recipe is quite powerful - it's even got the ability to write lambdas that test complex constraints on arguments. The type checking has helped me catch off-hand bugs quickly that I otherwise would have spent scratching my head on.
 
 Most of the actual translator is enclosed within the `translator` package/folder here. It contains a few modules that perform the translation on a step-by-step basis. `HypothesesTranslator.py` performs the hard and challenging task of turning the preicates in the rules into imperative executable python code. The others do more or less what their respective names indicate.
+
+Structure of the EHR and Translation Schema
+---------
+
+The core operation that defines the EHR's role-based access control is the activation and deactivation of roles. The user is given authority to perform certain actions and access restricted information based on the roles they have activated. In Becker’s policy, three kinds of rules explicitly involve roles:
+
+* `canActivate` – This defines who can activate a particular rule. In the example we saw earlier, the role involved was that of the `Spine-clinician`. The rule sets the pre-conditions a user has to meet before he/she can activate the role.
+
+* `canDeactivate` – This rule specifies who can deactivate a particular role. Users with higher authority (such as administrators) can be vested with the power to revoke the roles of user with lower authority.
+
+* `isDeactivated` – This rule is a special rule that is automatically triggered upon the execution of a role deactivation. It specifies in the second parameter of the head of its horn clause the role that triggers the deactivation, and in the predicates of its body it specifies the deactivations that must occur consequently. This has a *cascading effect* of deactivating multiple roles owned by a user upon, the deactivation of a single role. An example of such a scenario would be the user who is both a doctor and a head doctor. Each role offers him different powers – the doctor role allows him to access confidential patient records, while the head doctor role allows him to appoint interns and other doctors. Loosing his title of doctor implies he is longer a head doctor either. This rule allows other roles associated with the user to also be deactivated upon deactivation of a particular role. This role also *guarantees that there are no inconsistencies* in the system, as would have been the case had a user been a “Head doctor” but not a doctor.
+
+The translator automatically collects these related rules together and forms a “Role” class out of them. A Role object has three methods as its members: `canActivate`, `canDeactivate` and `onDeactivate`. The `canActivate` method can be used to check if a user if authorized to activate the role define by the class. The `canDeactivate` method can be used to check if a user can de-activate another user with the role defined by the class. The `onDeactivate` method is a method that is invoked when a user with the role defined by the class, has his role revoked.
+
+Another key type of rule present in the EHR is the `permits` clause. `permits` rules specify whether a user is authorized to perform a certain action. The actions themselves are represented as parameterized atoms in the Cassandra EHR. The translator creates objects for these actions and collects all associated `permits` rules within that class. There can be multiple horn clauses with the same head, and in the tradition of Prolog, this is to interpreted as “or” condition between them. The translator creates a generic `permits` method which performs an “or” on all defined `permits` rules. Similarly, rules operating on roles mentioned earlier also often have multiple horn clauses with the same head – in these cases as well, the translator collates them into the role class and creates a generic rule that does an “`or`” (Python boolean) over them.
+
+Here is a sample of a translated role object from the Spine module:
+
+```python
+
+class Spine_clinician(Role):
+    def __init__(self, ra, org, spcty):
+        super().__init__('Spine-clinician', ra = ra, org = org, spcty = spcty)
+    
+    def canActivate(self, *params):
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
+    
+    def canActivate_1(self, cli): # S1.1.1
+        return {
+            True for subj, role in hasActivated if 
+            role.name == "NHS-clinician-cert" and 
+            role.spcty == self.spcty and 
+            role.org == self.org and 
+            role.cli == cli and 
+            canActivate(self.ra, Registration_authority()) and 
+            Current_time() in vrange(role.start, role.end) and 
+            no_main_role_active(role.cli)
+        }
+    
+    def canActivate_2(self, cli): # S1.1.2
+        return {
+            True for subj, role in ehr.ra.hasActivated if 
+            role.name == "NHS-clinician-cert" and 
+            role.spcty == self.spcty and 
+            role.org == self.org and 
+            role.cli == cli and 
+            canActivate(self.ra, Registration_authority()) and 
+            Current_time() in vrange(role.start, role.end) and 
+            no_main_role_active(role.cli)
+        }
+    
+    def canDeactivate(self, cli, cli_): # S1.1.3
+        return (
+            cli == cli_
+        )
+    
+    def onDeactivate(self, subj):
+        deactivate(hasActivated, subj, Spine_emergency_clinician(self.org, Wildcard()))  # S3.2.3
+
+```
+
 
 Paper Abstract
 --------------
