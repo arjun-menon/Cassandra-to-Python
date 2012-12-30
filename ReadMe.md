@@ -65,7 +65,7 @@ TPG is an easy-to-use parser generator for Python that Annie and her PhD student
 
 One thing that I don't really like about Python is [duck typing](https://en.wikipedia.org/wiki/Duck_typing) (I think it's lame) –  which is why I decided to have atleast runtime type checking, and Py3k's function annotations let you accomplish this in a rather elegant and natural manner. In addition, Dmitry's typechecking recipe is quite powerful - it's even got the ability to write lambdas that test complex constraints on arguments. The type checking has helped me catch off-hand bugs quickly that I otherwise would have spent scratching my head on.
 
-Most of the actual translator is enclosed within the `translator` package/folder here. It contains a few modules that perform the translation on a step-by-step basis. `HypothesesTranslator.py` performs the hard and challenging task of turning the preicates in the rules into imperative executable python code. The others do more or less what their respective names indicate.
+Most of the actual translator is enclosed within the `translator` package/folder here. It contains a few modules that perform the translation on a step-by-step basis. `HypothesesTranslator.py` performs the hard and challenging task of turning the predicates in the rules into imperative executable python code. The others do more or less what their respective names indicate.
 
 Structure of the EHR and Translation Schema
 ---------
@@ -127,10 +127,32 @@ class Spine_clinician(Role):
 
 ```
 
+A few test cases that put the translated rules into action can be found in `driver.py`.
 
-Paper Abstract
---------------
-__Improving the Specification and Implementation of EHR Policy Rules__
+### Translation Pathway
+#### translator.translate
+
+The code that does the translation resides in the `translator` package. The translator is invoke by calling `translate()` function in the `translator.translate` module. An additional function called `parse_rules()` also in the same module must be called once prior to invoking `translate` to generate a Python *pickle* database of the parsed EHR. All subsequent invokation of `translate` do not require rebuilding the database unless the input EHR has changed.
+
+The `translator.translate` functions calls yet another function `translate_all` which repeatedly invokes the function `translate_rules` on the AST of each EHR ruleset. `translate_rules` then calls the function `generate_outline`.
+
+`generate_outline` analyzes the AST for object-oriented patterns and constructs *translation objects* pertaining to each type of pattern, and stores within in the rules for that particular type of pattern. These pattern-based translation objects contain *a __method__ called *`trans` which outputs Python translations of the rules captured by that *translation object*. The `translate_rules` function invokes this `trans` method on all of the translation objects in a rule set and combines them into a single *.py* Python module. These translated modules are then written into the folder `ehr` by `translate_all`.
+
+Usage
+-----
+The `ehr` directory contains both the input Datalog rules as well as the corresponding generated Python code. The files containing the original EHR rules end with `.txt` and the corresponding generated files end with `.py`. Some rules that are not automatically translated are marked with `todo` in the generated Python code. These rules need to be translated manually.
+
+The source code for the translator itself is contained in the module `translator`. To run the translator, execute `main.py`. On some systems, it may be necessary to reparse the rules owing to nuances of the Python `pickle` module. To reparse the rules, un-comment `parse_rules()` in `main.py`.
+
+### Caveats
+
+The translator is still incapable of translating a few types of rules. These are primarily rules that contain nested tuples and constraints over them. In addition, certain rules pertaining to credential verification have not been translated either. Rules that are not translated are outputted verbatim (in Cassandra) commented out, with a “`TODO`” next to them.
+
+Paper
+-----
+The paper on this work has not been published yet. A preliminary __abstract__ is listed below:
+
+### Improving the Specification and Implementation of EHR Policy Rules
 
 [Arjun G. Menon](http://arjungmenon.com/) and [Yanhong A. Liu](http://www.cs.sunysb.edu/~liu/)
 
@@ -147,7 +169,7 @@ The translated EHR policy is organized into four modules----Spine, Patient Demog
 Overall, this work provides important improvements to this large EHR policy that allow it to be executed easily and used for functionality testing, correctness validation, and performance evaluation.
 
 [1]  Moritz Y. Becker, Cassandra: flexible trust management and its application to electronic health records. Ph.D. Dissertation, University of Cambridge, Trinity College,
-October 2005.
+October 2005. <http://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-648.pdf>.
 
 [Arjun G. Menon](http://arjungmenon.com/) is an alumnus of Stony Brook University who majored in Computer Science.  
 [Y. Annie Liu](http://www.cs.sunysb.edu/~liu/) is a Professor in [Computer Science at Stony Brook University](http://www.cs.sunysb.edu/).
