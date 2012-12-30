@@ -67,8 +67,8 @@ One thing that I don't really like about Python is [duck typing](https://en.wiki
 
 Most of the actual translator is enclosed within the `translator` package/folder here. It contains a few modules that perform the translation on a step-by-step basis. `HypothesesTranslator.py` performs the hard and challenging task of turning the predicates in the rules into imperative executable python code. The others do more or less what their respective names indicate.
 
-Structure of the EHR and Translation Schema
----------
+Structure of the EHR and a Translation Schema
+---------------------------------------------
 
 The core operation that defines the EHR's role-based access control is the activation and deactivation of roles. The user is given authority to perform certain actions and access restricted information based on the roles they have activated. In Becker’s policy, three kinds of rules explicitly involve roles:
 
