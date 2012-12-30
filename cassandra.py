@@ -1,11 +1,12 @@
-from helpers import *
+from translator.helpers import *
 from datetime import *
 
-#class Role(object):
-#    def __init__(self, name, args):
-#        self.name = name
-#        self.args = args
-#    
+class  Role(object):
+    def __init__(self, name, **params):
+        self.name = name
+        self.__dict__.update(params)
+        self.prms = list(params)
+
 #    def __eq__(self, other):
 #        if self.name == other.name and self.args == other.args:
 #            self_params = [self.__dict__[p] for p in self.args]
@@ -15,16 +16,7 @@ from datetime import *
 #            if len(matching_params) == len(other_params):
 #                return True
 #        return False
-#    
-#    def __repr__(self):
-#        return self.name + '(' + ', '.join(map(repr, self.args)) + ')'
 
-class  Role(object):
-    def __init__(self, name, **params):
-        self.name = name
-        self.__dict__.update(params)
-        self.prms = list(params)
-    
     def __repr__(self):
         r = 'Role(name = ' + repr(self.name)
         a = ', '.join( prm + ' = ' + repr(self.__dict__[prm]) for prm in self.prms )
@@ -33,6 +25,12 @@ class  Role(object):
 class Wildcard(object):
     def __eq__(self, other):
         return True
+
+class Equals(object):
+    def __init__(self, entity):
+        self.entity = entity
+    def __eq__(self, other):
+        return self.entity == other
 
 def canActivate(subject, role):
     return role.canActivate(subject)
