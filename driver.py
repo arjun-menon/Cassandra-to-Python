@@ -1,6 +1,5 @@
 
 from ehr import *
-from ehr.spine import Spine_clinician
 
 # The following test attempts to satisfy/
 # successfully execute the rule S1.1.1
@@ -39,7 +38,7 @@ spine.hasActivated.append((None, new_role))
 # no-main-role should work fine, since no other role has been activated.
 
 # Testing it:
-result = canActivate('Dr. Bob', Spine_clinician('Bar', 'GPs', 'Dermatologist'))
+result = canActivate('Dr. Bob', spine.Spine_clinician('Bar', 'GPs', 'Dermatologist'))
 print('Result = ', repr(result))
 
 # REPL
