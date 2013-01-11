@@ -126,6 +126,8 @@ def translate_rules(rules, rule_sets, rule_set):
 
 ############################
 
+from . import interpreter
+
 ehr_path = "ehr/"
 
 rule_sets = ['spine', 'pds', 'hospital', 'ra']
@@ -154,6 +156,7 @@ def translate_all():
     for (rule_set, rules) in rules_collections:
         tr = translate_rules(rules, rule_sets, rule_set)
         write(tr, rule_set)
+        #interpreter.give(rules, rule_sets, rule_set)
 
 def translate():
     unpickle_rules()
