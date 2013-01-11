@@ -331,7 +331,6 @@ class Agent(Role):
             role.name == "Register-patient" and 
             role.agent == agent and 
             canActivate(self.pat, Patient()) and 
-            canActivate(role.agent, ehr.spine.Agent(self.pat)) and 
             no_main_role_active(role.agent)
         }
 
@@ -834,7 +833,6 @@ class Register_team_member(Role):
             role.name == "Clinician" and 
             subj == hd and 
             canActivate(subj, Head_of_team(self.team)) and 
-            canActivate(self.mem, Clinician(self.spcty)) and 
             team_member_regs(self.mem, self.team, self.spcty) == 0
         }
     
@@ -1000,7 +998,6 @@ class Register_ward_member(Role):
             role.name == "Clinician" and 
             subj == self.cli and 
             canActivate(hd, Head_of_ward(self.ward)) and 
-            canActivate(subj, Clinician(self.spcty)) and 
             ward_member_regs(subj, self.ward, self.spcty) == 0
         }
     
@@ -1057,7 +1054,6 @@ class Register_ward_episode(Role):
             role.name == "Clinician" and 
             subj == hd and 
             canActivate(subj, Head_of_ward(self.ward)) and 
-            canActivate(self.pat, Patient()) and 
             ward_episode_regs(self.pat, self.ward) == 0
         }
     
@@ -1167,8 +1163,7 @@ class ADB_treating_clinician(Role):
             role.name == "Emergency-clinician" and 
             role.pat == self.pat and 
             subj == cli and 
-            self.group == "A_and_E" and 
-            self.spcty == "A_and_E"
+            self.group == "A_and_E"
         }
 
 class Concealed_by_clinician(Role):
@@ -1199,8 +1194,7 @@ class Concealed_by_clinician(Role):
             True for subj, role in hasActivated if 
             role.name == "Clinician" and 
             subj == cli1 and 
-            canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty1)) and 
-            canActivate(cli2, ADB_treating_clinician(self.pat, Wildcard(), Wildcard()))
+            canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty1))
         }
     
     def canDeactivate_3(self, cg, cli): # A4.1.4

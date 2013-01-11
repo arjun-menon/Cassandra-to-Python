@@ -507,8 +507,7 @@ class Request_consent_to_treatment(Role):
             True for subj, role in hasActivated if 
             role.name == "Spine-clinician" and 
             subj == cli1 and 
-            canActivate(self.cli2, Spine_clinician(Wildcard(), self.org2, self.spcty2)) and 
-            canActivate(self.pat, Patient())
+            canActivate(self.cli2, Spine_clinician(Wildcard(), self.org2, self.spcty2))
         }
     
     def canDeactivate(self, *params):
@@ -826,8 +825,7 @@ class Group_treating_clinician(Role):
             role.org == self.org and 
             role.pat == self.pat and 
             role.group == self.group and 
-            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty)) and 
-            canActivate(self.ra, Registration_authority())
+            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty))
         }
     
     def canActivate_2(self, cli): # S3.4.2
@@ -837,8 +835,7 @@ class Group_treating_clinician(Role):
             role.org == self.org and 
             role.pat == self.pat and 
             role.group == self.group and 
-            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty)) and 
-            canActivate(self.ra, Registration_authority())
+            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty))
         }
 
 class Concealed_by_spine_clinician(Role):
@@ -878,8 +875,7 @@ class Concealed_by_spine_clinician(Role):
             role1.name == "Spine-clinician" and 
             role2.name == "Consent-to-group-treatment" and 
             subj1 == cli1 and 
-            canActivate(subj1, Group_treating_clinician(self.pat, role2.ra, role2.org, Wildcard(), role2.spcty1)) and 
-            canActivate(cli2, Group_treating_clinician(self.pat, role2.ra, role2.org, Wildcard(), Wildcard()))
+            canActivate(subj1, Group_treating_clinician(self.pat, role2.ra, role2.org, Wildcard(), role2.spcty1))
         }
 
 def count_concealed_by_spine_clinician(pat, id): # S4.1.6
@@ -887,8 +883,7 @@ def count_concealed_by_spine_clinician(pat, id): # S4.1.6
         True for subj, role in hasActivated if 
         role.name == "Concealed-by-spine-clinician" and 
         role.pat == pat and 
-        id in role.ids and 
-        Current_time() in vrange(role.start, role.end)
+        id in role.ids
     })
 
 class Conceal_request(Role):
@@ -980,8 +975,7 @@ class Concealed_by_spine_patient(Role):
             True for subj, role in hasActivated if 
             role.name == "Spine-clinician" and 
             subj == cli1 and 
-            canActivate(subj, ehr.ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), role.spcty1)) and 
-            canActivate(cli2, ehr.ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), Wildcard()))
+            canActivate(subj, ehr.ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), role.spcty1))
         }
 
 def count_concealed_by_spine_patient(a, b): # S4.2.12
@@ -1185,8 +1179,7 @@ class Read_spine_record_item(Role): # Action
             role1.name == "Spine-clinician" and 
             role2.name == "One-off-consent" and 
             subj1 == cli and 
-            Get_spine_record_org(self.pat, self.id) == role2.org and 
-            Get_spine_record_author(self.pat, self.id) == subj1
+            Get_spine_record_org(self.pat, self.id) == role2.org
         }
     
     def permits_4(self, cli): # S5.3.4
