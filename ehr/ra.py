@@ -150,8 +150,14 @@ class NHS_health_org_cert(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_NHS_health_org_regs(subj, self.org, self.start, self.end) == 0:
-            deactivate(hasActivated, Wildcard(), NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # R2.1.3
+        #R2.1.3 todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
+        #other-NHS-health-org-regs(n, x, org, start2, end2)
+        #n = 0
+        #start in [start2, end2]
+        #end in [start2, end2]
+        #start < end
+        deactivate(hasActivated, Wildcard(), NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # R2.1.3
+        
         #R2.2.3 todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
         #other-NHS-health-org-regs(n, x, org, start2, end2)
         #start in [start2, end2]
@@ -166,7 +172,10 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i
         True for subj, role in hasActivated if 
         role.name == "NHS-health-org-cert" and 
         role.org == org and 
-        start in vrange(role.start2, role.end2)
+        start in vrange(role.start2, role.end2) and 
+        end in vrange(role.start2, role.end2) and 
+        start < end and 
+        x != subj
     })
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3ii
@@ -174,7 +183,10 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3ii
         True for subj, role in hasActivated if 
         role.name == "NHS-health-org-cert" and 
         role.org == org and 
-        start in vrange(role.start2, role.end2)
+        start in vrange(role.start2, role.end2) and 
+        end in vrange(role.start2, role.end2) and 
+        start < end and 
+        start != role.start2
     })
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
@@ -182,7 +194,10 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
         True for subj, role in hasActivated if 
         role.name == "NHS-health-org-cert" and 
         role.org == org and 
-        start in vrange(role.start2, role.end2)
+        start in vrange(role.start2, role.end2) and 
+        end in vrange(role.start2, role.end2) and 
+        start < end and 
+        end != role.end2
     })
 
 class Workgroup_member(Role):

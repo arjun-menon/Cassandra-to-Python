@@ -34,7 +34,7 @@ class StopTranslating(Exception):
         self.msg = self.rule.name + " todo: " + self.reason
         
         StopTranslating.count += 1
-        #print(StopTranslating.count, "TODO: ", self.reason, "\n", self.rule, "\n")
+        print(StopTranslating.count, "TODO: ", self.reason, "\n", self.rule, "\n")
     
     def __repr__(self):
         return self.msg
@@ -89,6 +89,7 @@ class HypothesesTranslator(object):
         """ 'variables' is a list of variables that appear in 'code'.
         'code' is a format string on which string.format is invoked. """
         
+        print(self.rule.name, self.external_vars)
         ext, rest = separate(variables, lambda v: v in set(self.external_vars))
         
         substitution_dict = dict()
@@ -179,189 +180,163 @@ class HypothesesTranslator(object):
             ) )
     
     
-    def translate_hasActivated_hypo(self, hasAcs, wrapper):
-        conditionals = []
-
-        if len(hasAcs) == 1:
-            hasAc = hasAcs[0]
-            role = hasAc.args[1]
-            hasAc_subj = repr(hasAc.args[0])
-            role_name = role.name
-            role_params = [repr(param) for param in role.args]
-            
-            # turn role_params into a set
-            if len(role_params) != len(set(role_params)):
-                raise self.stopTranslating("duplicate role params in %s" + repr(role_params))
-            else:
-                role_params = set(role_params)
-            
-            conditionals.append( 'role.name == "%s"' % role_name )
-            
-            # find which role params already exist in external_vars
-            existing_role_params = role_params & set(self.external_vars)
-            
-            # create conditionals for existing role params
-            conditionals.extend([ "role."+param + " == " + self.external_vars[param] for param in existing_role_params ])
-            
-            role_param_mapping = { rp : "role."+rp for rp in role_params }
-            self.external_vars.update( role_param_mapping )
-            
-            if hasAc_subj in set(self.external_vars):
-                conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
-            self.external_vars.update( { hasAc_subj : 'subj' } )
-            
-            loc = loc_trans( repr(hasAc.location) ) +'.' if hasAc.location else ''
-            
-            tr = "return %s{\n    $group_key for subj, role in %shasActivated if \n    " % (wrapper[0], loc)
-            ending = "\n}" + wrapper[1]
-            
-        elif len(hasAcs) == 2:
-            h1, h2 = hasAcs
-            subj1, subj2 = str(h1.args[0]), str(h2.args[0])
-            role1, role2 = h1.args[1], h2.args[1]
-            
-            conditionals.append( 'role1.name == "%s"' % role1.name )
-            conditionals.append( 'role2.name == "%s"' % role2.name )
-            
-            if subj1 in set(self.external_vars):
-                conditionals.append( "subj1 == " + self.external_vars[subj1] )
-            if subj2 in set(self.external_vars):
-                conditionals.append( "subj2 == " + self.external_vars[subj2] )
-            
-            role1_args, role2_args = [str(a) for a in role1.args], [str(a) for a in role1.args]
-            conditionals.extend([ "role1."+p + " == " + self.external_vars[p] for p in (set(role1_args) & set(self.external_vars)) ])
-            conditionals.extend([ "role2."+p + " == " + self.external_vars[p] for p in (set(role2_args) & set(self.external_vars)) ])
-            
-            self.external_vars.update( { subj1 : 'subj1' } )
-            self.external_vars.update( { subj2 : 'subj2' } )
-            self.external_vars.update( { rp : "role1."+rp for rp in role1_args } )
-            self.external_vars.update( { rp : "role2."+rp for rp in role2_args } )
-            
-            loc1 = loc_trans( repr(h1.location) )+'.' if h1.location else ''
-            loc2 = loc_trans( repr(h2.location) )+'.' if h2.location else ''
-            
-            tr = "return %s{\n    $group_key for (subj1, role1) in %shasActivated for (subj2, role2) in %shasActivated if \n    " % (wrapper[0], loc1, loc2)
-            ending = "\n}" + wrapper[1]
-            
-            #print("Rule with 2 hasActivates:", self.rule.name)
-        
-        elif len(hasAcs) == 0:
-            tr = "return (\n    "
-            ending = "\n)"
-            #raise self.stopTranslating("a rule with no hasActivates")
-        
-        else:
-            raise self.stopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
-        
-        return tr, ending, conditionals
-    
-    def translate_canAcs(self, canAcs):
-        # handle canActivated:
-        
-        for (canAc_vars, canAc_cond_func) in map(self.build_canAc_bindings, canAcs):
-            if(len(canAc_vars)):
-                pass#warn("check "+self.rule.name+" whether wildcards in canActivate are okay")
-            vd = { canAc_var : "Wildcard()" for canAc_var in canAc_vars }
-            return [ canAc_cond_func(vd) ]
-        return []        
-    
-    def translate_countf(self, funcs, countf_wildcard):
-        # Handle the special case of (only) 1 count function invoked in a rule:
-        
-        count_funcs =  [f for f in funcs if f.name in CountFunctions.funcs]
-        
-        for f in count_funcs:
-            f_return = str(f.args[0])
-            args = [str(a) for a in f.args[1:]]
-            
-            unbound_vars, code_gen = self.substitution_func_gen(args, 
-                h2u(f.name) + '(' + ", ".join(p(str(a)) for a in args) + ')' )
-            
-            if unbound_vars:
-                if countf_wildcard:
-                    self.external_vars.update( { v : "Wildcard()" for v in unbound_vars } )
-                else:
-                    raise self.stopTranslating("unbound vars %r in %r" % (unbound_vars, f))
-            
-            # create a mapping from the return value of f to its code
-            self.external_vars.update( { f_return : code_gen() } )
-            
-            if unbound_vars and countf_wildcard:
-                for v in unbound_vars:
-                    self.external_vars.pop(v)
-            
-            # remove f from funcs:
-            funcs = [func for func in funcs if func.name != f.name]
-        
-        return funcs
-    
-    def translate_constraints(self, ctrs):
-        # handle constraints:
-        
-        for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
-            if(ctr_vars):
-                raise self.stopTranslating("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func()))
-            else:
-                return [ ctr_cond_func() ]
-        return []
-    
-    @typecheck
-    def translate_funcs(self, funcs) -> list:
-        # handle functions:
-        
-        for f in funcs:
-            f_args = [str(a) for a in f.args]
-            
-            unbound_vars, code_gen = self.substitution_func_gen(f_args, 
-                h2u(f.name) + '(' + ", ".join(p(str(a)) for a in f_args) + ')' )
-            
-            if unbound_vars:
-                raise self.stopTranslating("unbound vars in %s" % repr(f))
-            
-            return [ code_gen() ]
-        
-        return []
-    
-    def translate_group_rules(self, group_key, tr) -> str:
-        # translate group<x> rules
-        
-        if group_key:
-            group_key = str(group_key)
-            if not group_key in set(self.external_vars):
-                raise self.stopTranslating("could not find %s in %s" % (group_key, set(self.external_vars)))
-            group_key = self.external_vars[group_key]
-        else:
-            group_key = True
-        
-        return Template(tr).safe_substitute(group_key = group_key)
-    
     @typecheck
     def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str='', group_key=None, countf_wildcard=False) -> lambda t: t:
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
-                                                   lambda h: type(h) == Constraint, 
-                                                   lambda h: h.name == "canActivate", 
-                                                   lambda h: h.name == "hasActivated")
+                                                  lambda h: type(h) == Constraint, 
+                                                  lambda h: h.name == "canActivate",
+                                                  lambda h: h.name == "hasActivated")
             
             conditionals = []
             
             if pre_conditional:
                 conditionals.append(pre_conditional)
             
-            tr, ending,     hasAc_conditionals = self.translate_hasActivated_hypo(hasAcs, wrapper)
-            conditionals += hasAc_conditionals
+            # translate hasActivated:
+            tr = ""
             
-            conditionals += self.translate_canAcs(canAcs)
-            funcs         = self.translate_countf(funcs, countf_wildcard)
-            conditionals += self.translate_constraints(ctrs)
-            conditionals += self.translate_funcs(funcs)
-            tr            = self.translate_group_rules(group_key, tr)
+            if len(hasAcs) == 1:
+                hasAc = hasAcs[0]
+                role = hasAc.args[1]
+                hasAc_subj = repr(hasAc.args[0])
+                role_name = role.name
+                role_params = [repr(param) for param in role.args]
+                
+                # turn role_params into a set
+                if len(role_params) != len(set(role_params)):
+                    raise self.stopTranslating("duplicate role params in %s" + repr(role_params))
+                else:
+                    role_params = set(role_params)
+                
+                conditionals.append( 'role.name == "%s"' % role_name )
+                
+                # find which role params already exist in external_vars
+                existing_role_params = role_params & set(self.external_vars)
+                
+                # create conditionals for existing role params
+                conditionals.extend([ "role."+param + " == " + self.external_vars[param] for param in existing_role_params ])
+                
+                role_param_mapping = { rp : "role."+rp for rp in role_params }
+                self.external_vars.update( role_param_mapping )
+                
+                if hasAc_subj in set(self.external_vars):
+                    conditionals.append( "subj == " + self.external_vars[hasAc_subj] )
+                self.external_vars.update( { hasAc_subj : 'subj' } )
+                
+                loc = loc_trans( repr(hasAc.location) ) +'.' if hasAc.location else ''
+                
+                tr = "return %s{\n    $group_key for subj, role in %shasActivated if \n    " % (wrapper[0], loc)
+                ending = "\n}" + wrapper[1]
+                
+            elif len(hasAcs) == 2:
+                h1, h2 = hasAcs
+                subj1, subj2 = str(h1.args[0]), str(h2.args[0])
+                role1, role2 = h1.args[1], h2.args[1]
+                
+                conditionals.append( 'role1.name == "%s"' % role1.name )
+                conditionals.append( 'role2.name == "%s"' % role2.name )
+                
+                if subj1 in set(self.external_vars):
+                    conditionals.append( "subj1 == " + self.external_vars[subj1] )
+                if subj2 in set(self.external_vars):
+                    conditionals.append( "subj2 == " + self.external_vars[subj2] )
+                
+                role1_args, role2_args = [str(a) for a in role1.args], [str(a) for a in role1.args]
+                conditionals.extend([ "role1."+p + " == " + self.external_vars[p] for p in (set(role1_args) & set(self.external_vars)) ])
+                conditionals.extend([ "role2."+p + " == " + self.external_vars[p] for p in (set(role2_args) & set(self.external_vars)) ])
+                
+                self.external_vars.update( { subj1 : 'subj1' } )
+                self.external_vars.update( { subj2 : 'subj2' } )
+                self.external_vars.update( { rp : "role1."+rp for rp in role1_args } )
+                self.external_vars.update( { rp : "role2."+rp for rp in role2_args } )
+                
+                loc1 = loc_trans( repr(h1.location) )+'.' if h1.location else ''
+                loc2 = loc_trans( repr(h2.location) )+'.' if h2.location else ''
+                
+                tr = "return %s{\n    $group_key for (subj1, role1) in %shasActivated for (subj2, role2) in %shasActivated if \n    " % (wrapper[0], loc1, loc2)
+                ending = "\n}" + wrapper[1]
+                
+                #print("Rule with 2 hasActivates:", self.rule.name)
+            
+            elif len(hasAcs) == 0:
+                tr = "return (\n    "
+                ending = "\n)"
+                #raise self.stopTranslating("a rule with no hasActivates")
+            
+            else:
+                raise self.stopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
+            
+            
+            # handle canActivated:
+            
+            for (canAc_vars, canAc_cond_func) in map(self.build_canAc_bindings, canAcs):
+                if(len(canAc_vars)):
+                    pass#warn("check "+self.rule.name+" whether wildcards in canActivate are okay")
+                vd = { canAc_var : "Wildcard()" for canAc_var in canAc_vars }
+                conditionals.append( canAc_cond_func(vd) )
+            
+            # Handle the special case of (only) 1 count function invoked in a rule:
+            
+            count_funcs =  [f for f in funcs if f.name in CountFunctions.funcs]
+            
+            for f in count_funcs:
+                f_return = str(f.args[0])
+                args = [str(a) for a in f.args[1:]]
+                
+                unbound_vars, code_gen = self.substitution_func_gen(args, 
+                    h2u(f.name) + '(' + ", ".join(p(str(a)) for a in args) + ')' )
+                
+                if unbound_vars:
+                    if countf_wildcard:
+                        self.external_vars.update( { v : "Wildcard()" for v in unbound_vars } )
+                    else:
+                        raise self.stopTranslating("unbound vars %r in %r" % (unbound_vars, f))
+                
+                # create a mapping from the return value of f to its code
+                self.external_vars.update( { f_return : code_gen() } )
+                
+                if unbound_vars and countf_wildcard:
+                    for v in unbound_vars:
+                        self.external_vars.pop(v)
+                
+                # remove f from funcs:
+                funcs = [func for func in funcs if func.name != f.name]
+            
+            # handle constraints:
+            
+            for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
+                if(ctr_vars):
+                    raise self.stopTranslating("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func()))
+                else:
+                    conditionals.append( ctr_cond_func() )
+            
+            # handle functions:
+            
+            for f in funcs:
+                f_args = [str(a) for a in f.args]
+                
+                unbound_vars, code_gen = self.substitution_func_gen(f_args, 
+                    h2u(f.name) + '(' + ", ".join(p(str(a)) for a in f_args) + ')' )
+                
+                if unbound_vars:
+                    raise self.stopTranslating("unbound vars in %s" % repr(f))
+                
+                conditionals.append( code_gen() )
+            
+            # for group<x> rules
+            if group_key:
+                group_key = str(group_key)
+                if not group_key in set(self.external_vars):
+                    raise self.stopTranslating("could not find %s in %s" % (group_key, set(self.external_vars)))
+                group_key = self.external_vars[group_key]
+            else:
+                group_key = True
+            
+            tr = Template(tr).safe_substitute(group_key = group_key)
             
             if len(conditionals):
                 tr += " and \n    ".join(conditionals)
-            
-            if self.rule.name == 'S3.3.5':
-                print("-----------------------------------")
             
             return tr + ending
         
