@@ -282,6 +282,36 @@ class HypothesesTranslator(object):
             # remove f from funcs:
             return [func for func in funcs if func.name != f.name]
     
+    def handle_constraints(self, conditionals, ctrs):
+        for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
+            if(ctr_vars):
+                raise self.stopTranslating("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func()))
+            else:
+                conditionals.append( ctr_cond_func() )
+    
+    def handle_general_funcs(self, conditionals, funcs):
+        for f in funcs:
+            f_args = [str(a) for a in f.args]
+            
+            unbound_vars, code_gen = self.substitution_func_gen(f_args, 
+                h2u(f.name) + '(' + ", ".join(p(str(a)) for a in f_args) + ')' )
+            
+            if unbound_vars:
+                raise self.stopTranslating("unbound vars in %s" % repr(f))
+            
+            conditionals.append( code_gen() )
+    
+    def translate_group_rules(self, tr, group_key):
+        if group_key:
+            group_key = str(group_key)
+            if not group_key in set(self.external_vars):
+                raise self.stopTranslating("could not find %s in %s" % (group_key, set(self.external_vars)))
+            group_key = self.external_vars[group_key]
+        else:
+            group_key = True
+        
+        return Template(tr).safe_substitute(group_key = group_key)
+    
     @typecheck
     def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str='', group_key=None, countf_wildcard=False) -> lambda t: t:
         try:
@@ -289,7 +319,6 @@ class HypothesesTranslator(object):
                                                   lambda h: type(h) == Constraint, 
                                                   lambda h: h.name == "canActivate",
                                                   lambda h: h.name == "hasActivated")
-            
             conditionals = []
             
             if pre_conditional:
@@ -300,42 +329,18 @@ class HypothesesTranslator(object):
             
             # handle canActivated:
             self.translate_canActivated(conditionals)
-
             
             # Handle the special case of (only) 1 count function invoked in a rule:
             funcs = self.handle_one_count_func(funcs, countf_wildcard)
             
             # handle constraints:
-            
-            for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
-                if(ctr_vars):
-                    raise self.stopTranslating("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func()))
-                else:
-                    conditionals.append( ctr_cond_func() )
+            self.handle_constraints(conditionals, ctrs)
             
             # handle functions:
-            
-            for f in funcs:
-                f_args = [str(a) for a in f.args]
-                
-                unbound_vars, code_gen = self.substitution_func_gen(f_args, 
-                    h2u(f.name) + '(' + ", ".join(p(str(a)) for a in f_args) + ')' )
-                
-                if unbound_vars:
-                    raise self.stopTranslating("unbound vars in %s" % repr(f))
-                
-                conditionals.append( code_gen() )
+            self.handle_general_funcs(conditionals, funcs)
             
             # for group<x> rules
-            if group_key:
-                group_key = str(group_key)
-                if not group_key in set(self.external_vars):
-                    raise self.stopTranslating("could not find %s in %s" % (group_key, set(self.external_vars)))
-                group_key = self.external_vars[group_key]
-            else:
-                group_key = True
-            
-            tr = Template(tr).safe_substitute(group_key = group_key)
+            tr = self.translate_group_rules(tr, group_key)
             
             if len(conditionals):
                 tr += " and \n    ".join(conditionals)
