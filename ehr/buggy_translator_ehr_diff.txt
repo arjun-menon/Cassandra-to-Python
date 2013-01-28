@@ -1,0 +1,187 @@
+diff --git a/Cassandra-to-Python/ehr/hospital.py b/Cassandra-to-Python2/ehr/hospital.py
+index fe9ab32..3d8efd1 100644
+--- a/Cassandra-to-Python/ehr/hospital.py
++++ b/Cassandra-to-Python2/ehr/hospital.py
+@@ -331,7 +331,6 @@ class Agent(Role):
+             role.name == "Register-patient" and 
+             role.agent == agent and 
+             canActivate(self.pat, Patient()) and 
+-            canActivate(role.agent, ehr.spine.Agent(self.pat)) and 
+             no_main_role_active(role.agent)
+         }
+ 
+@@ -834,7 +833,6 @@ class Register_team_member(Role):
+             role.name == "Clinician" and 
+             subj == hd and 
+             canActivate(subj, Head_of_team(self.team)) and 
+-            canActivate(self.mem, Clinician(self.spcty)) and 
+             team_member_regs(self.mem, self.team, self.spcty) == 0
+         }
+     
+@@ -1000,7 +998,6 @@ class Register_ward_member(Role):
+             role.name == "Clinician" and 
+             subj == self.cli and 
+             canActivate(hd, Head_of_ward(self.ward)) and 
+-            canActivate(subj, Clinician(self.spcty)) and 
+             ward_member_regs(subj, self.ward, self.spcty) == 0
+         }
+     
+@@ -1057,7 +1054,6 @@ class Register_ward_episode(Role):
+             role.name == "Clinician" and 
+             subj == hd and 
+             canActivate(subj, Head_of_ward(self.ward)) and 
+-            canActivate(self.pat, Patient()) and 
+             ward_episode_regs(self.pat, self.ward) == 0
+         }
+     
+@@ -1167,8 +1163,7 @@ class ADB_treating_clinician(Role):
+             role.name == "Emergency-clinician" and 
+             role.pat == self.pat and 
+             subj == cli and 
+-            self.group == "A_and_E" and 
+-            self.spcty == "A_and_E"
++            self.group == "A_and_E"
+         }
+ 
+ class Concealed_by_clinician(Role):
+@@ -1199,8 +1194,7 @@ class Concealed_by_clinician(Role):
+             True for subj, role in hasActivated if 
+             role.name == "Clinician" and 
+             subj == cli1 and 
+-            canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty1)) and 
+-            canActivate(cli2, ADB_treating_clinician(self.pat, Wildcard(), Wildcard()))
++            canActivate(subj, ADB_treating_clinician(self.pat, Wildcard(), role.spcty1))
+         }
+     
+     def canDeactivate_3(self, cg, cli): # A4.1.4
+diff --git a/Cassandra-to-Python/ehr/ra.py b/Cassandra-to-Python2/ehr/ra.py
+index c94dd1f..2a54b3f 100644
+--- a/Cassandra-to-Python/ehr/ra.py
++++ b/Cassandra-to-Python2/ehr/ra.py
+@@ -150,14 +150,8 @@ class NHS_health_org_cert(Role):
+         }
+     
+     def onDeactivate(self, subj):
+-        #R2.1.3 todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
+-        #other-NHS-health-org-regs(n, x, org, start2, end2)
+-        #n = 0
+-        #start in [start2, end2]
+-        #end in [start2, end2]
+-        #start < end
+-        deactivate(hasActivated, Wildcard(), NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # R2.1.3
+-        
++        if other_NHS_health_org_regs(subj, self.org, self.start, self.end) == 0:
++            deactivate(hasActivated, Wildcard(), NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # R2.1.3
+         #R2.2.3 todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
+         #other-NHS-health-org-regs(n, x, org, start2, end2)
+         #start in [start2, end2]
+@@ -172,10 +166,7 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i
+         True for subj, role in hasActivated if 
+         role.name == "NHS-health-org-cert" and 
+         role.org == org and 
+-        start in vrange(role.start2, role.end2) and 
+-        end in vrange(role.start2, role.end2) and 
+-        start < end and 
+-        x != subj
++        start in vrange(role.start2, role.end2)
+     })
+ 
+ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3ii
+@@ -183,10 +174,7 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3ii
+         True for subj, role in hasActivated if 
+         role.name == "NHS-health-org-cert" and 
+         role.org == org and 
+-        start in vrange(role.start2, role.end2) and 
+-        end in vrange(role.start2, role.end2) and 
+-        start < end and 
+-        start != role.start2
++        start in vrange(role.start2, role.end2)
+     })
+ 
+ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
+@@ -194,10 +182,7 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
+         True for subj, role in hasActivated if 
+         role.name == "NHS-health-org-cert" and 
+         role.org == org and 
+-        start in vrange(role.start2, role.end2) and 
+-        end in vrange(role.start2, role.end2) and 
+-        start < end and 
+-        end != role.end2
++        start in vrange(role.start2, role.end2)
+     })
+ 
+ class Workgroup_member(Role):
+diff --git a/Cassandra-to-Python/ehr/spine.py b/Cassandra-to-Python2/ehr/spine.py
+index a78c656..5029006 100644
+--- a/Cassandra-to-Python/ehr/spine.py
++++ b/Cassandra-to-Python2/ehr/spine.py
+@@ -507,8 +507,7 @@ class Request_consent_to_treatment(Role):
+             True for subj, role in hasActivated if 
+             role.name == "Spine-clinician" and 
+             subj == cli1 and 
+-            canActivate(self.cli2, Spine_clinician(Wildcard(), self.org2, self.spcty2)) and 
+-            canActivate(self.pat, Patient())
++            canActivate(self.cli2, Spine_clinician(Wildcard(), self.org2, self.spcty2))
+         }
+     
+     def canDeactivate(self, *params):
+@@ -826,8 +825,7 @@ class Group_treating_clinician(Role):
+             role.org == self.org and 
+             role.pat == self.pat and 
+             role.group == self.group and 
+-            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty)) and 
+-            canActivate(self.ra, Registration_authority())
++            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty))
+         }
+     
+     def canActivate_2(self, cli): # S3.4.2
+@@ -837,8 +835,7 @@ class Group_treating_clinician(Role):
+             role.org == self.org and 
+             role.pat == self.pat and 
+             role.group == self.group and 
+-            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty)) and 
+-            canActivate(self.ra, Registration_authority())
++            canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty))
+         }
+ 
+ class Concealed_by_spine_clinician(Role):
+@@ -878,8 +875,7 @@ class Concealed_by_spine_clinician(Role):
+             role1.name == "Spine-clinician" and 
+             role2.name == "Consent-to-group-treatment" and 
+             subj1 == cli1 and 
+-            canActivate(subj1, Group_treating_clinician(self.pat, role2.ra, role2.org, Wildcard(), role2.spcty1)) and 
+-            canActivate(cli2, Group_treating_clinician(self.pat, role2.ra, role2.org, Wildcard(), Wildcard()))
++            canActivate(subj1, Group_treating_clinician(self.pat, role2.ra, role2.org, Wildcard(), role2.spcty1))
+         }
+ 
+ def count_concealed_by_spine_clinician(pat, id): # S4.1.6
+@@ -887,8 +883,7 @@ def count_concealed_by_spine_clinician(pat, id): # S4.1.6
+         True for subj, role in hasActivated if 
+         role.name == "Concealed-by-spine-clinician" and 
+         role.pat == pat and 
+-        id in role.ids and 
+-        Current_time() in vrange(role.start, role.end)
++        id in role.ids
+     })
+ 
+ class Conceal_request(Role):
+@@ -980,8 +975,7 @@ class Concealed_by_spine_patient(Role):
+             True for subj, role in hasActivated if 
+             role.name == "Spine-clinician" and 
+             subj == cli1 and 
+-            canActivate(subj, ehr.ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), role.spcty1)) and 
+-            canActivate(cli2, ehr.ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), Wildcard()))
++            canActivate(subj, ehr.ra.Group_treating_clinician(Wildcard(), role.ra, role.org, Wildcard(), role.spcty1))
+         }
+ 
+ def count_concealed_by_spine_patient(a, b): # S4.2.12
+@@ -1185,8 +1179,7 @@ class Read_spine_record_item(Role): # Action
+             role1.name == "Spine-clinician" and 
+             role2.name == "One-off-consent" and 
+             subj1 == cli and 
+-            Get_spine_record_org(self.pat, self.id) == role2.org and 
+-            Get_spine_record_author(self.pat, self.id) == subj1
++            Get_spine_record_org(self.pat, self.id) == role2.org
+         }
+     
+     def permits_4(self, cli): # S5.3.4
