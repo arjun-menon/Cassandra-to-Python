@@ -11,6 +11,7 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
+from IPython.utils.pickleutil import canSequence, can
 
 """Generates Python snippets for Datalog-with-constraints hypotheses.
 
@@ -248,6 +249,39 @@ class HypothesesTranslator(object):
         else:
             raise self.stopTranslating("Not implemented: %d hasAcs in a rule." % len(hasAcs))
     
+    def translate_canActivated(self, conditionals, canAcs):
+        for (canAc_vars, canAc_cond_func) in map(self.build_canAc_bindings, canAcs):
+            if(len(canAc_vars)):
+                pass#warn("check "+self.rule.name+" whether wildcards in canActivate are okay")
+            vd = { canAc_var : "Wildcard()" for canAc_var in canAc_vars }
+            conditionals.append( canAc_cond_func(vd) )
+    
+    def handle_one_count_func(self, funcs, countf_wildcard):
+        count_funcs =  [f for f in funcs if f.name in CountFunctions.funcs]
+        
+        for f in count_funcs:
+            f_return = str(f.args[0])
+            args = [str(a) for a in f.args[1:]]
+            
+            unbound_vars, code_gen = self.substitution_func_gen(args, 
+                h2u(f.name) + '(' + ", ".join(p(str(a)) for a in args) + ')' )
+            
+            if unbound_vars:
+                if countf_wildcard:
+                    self.external_vars.update( { v : "Wildcard()" for v in unbound_vars } )
+                else:
+                    raise self.stopTranslating("unbound vars %r in %r" % (unbound_vars, f))
+            
+            # create a mapping from the return value of f to its code
+            self.external_vars.update( { f_return : code_gen() } )
+            
+            if unbound_vars and countf_wildcard:
+                for v in unbound_vars:
+                    self.external_vars.pop(v)
+            
+            # remove f from funcs:
+            return [func for func in funcs if func.name != f.name]
+    
     @typecheck
     def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str='', group_key=None, countf_wildcard=False) -> lambda t: t:
         try:
@@ -265,39 +299,11 @@ class HypothesesTranslator(object):
             tr, ending = self.translate_hasActivated(conditionals, hasAcs, wrapper)
             
             # handle canActivated:
-            
-            for (canAc_vars, canAc_cond_func) in map(self.build_canAc_bindings, canAcs):
-                if(len(canAc_vars)):
-                    pass#warn("check "+self.rule.name+" whether wildcards in canActivate are okay")
-                vd = { canAc_var : "Wildcard()" for canAc_var in canAc_vars }
-                conditionals.append( canAc_cond_func(vd) )
+            self.translate_canActivated(conditionals)
+
             
             # Handle the special case of (only) 1 count function invoked in a rule:
-            
-            count_funcs =  [f for f in funcs if f.name in CountFunctions.funcs]
-            
-            for f in count_funcs:
-                f_return = str(f.args[0])
-                args = [str(a) for a in f.args[1:]]
-                
-                unbound_vars, code_gen = self.substitution_func_gen(args, 
-                    h2u(f.name) + '(' + ", ".join(p(str(a)) for a in args) + ')' )
-                
-                if unbound_vars:
-                    if countf_wildcard:
-                        self.external_vars.update( { v : "Wildcard()" for v in unbound_vars } )
-                    else:
-                        raise self.stopTranslating("unbound vars %r in %r" % (unbound_vars, f))
-                
-                # create a mapping from the return value of f to its code
-                self.external_vars.update( { f_return : code_gen() } )
-                
-                if unbound_vars and countf_wildcard:
-                    for v in unbound_vars:
-                        self.external_vars.pop(v)
-                
-                # remove f from funcs:
-                funcs = [func for func in funcs if func.name != f.name]
+            funcs = self.handle_one_count_func(funcs, countf_wildcard)
             
             # handle constraints:
             
