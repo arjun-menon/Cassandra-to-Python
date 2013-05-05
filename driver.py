@@ -41,20 +41,18 @@ spine.hasActivated.append((None, new_role))
 result = canActivate('Dr. Bob', spine.Spine_clinician('Bar', 'GPs', 'Dermatologist'))
 print('Result = ', repr(result))
 
-# REPL
-repl = False
-
-if repl:
-    while True:
-        print('>', end = '')
-        x = input()
-        if not len(x):
-            continue
-        try:
-            y = eval(x)
-            print(y)
-        except Exception as e:
-            print("Exception occured: ", e)
-
 if __name__ == "__main__":
-    pass
+    # REPL
+    repl = False
+    
+    if repl:
+        while True:
+            print('>', end = '')
+            x = input()
+            if not len(x):
+                continue
+            try:
+                y = eval(x)
+                print(y)
+            except Exception as e:
+                print("Exception occured: ", e)
