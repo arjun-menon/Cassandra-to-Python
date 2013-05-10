@@ -225,7 +225,7 @@ class HypothesesTranslator(object):
             if subj2 in set(self.external_vars):
                 conditionals.append( "subj2 == " + self.external_vars[subj2] )
             
-            role1_args, role2_args = [str(a) for a in role1.args], [str(a) for a in role1.args]
+            role1_args, role2_args = [str(a) for a in role1.args], [str(a) for a in role2.args]
             conditionals.extend([ "role1."+p + " == " + self.external_vars[p] for p in (set(role1_args) & set(self.external_vars)) ])
             conditionals.extend([ "role2."+p + " == " + self.external_vars[p] for p in (set(role2_args) & set(self.external_vars)) ])
             
@@ -280,11 +280,12 @@ class HypothesesTranslator(object):
             funcs.remove(f)
     
     def handle_constraints(self, conditionals, ctrs):
-        for (ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
-            if(ctr_vars):
-                raise self.stopTranslating("unable to bind vars %s in constraint %s" % (ctr_vars, ctr_cond_func()))
-            else:
+        for (remaining_ctr_vars, ctr_cond_func) in map(self.build_constraint_bindings, ctrs):
+            if not remaining_ctr_vars: # remaining_ctr_vars must be empty
                 conditionals.append( ctr_cond_func() )
+            else:
+                raise self.stopTranslating("unable to bind vars %s in constraint %s" 
+                                           % (remaining_ctr_vars, ctr_cond_func()))
     
     def handle_other_functions(self, conditionals, funcs):
         for f in funcs:

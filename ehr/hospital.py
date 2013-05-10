@@ -320,7 +320,6 @@ class Agent(Role):
             role2.name == "Register-patient" and 
             role1.pat == self.pat and 
             role1.agent == agent and 
-            role2.pat == self.pat and 
             role2.agent == agent and 
             no_main_role_active(role2.agent)
         }
@@ -501,7 +500,12 @@ class Consent_to_referral(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Patient" and 
             role2.name == "Request-consent-to-referral" and 
-            subj1 == pat
+            subj1 == pat and 
+            role2.spcty == self.spcty and 
+            role2.org == self.org and 
+            role2.pat == pat and 
+            role2.ra == self.ra and 
+            role2.cli == self.cli
         }
     
     def canActivate_2(self, pat): # A2.1.9
@@ -511,7 +515,11 @@ class Consent_to_referral(Role):
             role2.name == "Request-consent-to-referral" and 
             subj1 == pat and 
             role1.pat == pat and 
-            role2.pat == pat
+            role2.spcty == self.spcty and 
+            role2.org == self.org and 
+            role2.pat == pat and 
+            role2.ra == self.ra and 
+            role2.cli == self.cli
         }
     
     def canActivate_3(self, cg): # A2.1.10
@@ -519,7 +527,12 @@ class Consent_to_referral(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Caldicott-guardian" and 
             role2.name == "Request-consent-to-referral" and 
-            subj1 == cg
+            subj1 == cg and 
+            role2.spcty == self.spcty and 
+            role2.org == self.org and 
+            role2.pat == self.pat and 
+            role2.ra == self.ra and 
+            role2.cli == self.cli
         }
     
     def onDeactivate(self, subj):
@@ -557,10 +570,8 @@ class Ext_treating_clinician(Role):
             role1.cli == cli and 
             role2.spcty == self.spcty and 
             role2.org == self.org and 
-            role2.pat == self.pat and 
-            role2.ra == self.ra and 
             role2.cli == cli and 
-            canActivate(role2.ra, Registration_authority()) and 
+            canActivate(role1.ra, Registration_authority()) and 
             no_main_role_active(role2.cli)
         }
     
@@ -576,10 +587,8 @@ class Ext_treating_clinician(Role):
             role1.cli == cli and 
             role2.spcty == self.spcty and 
             role2.org == self.org and 
-            role2.pat == self.pat and 
-            role2.ra == self.ra and 
             role2.cli == cli and 
-            canActivate(role2.ra, Registration_authority()) and 
+            canActivate(role1.ra, Registration_authority()) and 
             no_main_role_active(role2.cli)
         }
     
@@ -726,7 +735,10 @@ class Third_party_consent(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Third-party" and 
             role2.name == "Request-third-party-consent" and 
-            subj1 == x
+            subj1 == x and 
+            role2.x == x and 
+            role2.pat == self.pat and 
+            role2.id == self.id
         }
     
     def canActivate_2(self, cg): # A2.3.17
@@ -734,7 +746,10 @@ class Third_party_consent(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Caldicott-guardian" and 
             role2.name == "Request-third-party-consent" and 
-            subj1 == cg
+            subj1 == cg and 
+            role2.x == self.x and 
+            role2.pat == self.pat and 
+            role2.id == self.id
         }
     
     def canDeactivate(self, *params):
@@ -790,7 +805,9 @@ class Register_head_of_team(Role):
             role1.name == "HR-mgr" and 
             role2.name == "Register-team-member" and 
             subj1 == mgr and 
-            head_of_team_regs(self.hd, self.team) == 0
+            role2.hd == self.hd and 
+            role2.team == self.team and 
+            head_of_team_regs(role2.hd, role2.team) == 0
         }
     
     def canDeactivate(self, mgr, x): # A3.1.5
@@ -891,8 +908,10 @@ class Register_team_episode(Role):
             role1.name == "Clinician" and 
             role2.name == "Register-team-member" and 
             subj1 == cli and 
+            role2.cli == cli and 
+            role2.team == self.team and 
             canActivate(self.pat, Patient()) and 
-            team_episode_regs(self.pat, self.team) == 0
+            team_episode_regs(self.pat, role2.team) == 0
         }
     
     def canDeactivate(self, *params):
@@ -918,7 +937,9 @@ class Register_team_episode(Role):
             role1.name == "Clinician" and 
             role2.name == "Register-team-member" and 
             subj1 == cli and 
-            subj2 == x
+            subj2 == x and 
+            role2.cli == cli and 
+            role2.team == self.team
         }
 
 def team_episode_regs(pat, team): # A3.3.7
@@ -956,7 +977,9 @@ class Register_head_of_ward(Role):
             role1.name == "HR-mgr" and 
             role2.name == "Register-ward-member" and 
             subj1 == mgr and 
-            head_of_ward_regs(self.cli, self.ward) == 0
+            role2.ward == self.ward and 
+            role2.cli == self.cli and 
+            head_of_ward_regs(role2.cli, role2.ward) == 0
         }
     
     def canDeactivate(self, mgr, x): # A3.4.5
@@ -1142,9 +1165,8 @@ class ADB_treating_clinician(Role):
             role2.name == "Register-team-episode" and 
             role1.spcty == self.spcty and 
             role1.cli == cli and 
-            role2.spcty == self.spcty and 
-            role2.cli == cli and 
-            canActivate(role2.cli, Clinician(role2.spcty)) and 
+            role2.pat == self.pat and 
+            canActivate(role1.cli, Clinician(role1.spcty)) and 
             self.group == role2.team
         }
     
@@ -1155,9 +1177,8 @@ class ADB_treating_clinician(Role):
             role2.name == "Register-ward-episode" and 
             role1.spcty == self.spcty and 
             role1.cli == cli and 
-            role2.spcty == self.spcty and 
-            role2.cli == cli and 
-            canActivate(role2.cli, Clinician(role2.spcty)) and 
+            role2.pat == self.pat and 
+            canActivate(role1.cli, Clinician(role1.spcty)) and 
             self.group == role2.ward
         }
     
@@ -1412,11 +1433,14 @@ class Read_record_item(Role): # Action
         }
     
     def permits_3(self, cli): # A5.3.3
-        #A5.3.3 todo: unable to bind vars {'team'} in constraint Get_record_group(self.pat, self.id) == team
-        #hasActivated(cli, Clinician(spcty))
-        #hasActivated(x, Register-team-member(cli, team, spcty))
-        #Get-record-group(pat, id) = team
-        pass
+        return {
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            role1.name == "Clinician" and 
+            role2.name == "Register-team-member" and 
+            subj1 == cli and 
+            role2.cli == cli and 
+            Get_record_group(self.pat, self.id) == role2.team
+        }
     
     def permits_4(self, cli): # A5.3.4
         #A5.3.4 todo: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)

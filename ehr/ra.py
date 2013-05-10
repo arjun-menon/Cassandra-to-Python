@@ -96,13 +96,16 @@ class NHS_clinician_cert(Role):
         super().__init__('NHS-clinician-cert', org = org, cli = cli, spcty = spcty, start = start, end = end)
     
     def canActivate(self, mgr): # R2.1.1
-        #R2.1.1 todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
-        #hasActivated(mgr, RA-manager())
-        #hasActivated(y, NHS-health-org-cert(org, start2, end2))
-        #start in [start2, end2]
-        #end in [start2, end2]
-        #start < end
-        pass
+        return {
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            role1.name == "RA-manager" and 
+            role2.name == "NHS-health-org-cert" and 
+            subj1 == mgr and 
+            role2.org == self.org and 
+            self.start in vrange(role2.start2, role2.end2) and 
+            self.end in vrange(role2.start2, role2.end2) and 
+            self.start < self.end
+        }
     
     def canDeactivate(self, mgr, x): # R2.1.2
         return {
@@ -116,13 +119,16 @@ class NHS_Caldicott_guardian_cert(Role):
         super().__init__('NHS-Caldicott-guardian-cert', org = org, cg = cg, start = start, end = end)
     
     def canActivate(self, mgr): # R2.2.1
-        #R2.2.1 todo: unable to bind vars {'start2', 'end2'} in constraint self.start in vrange(start2, end2)
-        #hasActivated(mgr, RA-manager())
-        #hasActivated(x, NHS-health-org-cert(org, start2, end2))
-        #start in [start2, end2]
-        #end in [start2, end2]
-        #start < end
-        pass
+        return {
+            True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+            role1.name == "RA-manager" and 
+            role2.name == "NHS-health-org-cert" and 
+            subj1 == mgr and 
+            role2.org == self.org and 
+            self.start in vrange(role2.start2, role2.end2) and 
+            self.end in vrange(role2.start2, role2.end2) and 
+            self.start < self.end
+        }
     
     def canDeactivate(self, mgr, x): # R2.2.2
         return {
@@ -213,8 +219,10 @@ class Workgroup_member(Role):
             role1.name == "NHS-health-org-cert" and 
             role2.name == "Register-team-member" and 
             role1.org == self.org and 
-            role2.org == self.org and 
-            Current_time() in vrange(role2.start, role2.end)
+            role2.spcty == self.spcty and 
+            role2.group == self.group and 
+            role2.cli == cli and 
+            Current_time() in vrange(role1.start, role1.end)
         }
     
     def canActivate_2(self, cli): # R3.1.2
@@ -223,8 +231,10 @@ class Workgroup_member(Role):
             role1.name == "NHS-health-org-cert" and 
             role2.name == "Register-ward-member" and 
             role1.org == self.org and 
-            role2.org == self.org and 
-            Current_time() in vrange(role2.start, role2.end)
+            role2.spcty == self.spcty and 
+            role2.group == self.group and 
+            role2.cli == cli and 
+            Current_time() in vrange(role1.start, role1.end)
         }
 # Credential Request Restrictions
 # ===============================
