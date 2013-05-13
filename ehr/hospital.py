@@ -26,13 +26,13 @@ class Register_clinician(Role):
     
     def onDeactivate(self, subj):
         # A1.1.6 -- deactive Clinician(spcty):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.cli and r == Clinician(r.spcty) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.cli and r == Clinician(self.spcty) }
         
         # A3.2.5 -- deactive Register-team-member(mem, team, spcty):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_team_member(r.mem, r.team, r.spcty) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_team_member(self.cli, Wildcard(), self.spcty) }
         
         # A3.5.6 -- deactive Register-ward-member(cli, ward, spcty):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_ward_member(r.cli, r.ward, r.spcty) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_ward_member(self.cli, Wildcard(), self.spcty) }
 
 def clinician_regs(cli, spcty): # A1.1.3
     return len({
@@ -62,7 +62,7 @@ class Clinician(Role):
     
     def onDeactivate(self, subj):
         # A3.7.5 -- deactive Emergency-clinician(pat):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == subj and r == Emergency_clinician(r.pat) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == subj and r == Emergency_clinician(Wildcard()) }
 
 def count_clinician_activations(user): # A1.1.7
     return len({
@@ -256,31 +256,31 @@ class Register_patient(Role):
         hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.pat and r == Patient() }
         
         # A1.6.9 -- deactive Register-agent(agent, pat):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_agent(r.agent, r.pat) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_agent(Wildcard(), self.pat) }
         
         # A2.1.6 -- deactive Request-consent-to-referral(pat, ra, org, cli, spcty):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_consent_to_referral(r.pat, r.ra, r.org, r.cli, r.spcty) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_consent_to_referral(self.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard()) }
         
         # A2.3.10 -- deactive Request-third-party-consent(x2, pat, id):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_third_party_consent(r.x2, r.pat, r.id) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_third_party_consent(Wildcard(), self.pat, Wildcard()) }
         
         # A2.3.20 -- deactive Third-party-consent(x, pat, id):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == r.x and r == Third_party_consent(r.x, r.pat, r.id) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Third_party_consent(Wildcard(), self.pat, Wildcard()) }
         
         # A3.3.6 -- deactive Register-team-episode(pat, team):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_team_episode(r.pat, r.team) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_team_episode(self.pat, Wildcard()) }
         
         # A3.6.6 -- deactive Register-ward-episode(pat, ward):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_ward_episode(r.pat, r.ward) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_ward_episode(self.pat, Wildcard()) }
         
         # A3.7.4 -- deactive Emergency-clinician(pat):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Emergency_clinician(r.pat) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Emergency_clinician(self.pat) }
         
         # A4.1.5 -- deactive Concealed-by-clinician(pat, id, start, end):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Concealed_by_clinician(r.pat, r.id, r.start, r.end) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Concealed_by_clinician(self.pat, Wildcard(), Wildcard(), Wildcard()) }
         
         # A4.2.6 -- deactive Concealed-by-patient(what, whom, start, end):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Concealed_by_patient(r.what, r.whom, r.start, r.end) and pi7_1(r.what) == self.pat }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Concealed_by_patient(Wildcard(), Wildcard(), Wildcard(), Wildcard()) and pi7_1(r.what) == self.pat }
 
 def patient_regs(pat): # A1.5.3
     return len({
@@ -392,7 +392,7 @@ class Register_agent(Role):
     
     def onDeactivate(self, subj):
         # A1.6.3 -- deactive Agent(pat):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.agent and r == Agent(r.pat) and other_agent_regs(subj, self.agent, r.pat) == 0 }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.agent and r == Agent(self.pat) and other_agent_regs(subj, self.agent, r.pat) == 0 }
 
 def other_agent_regs(x, ag, pat): # A1.6.10
     return len({
@@ -483,7 +483,7 @@ class Request_consent_to_referral(Role):
     
     def onDeactivate(self, subj):
         # A2.1.11 -- deactive Consent-to-referral(pat, ra, org, cli, spcty):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Consent_to_referral(r.pat, r.ra, r.org, r.cli, r.spcty) and other_consent_to_referral_requests(subj, r.pat, r.ra, r.org, r.cli, r.spcty) == 0 }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Consent_to_referral(self.pat, self.ra, self.org, self.cli2, self.spcty2) and other_consent_to_referral_requests(subj, r.pat, r.ra, r.org, r.cli, r.spcty) == 0 }
 
 def other_consent_to_referral_requests(x, pat, ra, org, cli, spcty): # A2.1.7
     return len({
@@ -546,7 +546,7 @@ class Consent_to_referral(Role):
     
     def onDeactivate(self, subj):
         # A2.2.4 -- deactive Ext-treating-clinician(pat, ra, org, spcty):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Ext_treating_clinician(r.pat, r.ra, r.org, r.spcty) and other_referral_consents(subj, r.pat, r.ra, r.org, cli, r.spcty) == 0 }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Ext_treating_clinician(self.pat, self.ra, self.org, self.spcty) and other_referral_consents(subj, r.pat, r.ra, r.org, cli, r.spcty) == 0 }
 
 def other_referral_consents(x, pat, ra, org, cli, spcty): # A2.1.12
     return len({
@@ -828,7 +828,7 @@ class Register_head_of_team(Role):
     
     def onDeactivate(self, subj):
         # A3.1.3 -- deactive Head-of-team(team):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.hd and r == Head_of_team(r.team) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.hd and r == Head_of_team(self.team) }
 
 def head_of_team_regs(hd, team): # A3.1.7
     return len({
@@ -884,7 +884,7 @@ class Register_team_member(Role):
     
     def onDeactivate(self, subj):
         # A3.1.6 -- deactive Register-head-of-team(hd, team):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_head_of_team(r.hd, r.team) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_head_of_team(self.mem, self.team) }
 
 def team_member_regs(mem, team, spcty): # A3.2.7
     return len({
@@ -1000,7 +1000,7 @@ class Register_head_of_ward(Role):
     
     def onDeactivate(self, subj):
         # A3.4.3 -- deactive Head-of-ward(ward):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.cli and r == Head_of_ward(r.ward) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.cli and r == Head_of_ward(self.ward) }
 
 def head_of_ward_regs(cli, ward): # A3.4.7
     return len({
@@ -1056,7 +1056,7 @@ class Register_ward_member(Role):
     
     def onDeactivate(self, subj):
         # A3.4.6 -- deactive Register-head-of-ward(cli, ward):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_head_of_ward(r.cli, r.ward) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_head_of_ward(self.cli, self.ward) }
 
 def ward_member_regs(cli, ward, spcty): # A3.5.7
     return len({

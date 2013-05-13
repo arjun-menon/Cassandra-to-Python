@@ -157,13 +157,13 @@ class NHS_health_org_cert(Role):
     
     def onDeactivate(self, subj):
         # R2.1.3 -- deactive NHS-clinician-cert(org, cli, spcty, start, end):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_clinician_cert(r.org, r.cli, r.spcty, r.start, r.end) and other_NHS_health_org_regs(subj, r.org, self.start, self.end) == 0 and 
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()) and other_NHS_health_org_regs(subj, r.org, self.start, self.end) == 0 and 
             r.start in vrange(self.start, self.end) and 
             r.end in vrange(self.start, self.end) and 
             r.start < r.end }
         
         # R2.2.3 -- deactive NHS-Caldicott-guardian-cert(org, cg, start, end):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_Caldicott_guardian_cert(r.org, r.cg, r.start, r.end) and r.start in vrange(self.start, self.end) and 
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_Caldicott_guardian_cert(self.org, Wildcard(), Wildcard(), Wildcard()) and r.start in vrange(self.start, self.end) and 
             r.end in vrange(self.start, self.end) and 
             r.start < r.end and 
             other_NHS_health_org_regs(subj, r.org, self.start, self.end) == 0 }

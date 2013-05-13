@@ -224,10 +224,10 @@ class Register_patient(Role):
         hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.pat and r == Patient() }
         
         # P1.3.3 -- deactive Agent(pat):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.pat and r == Agent(r.pat) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.pat and r == Agent(Wildcard()) }
         
         # P1.3.4 -- deactive Agent(pat):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Agent(r.pat) }
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Agent(self.pat) }
 
 def patient_regs(pat): # P2.1.3
     return len({

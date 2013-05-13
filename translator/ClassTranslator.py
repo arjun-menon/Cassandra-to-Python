@@ -57,7 +57,6 @@ def {cat}(self, *params):
             ht = HypothesesTranslator(rule)
             ht.external_vars = { subj : 'subj' }
             ht.external_vars.update({ repr(tp) : 'self.'+repr(sp) for tp, sp in zip(t_params, self.params) })
-            ht.external_vars.update({ repr(param) : 'r.'+repr(param) for param in target_role.args })
             
             unbound_vars = [target_subj] + [repr(p) for p in target_role.args]
             # hasActivated -= {(s, r) for (s, r) in hasActivated if s == subj and r == role}
@@ -75,6 +74,8 @@ def {cat}(self, *params):
             #print(unbound_vars, foo(vd))
             #print()
             deac += foo(vd)
+
+            ht.external_vars.update({ repr(param) : 'r.'+repr(param) for param in target_role.args })
 
             if rule.hypos:
                 cond = ht.translate_hypotheses(countf_wildcard = True)
