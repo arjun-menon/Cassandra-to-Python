@@ -42,8 +42,8 @@ class Spine_clinician(Role):
         )
     
     def onDeactivate(self, subj):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == subj and r == Spine_emergency_clinician(self.org, Wildcard()) } # {S3.2.3}
-        
+        # S3.2.3 -- deactive Spine-emergency-clinician(org, pat):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == subj and r == Spine_emergency_clinician(r.org, r.pat) }
 
 def count_spine_clinician_activations(user): # S1.1.4
     return len({
@@ -96,8 +96,8 @@ class Register_spine_admin(Role):
         }
     
     def onDeactivate(self, subj):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.adm2 and r == Spine_admin() } # {S1.2.3}
-        
+        # S1.2.3 -- deactive Spine-admin():
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.adm2 and r == Spine_admin() }
 
 def spine_admin_regs(adm): # S1.2.7
     return len({
@@ -152,30 +152,38 @@ class Register_patient(Role):
         }
     
     def onDeactivate(self, subj):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.pat and r == Patient() } # {S1.3.3}
+        # S1.3.3 -- deactive Patient():
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.pat and r == Patient() }
         
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_agent(Wildcard(), self.pat) } # {S1.4.13}
+        # S1.4.13 -- deactive Register-agent(agent, pat):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Register_agent(r.agent, r.pat) }
         
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == One_off_consent(self.pat) } # {S2.1.7}
+        # S2.1.7 -- deactive One-off-consent(pat):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == One_off_consent(r.pat) }
         
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_third_party_consent(Wildcard(), self.pat, Wildcard()) } # {S2.2.8}
+        # S2.2.8 -- deactive Request-third-party-consent(y, pat, id):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_third_party_consent(r.y, r.pat, r.id) }
         
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_consent_to_treatment(self.pat, Wildcard(), Wildcard(), Wildcard()) } # {S2.3.7}
+        # S2.3.7 -- deactive Request-consent-to-treatment(pat, org, cli, spcty):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_consent_to_treatment(r.pat, r.org, r.cli, r.spcty) }
         
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_consent_to_group_treatment(self.pat, Wildcard(), Wildcard()) } # {S2.4.7}
+        # S2.4.7 -- deactive Request-consent-to-group-treatment(pat, org, group):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Request_consent_to_group_treatment(r.pat, r.org, r.group) }
         
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.pat and r == Referrer(self.pat, Wildcard(), Wildcard(), Wildcard()) } # {S3.1.4}
+        # S3.1.4 -- deactive Referrer(pat, org, cli2, spcty1):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == r.pat and r == Referrer(r.pat, r.org, r.cli2, r.spcty1) }
         
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Spine_emergency_clinician(Wildcard(), self.pat) } # {S3.2.4}
+        # S3.2.4 -- deactive Spine-emergency-clinician(org, pat):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Spine_emergency_clinician(r.org, r.pat) }
         
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Concealed_by_spine_clinician(self.pat, Wildcard(), Wildcard(), Wildcard()) } # {S4.1.5}
+        # S4.1.5 -- deactive Concealed-by-spine-clinician(pat, ids, start, end):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Concealed_by_spine_clinician(r.pat, r.ids, r.start, r.end) }
         
-        #S4.2.6 todo: unable to bind vars {'what'} in constraint pi7_1(what) == self.pat
-        #pi7_1(what) = pat
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Conceal_request(Wildcard(), Wildcard(), Wildcard(), Wildcard()) } # {S4.2.6}
+        # S4.2.6 -- deactive Conceal-request(what, whom, start, end):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Conceal_request(r.what, r.whom, r.start, r.end) and pi7_1(r.what) == self.pat }
         
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Authenticated_express_consent(self.pat, Wildcard()) } # {S4.3.7}
-        
+        # S4.3.7 -- deactive Authenticated-express-consent(pat, cli):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Authenticated_express_consent(r.pat, r.cli) }
 
 def patient_regs(pat): # S1.3.7
     return len({
@@ -263,8 +271,8 @@ class Register_agent(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_agent_regs(subj, self.agent, self.pat) == 0:
-            hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.agent and r == Agent(self.pat) } # {S1.4.3}
+        # S1.4.3 -- deactive Agent(pat):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.agent and r == Agent(r.pat) and other_agent_regs(subj, self.agent, r.pat) == 0 }
 
 def agent_regs(pat): # S1.4.14
     return len({
@@ -426,10 +434,11 @@ class Request_third_party_consent(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_third_party_consent_requests(subj, self.x) == 0:
-            hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.x and r == Third_party() } # {S2.2.12}
-        if other_third_party_consent_requests(subj, self.x) == 0:
-            hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.x and r == Third_party_consent(self.x, self.pat, self.id) } # {S2.2.16}
+        # S2.2.12 -- deactive Third-party():
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.x and r == Third_party() and other_third_party_consent_requests(subj, self.x) == 0 }
+        
+        # S2.2.16 -- deactive Third-party-consent(x, pat, id):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == r.x and r == Third_party_consent(r.x, r.pat, r.id) and other_third_party_consent_requests(subj, r.x) == 0 }
 
 def other_third_party_consent_requests(y, z): # S2.2.9
     return len({
@@ -560,8 +569,8 @@ class Request_consent_to_treatment(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_consent_to_treatment_requests(subj, self.pat, self.org2, self.cli2, self.spcty2) == 0:
-            hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Consent_to_treatment(self.pat, self.org2, self.cli2, self.spcty2) } # {S2.3.12}
+        # S2.3.12 -- deactive Consent-to-treatment(pat, org, cli, spcty):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Consent_to_treatment(r.pat, r.org, r.cli, r.spcty) and other_consent_to_treatment_requests(subj, r.pat, r.org, r.cli, r.spcty) == 0 }
 
 def other_consent_to_treatment_requests(x, pat, org, cli, spcty): # S2.3.8
     return len({
@@ -679,8 +688,8 @@ class Request_consent_to_group_treatment(Role):
         }
     
     def onDeactivate(self, subj):
-        if other_consent_to_group_treatment_requests(subj, self.pat, self.org, self.group) == 0:
-            hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Consent_to_group_treatment(self.pat, self.org, self.group) } # {S2.4.12}
+        # S2.4.12 -- deactive Consent-to-group-treatment(pat, org, group):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Consent_to_group_treatment(r.pat, r.org, r.group) and other_consent_to_group_treatment_requests(subj, r.pat, r.org, r.group) == 0 }
 
 def other_consent_to_group_treatment_requests(x, pat, org, group): # S2.4.8
     return len({
@@ -962,8 +971,8 @@ class Conceal_request(Role):
         pass
     
     def onDeactivate(self, subj):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Concealed_by_spine_patient(self.what, self.who, self.start, self.end) } # {S4.2.11}
-        
+        # S4.2.11 -- deactive Concealed-by-spine-patient(what, who, start, end):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Concealed_by_spine_patient(r.what, r.who, r.start, r.end) }
 
 def count_conceal_requests(pat): # S4.2.7
     #S4.2.7 todo: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))

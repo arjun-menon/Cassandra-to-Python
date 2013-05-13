@@ -25,8 +25,8 @@ class Register_RA_manager(Role):
         }
     
     def onDeactivate(self, subj):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.mgr2 and r == RA_manager() } # {R1.1.6}
-        
+        # R1.1.6 -- deactive RA-manager():
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.mgr2 and r == RA_manager() }
 
 def RA_manager_regs(mgr): # R1.1.3
     return len({
@@ -156,22 +156,17 @@ class NHS_health_org_cert(Role):
         }
     
     def onDeactivate(self, subj):
-        #R2.1.3 todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
-        #other-NHS-health-org-regs(n, x, org, start2, end2)
-        #n = 0
-        #start in [start2, end2]
-        #end in [start2, end2]
-        #start < end
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()) } # {R2.1.3}
+        # R2.1.3 -- deactive NHS-clinician-cert(org, cli, spcty, start, end):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_clinician_cert(r.org, r.cli, r.spcty, r.start, r.end) and other_NHS_health_org_regs(subj, r.org, self.start, self.end) == 0 and 
+            r.start in vrange(self.start, self.end) and 
+            r.end in vrange(self.start, self.end) and 
+            r.start < r.end }
         
-        #R2.2.3 todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
-        #other-NHS-health-org-regs(n, x, org, start2, end2)
-        #start in [start2, end2]
-        #end in [start2, end2]
-        #start < end
-        #n = 0
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_Caldicott_guardian_cert(self.org, Wildcard(), Wildcard(), Wildcard()) } # {R2.2.3}
-        
+        # R2.2.3 -- deactive NHS-Caldicott-guardian-cert(org, cg, start, end):
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_Caldicott_guardian_cert(r.org, r.cg, r.start, r.end) and r.start in vrange(self.start, self.end) and 
+            r.end in vrange(self.start, self.end) and 
+            r.start < r.end and 
+            other_NHS_health_org_regs(subj, r.org, self.start, self.end) == 0 }
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i
     return len({

@@ -43,7 +43,7 @@ def {cat}(self, *params):
         if not self.isDacs:
             return ''
         
-        tr = ""
+        deactivators = list()
         for rule in self.isDacs:
             target_role =     rule.concl.args[1]
             target_subj = str(rule.concl.args[0])
@@ -55,8 +55,9 @@ def {cat}(self, *params):
             t_params = [p for p in trigger.args[1].args]
             
             ht = HypothesesTranslator(rule)
-            ht.external_vars = { repr(tp) : 'self.'+repr(sp) for tp, sp in zip(t_params, self.params) }
-            ht.external_vars.update( { subj : 'subj' } )
+            ht.external_vars = { subj : 'subj' }
+            ht.external_vars.update({ repr(tp) : 'self.'+repr(sp) for tp, sp in zip(t_params, self.params) })
+            ht.external_vars.update({ repr(param) : 'r.'+repr(param) for param in target_role.args })
             
             unbound_vars = [target_subj] + [repr(p) for p in target_role.args]
             # hasActivated -= {(s, r) for (s, r) in hasActivated if s == subj and r == role}
@@ -66,43 +67,28 @@ def {cat}(self, *params):
                         subject = p(target_subj), 
                         role_name = h2u(target_role.name),
                         role_params = ', '.join(p(repr(a)) for a in target_role.args) )
-
-            # code = "deactivate(hasActivated, {}, {}({}))  # {}\n".format(
-            #             p(target_subj), h2u(target_role.name),
-            #             ', '.join(p(repr(a)) for a in target_role.args), 
-            #             rule.name )
             
-            print(unbound_vars, deactivation_expression)
+            #print(unbound_vars, deactivation_expression)
             unbound_vars, foo = ht.substitution_func_gen(unbound_vars, deactivation_expression)
-            print(unbound_vars, foo())
+            #print(unbound_vars, foo())
             vd = { v : "Wildcard()" for v in unbound_vars }
-            print(unbound_vars, foo(vd))
-            print()
+            #print(unbound_vars, foo(vd))
+            #print()
             deac += foo(vd)
 
-            deac += " } # {%s}\n" % rule.name
-            
-            cond = ""
             if rule.hypos:
                 cond = ht.translate_hypotheses(countf_wildcard = True)
-                print('---------------------------------------------')
-                print(cond)
-                print('---------------------------------------------')
-                print()
                 if cond[:8] == 'return (' and cond[-1:] == ')':
                     cond = cond[13:][:-2]
-                if cond[0] == '#':
-                    tr += cond[:-4]
-                    cond = ''
-            
-            if cond:
-                tr += "if " + cond + ":\n    " + deac
-            else:
-                tr += deac + '\n'
+                    deac += " and " + cond
+
+            deac += " }"
+
+            deactivators.append( "# %s -- deactive %s:\n" % (rule.name, target_role) + deac + '\n' )
         
         return """
 def onDeactivate(self, subj):
-"""+tab(tr)
+"""+tab( '\n'.join(deactivators) )
     
     def translate(self):
         name   =     self.name
