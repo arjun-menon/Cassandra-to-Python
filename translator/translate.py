@@ -155,6 +155,7 @@ def translate_all():
         
     for (rule_set, rules) in rules_collections:
         tr = translate_rules(rules, rule_sets, rule_set)
+        StopTranslating.count = 0
         write(tr, rule_set)
         #interpreter.give(rules, rule_sets, rule_set)
 

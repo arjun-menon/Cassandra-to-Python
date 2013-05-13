@@ -65,47 +65,47 @@ Done. Wrote to pds.py
 
 Translating 168 rules in hospital...
 
-12 TODO:  unable to bind vars {'what'} in constraint pi7_1(what) == self.pat 
+1 TODO:  unable to bind vars {'what'} in constraint pi7_1(what) == self.pat 
  'A4.2.6'
 isDeactivated(x, Concealed-by-patient(what, whom, start, end)) <-
 	pi7_1(what) = pat 
 
-13 TODO:  could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time) 
+2 TODO:  could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time) 
  'A4.2.1'
 canActivate(pat, Concealed-by-patient(what, who, start, end)) <-
 	hasActivated(pat, Patient()), count-concealed-by-patient(n, pat), what = (pat,ids,authors,groups,subjects,from-time,to-time), who = (orgs1,readers1,groups1,spctys1), n < 100 
 
-14 TODO:  could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time) 
+3 TODO:  could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time) 
  'A4.2.2'
 canActivate(ag, Concealed-by-patient(what, who, start, end)) <-
 	hasActivated(ag, Agent(pat)), count-concealed-by-patient(n, pat), what = (pat,ids,authors,groups,subjects,from-time,to-time), who = (orgs1,readers1,groups1,spctys1), n < 100 
 
-15 TODO:  could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time) 
+4 TODO:  could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time) 
  'A4.2.7'
 count-concealed-by-patient(count<y>, pat) <-
 	hasActivated(x, Concealed-by-patient(y)), what = (pat,ids,authors,groups,subjects,from-time,to-time), who = (orgs1,readers1,groups1,spctys1), y = (what,who,start,end) 
 
-16 TODO:  could not translate constraint: a = (pat,id) 
+5 TODO:  could not translate constraint: a = (pat,id) 
  'A4.2.8'
 count-concealed-by-patient2(count<x>, a, b) <-
 	hasActivated(x, Concealed-by-patient(what, whom, start, end)), a = (pat,id), b = (org,reader,group,spcty), what = (pat,ids,authors,groups,subjects,from-time,to-time), whom = (orgs1,readers1,groups1,spctys1), Get-record-author(pat, id) in authors, Get-record-group(pat, id) in groups, sub in Get-record-subjects(pat, id), sub in subjects, Get-record-time(pat, id) in [from-time, to-time], id in ids, org in orgs1, reader in readers1, group in groups1, spcty in spctys1, Current-time() in [start, end] 
 
-17 TODO:  unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
+6 TODO:  unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
  'A5.3.1'
 permits(ag, Read-record-item(pat, id)) <-
 	hasActivated(ag, Agent(pat)), count-concealed-by-patient2(n, a, b), count-concealed-by-clinician(m, pat, id), third-party-consent(consenters, pat, id), a = (pat,id), b = ("No-org",ag,"No-group","No-spcty"), n = 0, m = 0, Get-record-third-parties(pat, id) subseteq consenters 
 
-18 TODO:  unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
+7 TODO:  unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
  'A5.3.4'
 permits(cli, Read-record-item(pat, id)) <-
 	hasActivated(cli, Clinician(spcty)), canActivate(cli, ADB-treating-clinician(pat, group, spcty)), count-concealed-by-patient2(n, a, b), n = 0, a = (pat,id), b = ("ADB",cli,group,spcty), Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty) 
 
-19 TODO:  unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
+8 TODO:  unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
  'A5.3.5'
 permits(cli, Read-record-item(pat, id)) <-
 	hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty)), count-concealed-by-patient2(n, a, b), n = 0, a = (pat,id), b = (org,cli,"Ext-group",spcty), Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty) 
 
-20 TODO:  unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
+9 TODO:  unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
  'A5.3.6'
 permits(pat, Read-record-item(pat, id)) <-
 	hasActivated(pat, Patient()), count-concealed-by-patient2(n, a, b), count-concealed-by-clinician(m, pat, id), third-party-consent(consenters, pat, id), n = 0, m = 0, a = (pat,id), b = ("No-org",pat,"No-group","No-spcty"), Get-record-third-parties(pat, id) subseteq consenters 
@@ -115,12 +115,14 @@ Done. Wrote to hospital.py
 
 Translating 37 rules in ra...
 
-21 TODO:  unable to bind vars {'start'} in constraint start in vrange(self.start, self.end) 
+R2.1.3 {'start2': 'self.start', 'org': 'self.org', 'end2': 'self.end', 'x': 'subj'}
+R2.1.3 {'start2': 'self.start', 'org': 'self.org', 'end2': 'self.end', 'n': 'other_NHS_health_org_regs(subj, self.org, self.start, self.end)', 'x': 'subj'}
+1 TODO:  unable to bind vars {'start'} in constraint start in vrange(self.start, self.end) 
  'R2.1.3'
 isDeactivated(mgr, NHS-clinician-cert(org, cli, spcty, start, end)) <-
 	other-NHS-health-org-regs(n, x, org, start2, end2), n = 0, start in [start2, end2], end in [start2, end2], start < end 
 
-22 TODO:  unable to bind vars {'start'} in constraint start in vrange(self.start, self.end) 
+2 TODO:  unable to bind vars {'start'} in constraint start in vrange(self.start, self.end) 
  'R2.2.3'
 isDeactivated(mgr, NHS-Caldicott-guardian-cert(org, cg, start, end)) <-
 	other-NHS-health-org-regs(n, x, org, start2, end2), start in [start2, end2], end in [start2, end2], start < end, n = 0 
