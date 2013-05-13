@@ -45,10 +45,8 @@ def {cat}(self, *params):
         
         tr = ""
         for rule in self.isDacs:
-            assert rule.hypos[0].name == SpecialPredicates.isDac
-            
-            deac_role =     rule.concl.args[1]
-            deac_subj = str(rule.concl.args[0])
+            target_role =     rule.concl.args[1]
+            target_subj = str(rule.concl.args[0])
             
             trigger = rule.hypos[0]
             rule.hypos = rule.hypos[1:] # remove triggering hypo.
@@ -60,10 +58,10 @@ def {cat}(self, *params):
             ht.external_vars = { repr(tp) : 'self.'+repr(sp) for tp, sp in zip(t_params, self.params) }
             ht.external_vars.update( { subj : 'subj' } )
             
-            bound_vars = [deac_subj] + [repr(p) for p in deac_role.args]
+            bound_vars = [target_subj] + [repr(p) for p in target_role.args]
             code = "deactivate(hasActivated, {}, {}({}))  # {}\n".format(
-                        p(deac_subj), h2u(deac_role.name),
-                        ', '.join(p(repr(a)) for a in deac_role.args), 
+                        p(target_subj), h2u(target_role.name),
+                        ', '.join(p(repr(a)) for a in target_role.args), 
                         rule.name )
             
             unbound_vars, foo = ht.substitution_func_gen(bound_vars, code)
