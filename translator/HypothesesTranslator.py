@@ -86,11 +86,23 @@ class HypothesesTranslator(object):
         return constraints
     
     def substitution_func_gen(self, variables, code):
-        """ 'variables' is a list of variables that appear in 'code'.
-        'code' is a format string on which string.format is invoked. """
+        """Takes a Python string representing a fragment of code, contating unbound variables.
+        Substitutes unbounds if possible, with variables from self.external_vars
+        The remaining unbound variables are returned along with a lambda that takes 
+        as argument a dictionaty mapping the remaining unbounds to substition code.
+
+        Sample Input (parameters):
+            variables = ['x', 'org', 'pat']
+            code = "deactivate(hasActivated, {x}, Spine_emergency_clinician({org}, {pat}))  # S3.2.3"
+
+        Sample Output (return values):
+            # only 'pat' remainds unbound now, as 'x' & 'org' were found in self.external_vars
+            return_1 = {'pat'}
+            return_2 = "deactivate(hasActivated, subj, Spine_emergency_clinician(self.org, pat))  # S3.2.3"
+        """
         
         #print(self.rule.name, self.external_vars)
-        ext, rest = separate(variables, lambda v: v in set(self.external_vars))
+        ext, rest = separate(variables, lambda v: v in self.external_vars.keys())
         
         substitution_dict = dict()
         substitution_dict.update( { e : self.external_vars[e] for e in ext } )
