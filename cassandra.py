@@ -35,12 +35,8 @@ class Equals(object):
 def canActivate(subject, role):
     return role.canActivate(subject)
 
-def deactivate(hasActivated, subj, role):
-    hasActivated -= {(s, r) for (s, r) in hasActivated if s == subj and r == role}
-
 def pi7_1(obj):
     pass
 
 def Current_time():
     return datetime.utcnow()
-

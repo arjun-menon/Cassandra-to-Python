@@ -25,7 +25,7 @@ class Register_RA_manager(Role):
         }
     
     def onDeactivate(self, subj):
-        deactivate(hasActivated, self.mgr2, RA_manager())  # R1.1.6
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.mgr2 and r == RA_manager() } # {R1.1.6}
         
 
 def RA_manager_regs(mgr): # R1.1.3
@@ -162,7 +162,7 @@ class NHS_health_org_cert(Role):
         #start in [start2, end2]
         #end in [start2, end2]
         #start < end
-        deactivate(hasActivated, Wildcard(), NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()))  # R2.1.3
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()) } # {R2.1.3}
         
         #R2.2.3 todo: unable to bind vars {'start'} in constraint start in vrange(self.start, self.end)
         #other-NHS-health-org-regs(n, x, org, start2, end2)
@@ -170,7 +170,7 @@ class NHS_health_org_cert(Role):
         #end in [start2, end2]
         #start < end
         #n = 0
-        deactivate(hasActivated, Wildcard(), NHS_Caldicott_guardian_cert(self.org, Wildcard(), Wildcard(), Wildcard()))  # R2.2.3
+        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_Caldicott_guardian_cert(self.org, Wildcard(), Wildcard(), Wildcard()) } # {R2.2.3}
         
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i

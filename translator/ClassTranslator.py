@@ -35,7 +35,7 @@ def {cat}(self, *params):
     return {or_calls}
 """.format(cat = category, 
            or_calls = " or ".join("self.%s_%d(*params)" % (category, i) for i in list(range(1, len(rules) + 1)))
-           ) + "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(rules))), rules) )
+           ) + "".join( rule.translate(self.params)(i+1) for (i, rule) in enumerate(rules) )
         
         return tab(translation)
     
@@ -58,19 +58,37 @@ def {cat}(self, *params):
             ht.external_vars = { repr(tp) : 'self.'+repr(sp) for tp, sp in zip(t_params, self.params) }
             ht.external_vars.update( { subj : 'subj' } )
             
-            bound_vars = [target_subj] + [repr(p) for p in target_role.args]
-            code = "deactivate(hasActivated, {}, {}({}))  # {}\n".format(
-                        p(target_subj), h2u(target_role.name),
-                        ', '.join(p(repr(a)) for a in target_role.args), 
-                        rule.name )
+            unbound_vars = [target_subj] + [repr(p) for p in target_role.args]
+            # hasActivated -= {(s, r) for (s, r) in hasActivated if s == subj and r == role}
+            # deactivate(hasActivated, self.agent, Agent(self.pat))
+            deac = "hasActivated -= { "
+            deactivation_expression = "(s, r) for (s, r) in hasActivated if s == {subject} and r == {role_name}({role_params})".format( 
+                        subject = p(target_subj), 
+                        role_name = h2u(target_role.name),
+                        role_params = ', '.join(p(repr(a)) for a in target_role.args) )
+
+            # code = "deactivate(hasActivated, {}, {}({}))  # {}\n".format(
+            #             p(target_subj), h2u(target_role.name),
+            #             ', '.join(p(repr(a)) for a in target_role.args), 
+            #             rule.name )
             
-            unbound_vars, foo = ht.substitution_func_gen(bound_vars, code)
+            print(unbound_vars, deactivation_expression)
+            unbound_vars, foo = ht.substitution_func_gen(unbound_vars, deactivation_expression)
+            print(unbound_vars, foo())
             vd = { v : "Wildcard()" for v in unbound_vars }
-            deac = foo(vd)
+            print(unbound_vars, foo(vd))
+            print()
+            deac += foo(vd)
+
+            deac += " } # {%s}\n" % rule.name
             
             cond = ""
             if rule.hypos:
                 cond = ht.translate_hypotheses(countf_wildcard = True)
+                print('---------------------------------------------')
+                print(cond)
+                print('---------------------------------------------')
+                print()
                 if cond[:8] == 'return (' and cond[-1:] == ')':
                     cond = cond[13:][:-2]
                 if cond[0] == '#':
@@ -163,7 +181,7 @@ class ActionClass(object):
 def permits(self, subj):
     return %s
 """ % " or ".join("self.permits_%d(subj)" % i for i in list(range(1, len(self.permits) + 1))) +\
-        "".join( rule.translate(self.params)(i+1) for (i, rule) in zip(list(range(len(self.permits))), self.permits) )
+        "".join( rule.translate(self.params)(i+1) for (i, rule) in enumerate(self.permits) )
         
         return tab(translation)
     
