@@ -55,27 +55,21 @@ def {cat}(self, *params):
             t_params = [p for p in trigger.args[1].args]
             
             ht = HypothesesTranslator(rule)
-            ht.external_vars = { subj : 'subj' }
+            ht.external_vars = { subj : 'subject' }
             ht.external_vars.update({ repr(tp) : 'self.'+repr(sp) for tp, sp in zip(t_params, self.params) })
-            
-            unbound_vars = [target_subj] + [repr(p) for p in target_role.args]
-            # hasActivated -= {(s, r) for (s, r) in hasActivated if s == subj and r == role}
-            # deactivate(hasActivated, self.agent, Agent(self.pat))
-            deac = "hasActivated -= { "
-            deactivation_expression = "(s, r) for (s, r) in hasActivated if s == {subject} and r == {role_name}({role_params})".format( 
-                        subject = p(target_subj), 
-                        role_name = h2u(target_role.name),
-                        role_params = ', '.join(p(repr(a)) for a in target_role.args) )
-            
-            #print(unbound_vars, deactivation_expression)
-            unbound_vars, foo = ht.substitution_func_gen(unbound_vars, deactivation_expression)
-            #print(unbound_vars, foo())
-            vd = { v : "Wildcard()" for v in unbound_vars }
-            #print(unbound_vars, foo(vd))
-            #print()
-            deac += foo(vd)
 
-            ht.external_vars.update({ repr(param) : 'r.'+repr(param) for param in target_role.args })
+            deac = "hasActivated -= { (subj, role) for (subj, role) in hasActivated if "
+            conds = []
+            ext_vars = ht.external_vars.keys()
+            if target_subj in ext_vars:
+                conds.append( "subj == {ext_var}".format(target_subj=target_subj, ext_var=ht.external_vars[target_subj]) )
+            conds.append( "role.name == '%s'" % h2u(target_role.name) )
+            for a in map(repr, target_role.args):
+                if a in ext_vars:
+                    conds.append( "role.{a} == {ext_var}".format(a=a, ext_var=ht.external_vars[a]) )
+            deac += " and ".join(conds)
+
+            ht.external_vars.update({ repr(param) : 'role.'+repr(param) for param in target_role.args })
 
             if rule.hypos:
                 cond = ht.translate_hypotheses(countf_wildcard = True)
@@ -84,11 +78,10 @@ def {cat}(self, *params):
                     deac += " and " + cond
 
             deac += " }"
-
             deactivators.append( "# %s -- deactive %s:\n" % (rule.name, target_role) + deac + '\n' )
         
         return """
-def onDeactivate(self, subj):
+def onDeactivate(self, subject):
 """+tab( '\n'.join(deactivators) )
     
     def translate(self):
@@ -185,4 +178,3 @@ class {name_u}(Role): # Action
         ,params_dict = ', '.join(str(p) + ' = ' + repr(p) for p in self.params)
         ,permits = self.permits_translator()
         )
-

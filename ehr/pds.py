@@ -48,9 +48,9 @@ class Register_PDS_manager(Role):
             subj == adm1
         }
     
-    def onDeactivate(self, subj):
+    def onDeactivate(self, subject):
         # P1.1.3 -- deactive PDS-manager():
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.adm2 and r == PDS_manager() }
+        hasActivated -= { (subj, role) for (subj, role) in hasActivated if subj == self.adm2 and role.name == 'PDS_manager' }
 
 def pds_admin_regs(adm): # P1.1.7
     return len({
@@ -219,15 +219,15 @@ class Register_patient(Role):
             subj == adm
         }
     
-    def onDeactivate(self, subj):
+    def onDeactivate(self, subject):
         # P1.2.3 -- deactive Patient():
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.pat and r == Patient() }
+        hasActivated -= { (subj, role) for (subj, role) in hasActivated if subj == self.pat and role.name == 'Patient' }
         
         # P1.3.3 -- deactive Agent(pat):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.pat and r == Agent(Wildcard()) }
+        hasActivated -= { (subj, role) for (subj, role) in hasActivated if subj == self.pat and role.name == 'Agent' }
         
         # P1.3.4 -- deactive Agent(pat):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == Agent(self.pat) }
+        hasActivated -= { (subj, role) for (subj, role) in hasActivated if role.name == 'Agent' and role.pat == self.pat }
 
 def patient_regs(pat): # P2.1.3
     return len({

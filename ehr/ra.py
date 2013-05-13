@@ -24,9 +24,9 @@ class Register_RA_manager(Role):
             subj == mgr
         }
     
-    def onDeactivate(self, subj):
+    def onDeactivate(self, subject):
         # R1.1.6 -- deactive RA-manager():
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == self.mgr2 and r == RA_manager() }
+        hasActivated -= { (subj, role) for (subj, role) in hasActivated if subj == self.mgr2 and role.name == 'RA_manager' }
 
 def RA_manager_regs(mgr): # R1.1.3
     return len({
@@ -155,18 +155,18 @@ class NHS_health_org_cert(Role):
             subj == mgr
         }
     
-    def onDeactivate(self, subj):
+    def onDeactivate(self, subject):
         # R2.1.3 -- deactive NHS-clinician-cert(org, cli, spcty, start, end):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_clinician_cert(self.org, Wildcard(), Wildcard(), Wildcard(), Wildcard()) and other_NHS_health_org_regs(subj, r.org, self.start, self.end) == 0 and 
-            r.start in vrange(self.start, self.end) and 
-            r.end in vrange(self.start, self.end) and 
-            r.start < r.end }
+        hasActivated -= { (subj, role) for (subj, role) in hasActivated if role.name == 'NHS_clinician_cert' and role.org == self.org and other_NHS_health_org_regs(subject, role.org, self.start, self.end) == 0 and 
+            role.start in vrange(self.start, self.end) and 
+            role.end in vrange(self.start, self.end) and 
+            role.start < role.end }
         
         # R2.2.3 -- deactive NHS-Caldicott-guardian-cert(org, cg, start, end):
-        hasActivated -= { (s, r) for (s, r) in hasActivated if s == Wildcard() and r == NHS_Caldicott_guardian_cert(self.org, Wildcard(), Wildcard(), Wildcard()) and r.start in vrange(self.start, self.end) and 
-            r.end in vrange(self.start, self.end) and 
-            r.start < r.end and 
-            other_NHS_health_org_regs(subj, r.org, self.start, self.end) == 0 }
+        hasActivated -= { (subj, role) for (subj, role) in hasActivated if role.name == 'NHS_Caldicott_guardian_cert' and role.org == self.org and role.start in vrange(self.start, self.end) and 
+            role.end in vrange(self.start, self.end) and 
+            role.start < role.end and 
+            other_NHS_health_org_regs(subject, role.org, self.start, self.end) == 0 }
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i
     return len({
