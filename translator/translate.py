@@ -135,8 +135,9 @@ rules_collections = None
 
 def parse_rules():
     global rules_collections, rule_sets
+    from . ehrparse import parse_ehr_file
     print("Parsing rules...")
-    rules_collections = [ ( rule_set, parse_one(ehr_path+"%s.txt" % rule_set) ) for rule_set in rule_sets ]
+    rules_collections = [ ( rule_set, parse_ehr_file(ehr_path+"%s.txt" % rule_set) ) for rule_set in rule_sets ]
     with open(ehr_path+"parse_tree.pickle", "wb") as f:
         pickle.dump(rules_collections, f)
 
