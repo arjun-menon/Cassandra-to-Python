@@ -1,9 +1,9 @@
 from typecheck import *
 from functools import reduce
 
-##################
-# Helper functions
-##################
+###################
+# Helper Functions
+###################
 
 def uniq(seq): # returns unique elements (like set) with order preserved
     seen = set()
@@ -59,7 +59,7 @@ def untranslated(obj):
 # Helper Classes
 ##################
 
-class anyset(object): # because python sets don't allow dicts/objs
+class anyset(object): # because python sets don't allow unhashable types like other sets & dicts...
     def __init__(self):
         self.list_of_objects = []
     def add(self, obj):
@@ -86,18 +86,6 @@ class anyset(object): # because python sets don't allow dicts/objs
                     return item
         return ListIterator(self.list_of_objects)
 
-class bla(object):
-    pass
-
-d = set()
-d.add(bla())
-
-#x = anyset()
-#x.add({'a':'b'})
-#x.add('foo')
-#for i in x:
-#    print(i)
-
 class vrange(object):
     def __init__(self, start, end):
         self.start, self.end = start, end
@@ -106,3 +94,24 @@ class vrange(object):
             #raise CassandraException("test failed: %r is not in [%r, %r]" % (val, self.start, self.end))
             return False
         return True
+
+class Wildcard(object):
+    def __init__(self):
+        pass
+
+def compare_seq(a, b):
+    """Compare sequences containing Wilcard() objects.
+    Wildcard objects, as their names suggest, are treated as wildcards.
+
+    Note: Python supports sequence type comparison. This function simply 
+    when used in conjuction with the Wildcard class, adds wildcard support.
+    """
+
+    if len(a) != len(b):
+        return False
+    for i, j in zip(a, b):
+        if isinstance(i, Wildcard) or isinstance(j, Wildcard):
+            continue
+        if i != j:
+            return False
+    return True
