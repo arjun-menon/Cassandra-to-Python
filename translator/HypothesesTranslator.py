@@ -35,6 +35,7 @@ class StopTranslating(Exception):
         
         StopTranslating.count += 1
         print(StopTranslating.count, "TODO: ", self.reason, "\n", self.rule, "\n")
+        print("---------------------------------------------------------------------------\n")
     
     def __repr__(self):
         return self.msg
