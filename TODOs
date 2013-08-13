@@ -100,6 +100,37 @@ Translating 168 rules in hospital...
 canActivate(pat, Concealed-by-patient(what, who, start, end)) <-
 	hasActivated(pat, Patient()), count-concealed-by-patient(n, pat), what = (pat,ids,authors,groups,subjects,from-time,to-time), who = (orgs1,readers1,groups1,spctys1), n < 100 
 
+(A4.2.1)
+
+canActivate(pat, Concealed-by-patient(what, who, start, end)) <-
+hasActivated(pat, Patient()),
+count-concealed-by-patient(n, pat),
+what=(pat, ids, authors, groups, subjects, from-time, to-time),
+who=(orgs1, readers1, groups1, spctys1),
+n < 100
+
+      ~~~~~~   Hand Translation   ~~~~~~      
+
+class Concealed_by_patient(Role):
+    def __init__(self, what, who, start, end):
+        super().__init__('Concealed-by-patient', what = what, who = who, start = start, end = end)
+    
+    def canActivate(self, *params):
+        return self.canActivate_1(*params) or self.canActivate_2(*params)
+    
+    def canActivate_1(self, pat): # A4.2.1
+        return {
+            True for subj, role in hasActivated if 
+            role.name == "Patient" and 
+            subj == pat and 
+            count_concealed_by_patient(subj) < 100 and
+            >>>
+            self.what == (pat, *, *, *, *, *, *) and
+            self.who == (*, *, *, *)
+            <<<
+        }
+
+
 -------------------------------------------------------------------------------------------------------------------------------------------
 
 2 TODO:  could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time) 
