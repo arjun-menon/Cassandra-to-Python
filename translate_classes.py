@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from . RuleTranslator import *
+from translate_rules import *
 
 class RoleClass(object):
     def __init__(self, name, params):

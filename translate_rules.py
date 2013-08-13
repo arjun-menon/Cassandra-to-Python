@@ -16,7 +16,7 @@
    canActivate, canDeactivate, permits;
    as well as function predicates."""
 
-from . HypothesesTranslator import *
+from translate_hypotheses import *
 
 class SpecialPredicates:
     prmts = "permits"        # 1. permits(e,a) indicates that the entity e is permitted to perform action a.

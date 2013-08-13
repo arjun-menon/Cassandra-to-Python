@@ -1,17 +1,23 @@
 #!/usr/bin/python3
 
-from translator import translate
-import argparse
-
 if __name__ == "__main__":
-    parse_by_default = True
+    from translate_all import parse, translate
+    import argparse
+
+    should_parse = True  # default parse mode
     
     argparser = argparse.ArgumentParser(description="Translate Cassandra rules to Python.")
-    argparser.add_argument( '-p', '--parse', default=parse_by_default, action='store_true', 
+    argparser.add_argument( '-p', '--parse', default=False, action='store_true', 
                             help='Parse & pickle rules. (Do this only once.)' )
+    argparser.add_argument( '-P', '--noparse', default=False, action='store_true', 
+                            help='Do not parse rules. (Use the old pickle.)' )
     args = argparser.parse_args()
-    
+    if args.noparse:
+        should_parse = False
     if args.parse:
-        translate.parse_rules()
+        should_parse = True
     
-    translate.translate()
+    if should_parse:
+        parse()
+
+    translate()

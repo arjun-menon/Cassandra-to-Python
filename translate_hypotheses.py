@@ -23,8 +23,8 @@ Hypotheses make up bulk of the translation work.
 import pickle, itertools
 from string import Template
 
-from . helpers import *
-from . ast_nodes import *
+from helpers import *
+from ast_nodes import *
 
 class StopTranslating(Exception):
     count = 0

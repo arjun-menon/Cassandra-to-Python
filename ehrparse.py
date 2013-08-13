@@ -1,5 +1,5 @@
-from . import tpg
-from . ast_nodes import *
+import tpg
+from ast_nodes import *
 
 class EhrParser(tpg.Parser):
     r"""
