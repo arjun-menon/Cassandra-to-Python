@@ -250,30 +250,32 @@ def patient_regs(pat): # P2.1.3
 
 # For the Role 'Register-patient'
 # 
-# 'P2.2.1'
+# (P2.2.1)
 # canReqCred(pat, "PDS".hasActivated(x, Register-patient(pat))) <-
-# 	hasActivated(pat, Patient())
+# hasActivated(pat, Patient())
 # 
-# 'P2.2.2'
+# (P2.2.2)
 # canReqCred(ag, "PDS".hasActivated(x, Register-patient(pat))) <-
-# 	hasActivated(ag, Agent(pat))
+# hasActivated(ag, Agent(pat))
 # 
-# 'P2.2.3'
+# (P2.2.3)
 # canReqCred(usr, "PDS".hasActivated(x, Register-patient(pat))) <-
-# 	hasActivated(usr, Professional-user(ra, org))
+# hasActivated(usr, Professional-user(ra, org))
 # 
-# 'P2.2.4'
+# (P2.2.4)
 # canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
-# 	ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority())
+# ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
+# canActivate(ra, Registration-authority())
 # 
-# 'P2.2.5'
+# (P2.2.5)
 # canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
-# 	org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority())
+# org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
+# canActivate(ra, Registration-authority())
 # 
-# 'P2.2.5'
+# (P2.2.5)
 # canReqCred(ra, "PDS".hasActivated(x, Register-patient(pat))) <-
-# 	canActivate(ra, Registration-authority())
+# canActivate(ra, Registration-authority())
 # 
-# 'P2.2.5'
+# (P2.2.5)
 # canReqCred(spine, "PDS".hasActivated(x, Register-patient(pat))) <-
-# 	spine = "Spine"
+# spine = "Spine"

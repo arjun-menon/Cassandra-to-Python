@@ -1270,17 +1270,21 @@ class Force_read_spine_record_item(Role): # Action
 
 # For the Role 'Agent'
 # 
-# 'S1.4.6'
+# (S1.4.6)
 # canReqCred(ag, "Spine".canActivate(ag, Agent(pat))) <-
-# 	hasActivated(ag, Agent(pat))
+# hasActivated(ag, Agent(pat))
 # 
-# 'S1.4.7'
+# (S1.4.7)
 # canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
-# 	ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority()), Current-time() in [start, end]
+# ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
+# canActivate(ra, Registration-authority()), 
+# Current-time() in [start, end]
 # 
-# 'S1.4.8'
+# (S1.4.8)
 # canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
-# 	org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), canActivate(ra, Registration-authority()), Current-time() in [start, end]
+# org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
+# canActivate(ra, Registration-authority()), 
+# Current-time() in [start, end]
 
 # Restrictions on hasActivate
 

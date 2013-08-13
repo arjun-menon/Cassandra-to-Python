@@ -10,8 +10,8 @@ class Rule(object):
     def addHypothesis(self,hypothesis):
         self.hypos.append(hypothesis)
     def __repr__(self):
-        x = [repr(i) for i in self.hypos]
-        return repr(self.name)+ '\n' +repr(self.concl)+ ' <-\n\t' + ', '.join(x)
+        hypos_repr = [repr(i) for i in self.hypos]
+        return '(' + str(self.name) + ')' + '\n' +repr(self.concl)+ ' <-\n' + ', \n'.join(hypos_repr)
 
 class Atom(object):
     def __init__(self,name,args):
