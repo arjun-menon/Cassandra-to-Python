@@ -83,6 +83,9 @@ class EhrParser(tpg.Parser):
     Operator/o -> in/o | notin/o | subseteq/o | eq/o | neq/o | langle/o;
     """
 
+def parse_ehr(code):
+  return EhrParser()(code)
+
 def parse_ehr_file(file_name):
     with open(file_name) as f:
-        return EhrParser()( f.read() )
+        return parse_ehr( f.read() )
