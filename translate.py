@@ -40,7 +40,7 @@ def translate():
 
     for (module_name, ast) in ehr_ast:
         StopTranslating.count = 0
-        translation = translate_rules(ast, module_names, module_name)
+        translation = translate_module(ast, module_names, module_name)
 
         file_name = "%s.py" % module_name
         with open(ehr_path + file_name, 'w') as f:

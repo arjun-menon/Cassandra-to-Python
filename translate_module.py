@@ -107,7 +107,7 @@ def trans(obj, *args):
     else: # comment out the repr
         return untranslated(obj)
 
-def translate_rules(rules, rule_sets, rule_set):
+def translate_module(rules, rule_sets, rule_set):
     print("Translating %d rules in %s...\n" % (len(rules), rule_set) )
     outline, list_of_roles = generate_outline(rules)
     
