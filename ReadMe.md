@@ -131,11 +131,19 @@ A few test cases that put the translated rules into action can be found in `driv
 
 ### Translation Pathway
 
-Prior to translation, the EHR needs to be parsed, and an Abstract Systax Tree (AST) must be constructed out of it. The classes representing nodes in this AST reside in `ast_nodes.py`. (These classes are widely used.) The TPG parser generator grammar & parser is in `ehrparse.py`. Much of the actual translator however resides in the files starting with `translate*`. Roughly, the order of depth in which these files get invoked is: `translate.py` **→** `translate.py` **→** `translate_module.py` **→** `translate_classes.py` **→** `translate_rules.py` **→** `translate_hypotheses.py`. The function of each of these files is described below:
+Prior to translation, the EHR needs to be parsed, and an Abstract Systax Tree (AST) must be constructed out of it. The classes representing nodes in this AST reside in `ast_nodes.py`. (These classes are widely used.) The TPG parser generator grammar & parser is in `ehrparse.py`. Much of the actual translator however resides in the files starting with `translate*`.
+
+The rough order of depth in which these files are invoked is shown below:
+
+`translate.py` **→** `translate.py` **→** `translate_module.py` **→** `translate_classes.py` **→** `translate_rules.py` **→** `translate_hypotheses.py`
+
+The function of each of these files is described below:
 
 * `translate.py` – This file provides the command-line interface for using the translator. If necessary, it first invokes the parser (in `ehrparse.py`) and pickles the ASTs of each EHR module. It then calls the function `translate_module` of `translate_module.py` on the AST of each module. This function then returns the Python translation for that EHR module. The _Python code_ is then written to `.py` files named after the modules in the `ehr/` folder.
 
-* `translate_module.py` – This file contains a very key function called `generate_outline`. `generate_outline` takes the AST representing the rules in a module as argument. `generate_outline` then analyzes the AST for object-oriented patterns and constructs *translation objects* pertaining to each type of pattern (Role, Action, etc.), and stores within each object the rules (branches of the AST) particular to that object. In addition, all of these translation objects are required to contain a __method__ called `trans` *which returns the Python translation of the rules captured by that translation object*. The `translate_module` function in this file, first calls `generate_outline`, then invokes the `trans` method on all of the translation objects returned by it and combines them into code for a cohesive Python module. These modules are then written to appropriately named `.py` by the `translate()` function of the previous file.
+* `translate_module.py` – This file contains a very key function called `generate_outline`. `generate_outline` takes the AST representing the rules in a module as argument. `generate_outline` then analyzes the AST for object-oriented patterns and constructs *translation objects* pertaining to each type of pattern (Role, Action, etc.), and stores within each object the rules (branches of the AST) particular to that object.
+
+    In addition, all of these translation objects are supposed to provide a method called **translate** which returns the Python translation of the rules captured by that translation object. In case this method is unavailable, the original Cassandra code pertaining to that object is returned commented Python-style with #s. The `translate_module` function in this file, first calls `generate_outline`, then invokes the `trans` method on all of the translation objects returned by it and combines them into code for a cohesive Python module. These modules are then written to appropriately named `.py` by the `translate()` function of the previous file.
 
 Usage
 -----
