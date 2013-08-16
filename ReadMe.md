@@ -131,19 +131,19 @@ A few test cases that put the translated rules into action can be found in `driv
 
 ### Translation Pathway
 
-Prior to translation, the EHR needs to be parsed, and an Abstract Systax Tree (AST) must be constructed out of it. The classes representing nodes in this AST reside in `ast_nodes.py`. (These classes are widely used.) The TPG parser generator grammar & parser is in `ehrparse.py`. Much of the actual translator however resides in the files starting with `translate*`.
+Prior to translation, the EHR needs to be parsed, and an Abstract Systax Tree (AST) must be constructed out of it. The classes representing nodes in this AST reside in `ast_nodes.py`. (These classes are widely used.) The TPG parser generator grammar & parser is in `ehrparse.py`. Much of the actual translator however resides in the Python modules starting with `translate*`.
 
-The rough order of depth in which these files are invoked is shown below:
+The order of depth in which these modules are invoked is shown below:
 
-`translate.py` **→** `translate.py` **→** `translate_module.py` **→** `translate_classes.py` **→** `translate_rules.py` **→** `translate_hypotheses.py`
+`translate.py` **→** `translate_module.py` **→** `translate_classes.py` **→** `translate_rules.py` **→** `translate_hypotheses.py`
 
-The function of each of these files is described below:
+The function of each module is described below:
 
 * `translate.py` – This file provides the command-line interface for using the translator. If necessary, it first invokes the parser (in `ehrparse.py`) and pickles the ASTs of each EHR module. It then calls the function `translate_module` of `translate_module.py` on the AST of each module. This function then returns the Python translation for that EHR module. The _Python code_ is then written to `.py` files named after the modules in the `ehr/` folder.
 
-* `translate_module.py` – This file contains a very key function called `generate_outline`. `generate_outline` takes the AST representing the rules in a module as argument. `generate_outline` then analyzes the AST for object-oriented patterns and constructs *translation objects* pertaining to each type of pattern (Role, Action, etc.), and stores within each object the rules (branches of the AST) particular to that object.
+* `translate_module.py` – The module is responsible for translating each EHR module to its corresponding `.py` Python module. The `translate_module` function, contained in this module, takes the AST of an EHR module, and passes it onto a function called `generate_outline`. `generate_outline` then analyzes the AST (representing the rules in the EHR module) for object-oriented patterns and constructs *translation objects* pertaining to each type of pattern (e.g. Role, Action, etc.). It stores within each of these object the rules of the EHR pertaining to that object. The actual translation of these objects is handled in the other `translate_` modules which implement the classes for each of these patterns.
 
-    In addition, all of these translation objects are supposed to provide a method called **translate** which returns the Python translation of the rules captured by that translation object. In case this method is unavailable, the original Cassandra code pertaining to that object is returned commented Python-style with #s. The `translate_module` function in this file, first calls `generate_outline`, then invokes the `trans` method on all of the translation objects returned by it and combines them into code for a cohesive Python module. These modules are then written to appropriately named `.py` by the `translate()` function of the previous file.
+    The translation objects are expected to provide a method called **translate** (implemented elsewhere) which returns the Python translation of the rules stored in that translation object. In case this method is unavailable, the original Cassandra code pertaining to that object is returned commented Python-style with #s. The `translate_module`, first calls `generate_outline`, then invokes the `translate` method of all of the translation objects returned by `generate_outline` and combines the returned *Python code fragments* into code for a cohesive Python module. These modules are then written to `.py` files by the `translate` function in `translate.py`.
 
 Usage
 -----
