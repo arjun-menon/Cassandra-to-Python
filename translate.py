@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # Copyright (C) 2011-2012 Arjun G. Menon
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -19,7 +21,7 @@ ehr_path = "ehr/"
 rule_sets = ['spine', 'pds', 'hospital', 'ra']
 rules_collections = None
 
-def parse():
+def parse_and_pickle():
     global rules_collections, rule_sets
     from datetime import datetime
     from ehrparse import parse_ehr_file
@@ -53,6 +55,17 @@ def translate_all():
         write(tr, rule_set)
         #interpreter.give(rules, rule_sets, rule_set)
 
-def translate():
-    unpickle_rules()
+if __name__ == "__main__":
+    import argparse
+    argparser = argparse.ArgumentParser(description="Translate Cassandra rules to Python.")
+    argparser.add_argument( '-p', '--parse', default=False, action='store_true', help='Parse & pickle rules. (Do this only once.)' )
+    argparser.add_argument( '-P', '--noparse', default=False, action='store_true', help='Do not parse rules. (Use previously pickled AST.)' )
+    args = argparser.parse_args()
+
+    parse_by_default = True  # default parse mode
+    if (parse_by_default or args.parse) and (not args.noparse):
+        parse_and_pickle()
+    else:
+        unpickle_rules()
+
     translate_all()
