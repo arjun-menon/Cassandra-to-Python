@@ -17,43 +17,35 @@
 from translate_module import *
 
 ehr_path = "ehr/"
+module_names = ['spine', 'pds', 'hospital', 'ra']
 
-rule_sets = ['spine', 'pds', 'hospital', 'ra']
-rules_collections = None
-
-def parse_and_pickle():
-    global rules_collections, rule_sets
+def parse():
     from datetime import datetime
     from ehrparse import parse_ehr_file
     
     print("Parsing... ", end='')
-
     start_time = datetime.now()
-    rules_collections = [ ( rule_set, parse_ehr_file(ehr_path+"%s.txt" % rule_set) ) for rule_set in rule_sets ]
-    with open(ehr_path+"parse_tree.pickle", "wb") as f:
-        pickle.dump(rules_collections, f)
-    end_time = datetime.now()
 
+    # Parse & pickle the EHRs' ASTs:
+    ehr_ast = [ ( rule_set, parse_ehr_file(ehr_path+"%s.txt" % rule_set) ) for rule_set in module_names ]
+    with open(ehr_path+"parse_tree.pickle", "wb") as f:
+        pickle.dump(ehr_ast, f)
+
+    end_time = datetime.now()
     print("Done. (took %.2f seconds)\n" % (end_time - start_time).total_seconds())
 
-def unpickle_rules():
-    global rules_collections
+def translate():
     with open(ehr_path+"parse_tree.pickle", "rb") as f:
-        rules_collections = pickle.load(f)
+        ehr_ast = pickle.load(f)
 
-def translate_all():
-    global rules_collections
-    
-    def write(tr, rule_set):
-        with open(ehr_path+"%s.py" % rule_set, 'w') as f:
-            f.write(tr)
-        print("Done. Wrote to %s.py\n\n" % rule_set)
-        
-    for (rule_set, rules) in rules_collections:
-        tr = translate_rules(rules, rule_sets, rule_set)
+    for (module_name, ast) in ehr_ast:
         StopTranslating.count = 0
-        write(tr, rule_set)
-        #interpreter.give(rules, rule_sets, rule_set)
+        translation = translate_rules(ast, module_names, module_name)
+
+        file_name = "%s.py" % module_name
+        with open(ehr_path + file_name, 'w') as f:
+            f.write(translation)
+        print("Done. Wrote to %s\n\n" % file_name)
 
 if __name__ == "__main__":
     import argparse
@@ -64,8 +56,6 @@ if __name__ == "__main__":
 
     parse_by_default = True  # default parse mode
     if (parse_by_default or args.parse) and (not args.noparse):
-        parse_and_pickle()
-    else:
-        unpickle_rules()
+        parse()
 
-    translate_all()
+    translate()
