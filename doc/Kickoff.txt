@@ -1,0 +1,46 @@
+
+Cassandra EHR Translator
+========================
+Arjun G. Menon
+
+
+Getting it
+-----------
+
+A zipball of the entire source for the translator and translated EHR as well as the original EHR
+ and library dependencies of the translator can be obtained at:
+
+https://github.com/novarc/Cassandra/zipball/master
+
+Additionally, you can browse the source code online at:
+
+https://github.com/novarc/Cassandra
+
+
+Running it
+-----------
+
+Simply run 'translator.py' with a Py3k interpreter.
+
+The code has been developed using CPython 3.2, so I do not know if it will work with earlier 
+versions of py3k.
+
+Upon execution, the translation should print out something like:
+
+-------------------
+Translating 137 rules in spine...
+Done. Wrote to spine.py
+
+Translating 35 rules in pds...
+Done. Wrote to pds.py
+
+Translating 168 rules in hospital...
+Done. Wrote to hospital.py
+
+Translating 37 rules in ra...
+Done. Wrote to ra.py
+-------------------
+
+This signifies successful translation.
+
+The translated files are output to the folder 'ehr'.
