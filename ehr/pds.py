@@ -1,5 +1,5 @@
 from cassandra import *
-import ehr.spine, ehr.hospital, ehr.ra
+import ehr.hospital, ehr.ra, ehr.spine
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
