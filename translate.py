@@ -15,6 +15,7 @@
 # under the License.
 
 from translate_module import *
+import pickle
 
 ehr_path = "ehr/"
 module_names = ['spine', 'pds', 'hospital', 'ra']
@@ -38,8 +39,8 @@ def translate():
     with open(ehr_path+"parse_tree.pickle", "rb") as f:
         ehr_ast = pickle.load(f)
 
+    StopTranslating.count = 0
     for (module_name, ast) in ehr_ast:
-        StopTranslating.count = 0
         translation = translate_module(ast, module_names, module_name)
 
         file_name = "%s.py" % module_name
@@ -54,7 +55,7 @@ if __name__ == "__main__":
     argparser.add_argument( '-P', '--noparse', default=False, action='store_true', help='Do not parse rules. (Use previously pickled AST.)' )
     args = argparser.parse_args()
 
-    parse_by_default = True  # default parse mode
+    parse_by_default = False  # default parse mode
     if (parse_by_default or args.parse) and (not args.noparse):
         parse()
 
