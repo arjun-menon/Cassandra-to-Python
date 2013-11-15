@@ -1,5 +1,5 @@
 from cassandra import *
-import ehr.ra, ehr.spine, ehr.pds
+import ehr.ra, ehr.pds, ehr.spine
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -38,8 +38,8 @@ def clinician_regs(cli, spcty): # A1.1.3
     return len({
         True for subj, role in hasActivated if 
         role.name == "Register-clinician" and 
-        role.spcty == spcty and 
-        role.cli == cli
+        role.cli == cli and 
+        role.spcty == spcty
     })
 
 class Clinician(Role):
@@ -50,8 +50,8 @@ class Clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Register-clinician" and 
-            role.spcty == self.spcty and 
             role.cli == cli and 
+            role.spcty == self.spcty and 
             no_main_role_active(role.cli)
         }
     
@@ -398,8 +398,8 @@ def other_agent_regs(x, ag, pat): # A1.6.10
     return len({
         True for subj, role in hasActivated if 
         role.name == "Register-agent" and 
-        role.ag == ag and 
         role.pat == pat and 
+        role.ag == ag and 
         x != subj
     })
 
@@ -489,10 +489,10 @@ def other_consent_to_referral_requests(x, pat, ra, org, cli, spcty): # A2.1.7
     return len({
         True for subj, role in hasActivated if 
         role.name == "Request-consent-to-referral" and 
-        role.org == org and 
         role.ra == ra and 
-        role.cli == cli and 
         role.pat == pat and 
+        role.cli == cli and 
+        role.org == org and 
         role.spcty == spcty and 
         x != subj
     })
@@ -510,11 +510,11 @@ class Consent_to_referral(Role):
             role1.name == "Patient" and 
             role2.name == "Request-consent-to-referral" and 
             subj1 == pat and 
-            role2.spcty == self.spcty and 
+            role2.cli == self.cli and 
             role2.ra == self.ra and 
             role2.org == self.org and 
-            role2.pat == pat and 
-            role2.cli == self.cli
+            role2.spcty == self.spcty and 
+            role2.pat == pat
         }
     
     def canActivate_2(self, pat): # A2.1.9
@@ -524,11 +524,11 @@ class Consent_to_referral(Role):
             role2.name == "Request-consent-to-referral" and 
             subj1 == pat and 
             role1.pat == pat and 
-            role2.spcty == self.spcty and 
+            role2.cli == self.cli and 
             role2.ra == self.ra and 
             role2.org == self.org and 
-            role2.pat == pat and 
-            role2.cli == self.cli
+            role2.spcty == self.spcty and 
+            role2.pat == pat
         }
     
     def canActivate_3(self, cg): # A2.1.10
@@ -537,10 +537,10 @@ class Consent_to_referral(Role):
             role1.name == "Caldicott-guardian" and 
             role2.name == "Request-consent-to-referral" and 
             subj1 == cg and 
-            role2.org == self.org and 
             role2.ra == self.ra and 
-            role2.cli == self.cli and 
             role2.pat == self.pat and 
+            role2.cli == self.cli and 
+            role2.org == self.org and 
             role2.spcty == self.spcty
         }
     
@@ -552,10 +552,10 @@ def other_referral_consents(x, pat, ra, org, cli, spcty): # A2.1.12
     return len({
         True for subj, role in hasActivated if 
         role.name == "Consent-to-referral" and 
-        role.org == org and 
         role.ra == ra and 
-        role.cli == cli and 
         role.pat == pat and 
+        role.cli == cli and 
+        role.org == org and 
         role.spcty == spcty and 
         x != subj
     })
@@ -572,14 +572,14 @@ class Ext_treating_clinician(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Consent-to-referral" and 
             role2.name == "NHS-clinician-cert" and 
-            role1.spcty == self.spcty and 
             role1.ra == self.ra and 
-            role1.org == self.org and 
             role1.pat == self.pat and 
             role1.cli == cli and 
-            role2.spcty == self.spcty and 
-            role2.org == self.org and 
+            role1.org == self.org and 
+            role1.spcty == self.spcty and 
             role2.cli == cli and 
+            role2.org == self.org and 
+            role2.spcty == self.spcty and 
             canActivate(role1.ra, Registration_authority()) and 
             no_main_role_active(role2.cli)
         }
@@ -589,14 +589,14 @@ class Ext_treating_clinician(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.ra.hasActivated if 
             role1.name == "Consent-to-referral" and 
             role2.name == "NHS-clinician-cert" and 
-            role1.spcty == self.spcty and 
             role1.ra == self.ra and 
-            role1.org == self.org and 
             role1.pat == self.pat and 
             role1.cli == cli and 
-            role2.spcty == self.spcty and 
-            role2.org == self.org and 
+            role1.org == self.org and 
+            role1.spcty == self.spcty and 
             role2.cli == cli and 
+            role2.org == self.org and 
+            role2.spcty == self.spcty and 
             canActivate(role1.ra, Registration_authority()) and 
             no_main_role_active(role2.cli)
         }
@@ -745,9 +745,9 @@ class Third_party_consent(Role):
             role1.name == "Third-party" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == x and 
-            role2.x == x and 
             role2.id == self.id and 
-            role2.pat == self.pat
+            role2.pat == self.pat and 
+            role2.x == x
         }
     
     def canActivate_2(self, cg): # A2.3.17
@@ -756,9 +756,9 @@ class Third_party_consent(Role):
             role1.name == "Caldicott-guardian" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == cg and 
-            role2.x == self.x and 
             role2.id == self.id and 
-            role2.pat == self.pat
+            role2.pat == self.pat and 
+            role2.x == self.x
         }
     
     def canDeactivate(self, *params):
@@ -917,8 +917,8 @@ class Register_team_episode(Role):
             role1.name == "Clinician" and 
             role2.name == "Register-team-member" and 
             subj1 == cli and 
-            role2.team == self.team and 
             role2.cli == cli and 
+            role2.team == self.team and 
             canActivate(self.pat, Patient()) and 
             team_episode_regs(self.pat, role2.team) == 0
         }
@@ -947,16 +947,16 @@ class Register_team_episode(Role):
             role2.name == "Register-team-member" and 
             subj1 == cli and 
             subj2 == x and 
-            role2.team == self.team and 
-            role2.cli == cli
+            role2.cli == cli and 
+            role2.team == self.team
         }
 
 def team_episode_regs(pat, team): # A3.3.7
     return len({
         True for subj, role in hasActivated if 
         role.name == "Register-team-episode" and 
-        role.team == team and 
-        role.pat == pat
+        role.pat == pat and 
+        role.team == team
     })
 
 class Head_of_ward(Role):
@@ -1062,8 +1062,8 @@ def ward_member_regs(cli, ward, spcty): # A3.5.7
     return len({
         True for subj, role in hasActivated if 
         role.name == "Register-ward-member" and 
-        role.spcty == spcty and 
         role.cli == cli and 
+        role.spcty == spcty and 
         role.ward == ward
     })
 
@@ -1172,8 +1172,8 @@ class ADB_treating_clinician(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Register-team-member" and 
             role2.name == "Register-team-episode" and 
-            role1.spcty == self.spcty and 
             role1.cli == cli and 
+            role1.spcty == self.spcty and 
             role2.pat == self.pat and 
             canActivate(role1.cli, Clinician(role1.spcty)) and 
             self.group == role2.team
@@ -1184,8 +1184,8 @@ class ADB_treating_clinician(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Register-ward-member" and 
             role2.name == "Register-ward-episode" and 
-            role1.spcty == self.spcty and 
             role1.cli == cli and 
+            role1.spcty == self.spcty and 
             role2.pat == self.pat and 
             canActivate(role1.cli, Clinician(role1.spcty)) and 
             self.group == role2.ward
@@ -1257,7 +1257,7 @@ class Concealed_by_patient(Role):
         return self.canActivate_1(*params) or self.canActivate_2(*params)
     
     def canActivate_1(self, pat): # A4.2.1
-        #A4.2.1 todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
+        #A4.2.1 todo: unable to bind vars {'from_time', 'authors', 'groups', 'subjects', 'ids', 'to_time'} in constraint compare_seq(self.what, (subj, ids, authors, groups, subjects, from_time, to_time))
         #hasActivated(pat, Patient())
         #count-concealed-by-patient(n, pat)
         #what = (pat,ids,authors,groups,subjects,from-time,to-time)
@@ -1266,7 +1266,7 @@ class Concealed_by_patient(Role):
         pass
     
     def canActivate_2(self, ag): # A4.2.2
-        #A4.2.2 todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
+        #A4.2.2 todo: unable to bind vars {'from_time', 'authors', 'groups', 'subjects', 'ids', 'to_time'} in constraint compare_seq(self.what, (role.pat, ids, authors, groups, subjects, from_time, to_time))
         #hasActivated(ag, Agent(pat))
         #count-concealed-by-patient(n, pat)
         #what = (pat,ids,authors,groups,subjects,from-time,to-time)
@@ -1301,7 +1301,7 @@ class Concealed_by_patient(Role):
         }
 
 def count_concealed_by_patient(pat): # A4.2.7
-    #A4.2.7 todo: could not translate constraint: what = (pat,ids,authors,groups,subjects,from-time,to-time)
+    #A4.2.7 todo: unable to bind vars {'from_time', 'authors', 'groups', 'subjects', 'what', 'ids', 'to_time'} in constraint compare_seq(what, (pat, ids, authors, groups, subjects, from_time, to_time))
     #hasActivated(x, Concealed-by-patient(y))
     #what = (pat,ids,authors,groups,subjects,from-time,to-time)
     #who = (orgs1,readers1,groups1,spctys1)
@@ -1309,7 +1309,7 @@ def count_concealed_by_patient(pat): # A4.2.7
     pass
 
 def count_concealed_by_patient2(a, b): # A4.2.8
-    #A4.2.8 todo: could not translate constraint: a = (pat,id)
+    #A4.2.8 todo: unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id))
     #hasActivated(x, Concealed-by-patient(what, whom, start, end))
     #a = (pat,id)
     #b = (org,reader,group,spcty)
