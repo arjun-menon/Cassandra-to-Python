@@ -21,7 +21,7 @@ module_names = ['spine', 'pds', 'hospital', 'ra']
 
 def parse():
     from datetime import datetime
-    from ehrparse import parse_ehr_file
+    from grammar import parse_ehr_file
     
     print("Parsing... ", end='')
     start_time = datetime.now()
