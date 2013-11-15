@@ -1,5 +1,5 @@
 from cassandra import *
-import ehr.ra, ehr.pds, ehr.hospital
+import ehr.ra, ehr.hospital, ehr.pds
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -16,9 +16,9 @@ class Spine_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "NHS-clinician-cert" and 
-            role.cli == cli and 
-            role.org == self.org and 
             role.spcty == self.spcty and 
+            role.org == self.org and 
+            role.cli == cli and 
             canActivate(self.ra, Registration_authority()) and 
             Current_time() in vrange(role.start, role.end) and 
             no_main_role_active(role.cli)
@@ -28,9 +28,9 @@ class Spine_clinician(Role):
         return {
             True for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-clinician-cert" and 
-            role.cli == cli and 
-            role.org == self.org and 
             role.spcty == self.spcty and 
+            role.org == self.org and 
+            role.cli == cli and 
             canActivate(self.ra, Registration_authority()) and 
             Current_time() in vrange(role.start, role.end) and 
             no_main_role_active(role.cli)
@@ -487,9 +487,9 @@ class Third_party_consent(Role):
             role1.name == "Third-party" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == x and 
-            role2.id == self.id and 
             role2.pat == self.pat and 
-            role2.x == x
+            role2.x == x and 
+            role2.id == self.id
         }
     
     def canActivate_2(self, cli): # S2.2.15
@@ -498,9 +498,9 @@ class Third_party_consent(Role):
             role1.name == "Spine-clinician" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == cli and 
-            role2.id == self.id and 
             role2.pat == self.pat and 
             role2.x == self.x and 
+            role2.id == self.id and 
             canActivate(subj1, Treating_clinician(role2.pat, role1.org, role1.spcty))
         }
 
@@ -508,8 +508,8 @@ def third_party_consent(pat, id): # S2.2.17
     return {
         role.consenter for subj, role in hasActivated if 
         role.name == "Third-party-consent" and 
-        role.id == id and 
-        role.pat == pat
+        role.pat == pat and 
+        role.id == id
     }
 
 class Request_consent_to_treatment(Role):
@@ -540,8 +540,8 @@ class Request_consent_to_treatment(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Spine-clinician" and 
-            role.org2 == self.org2 and 
             role.spcty2 == self.spcty2 and 
+            role.org2 == self.org2 and 
             subj == cli2
         }
     
@@ -576,9 +576,9 @@ def other_consent_to_treatment_requests(x, pat, org, cli, spcty): # S2.3.8
     return len({
         True for subj, role in hasActivated if 
         role.name == "Request-consent-to-treatment" and 
-        role.cli == cli and 
         role.pat == pat and 
         role.org == org and 
+        role.cli == cli and 
         role.spcty == spcty and 
         x != subj
     })
@@ -596,9 +596,9 @@ class Consent_to_treatment(Role):
             role1.name == "Patient" and 
             role2.name == "Request-consent-to-treatment" and 
             subj1 == pat and 
-            role2.cli == self.cli and 
             role2.pat == pat and 
             role2.org == self.org and 
+            role2.cli == self.cli and 
             role2.spcty == self.spcty
         }
     
@@ -609,9 +609,9 @@ class Consent_to_treatment(Role):
             role2.name == "Request-consent-to-treatment" and 
             subj1 == ag and 
             role1.pat == self.pat and 
-            role2.cli == self.cli and 
             role2.pat == self.pat and 
             role2.org == self.org and 
+            role2.cli == self.cli and 
             role2.spcty == self.spcty
         }
     
@@ -621,8 +621,8 @@ class Consent_to_treatment(Role):
             role1.name == "Spine-clinician" and 
             role2.name == "Request-consent-to-treatment" and 
             subj1 == cli1 and 
-            role1.org == self.org and 
             role1.spcty == self.spcty and 
+            role1.org == self.org and 
             role2.pat == self.pat and 
             role2.org == self.org and 
             role2.spcty == self.spcty and 
@@ -799,9 +799,9 @@ class Treating_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Consent-to-treatment" and 
-            role.cli == cli and 
             role.pat == self.pat and 
             role.org == self.org and 
+            role.cli == cli and 
             role.spcty == self.spcty
         }
     
@@ -819,9 +819,9 @@ class Treating_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Referrer" and 
-            role.cli == cli and 
             role.pat == self.pat and 
             role.org == self.org and 
+            role.cli == cli and 
             role.spcty == self.spcty and 
             canActivate(role.cli, Spine_clinician(Wildcard(), role.org, role.spcty))
         }
@@ -991,9 +991,9 @@ class Concealed_by_spine_patient(Role):
             role1.name == "Spine-clinician" and 
             role2.name == "Conceal-request" and 
             subj1 == cli and 
-            role2.end == self.end and 
             role2.start == self.start and 
             role2.who == self.who and 
+            role2.end == self.end and 
             role2.what == self.what and 
             canActivate(subj1, Treating_clinician(Wildcard(), role1.org, role1.spcty))
         }
@@ -1019,7 +1019,7 @@ class Concealed_by_spine_patient(Role):
         }
 
 def count_concealed_by_spine_patient(a, b): # S4.2.12
-    #S4.2.12 todo: unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id))
+    #S4.2.12 todo: unable to bind vars {'pat', 'id'} in constraint compare_seq(a, (pat, id))
     #hasActivated(x, Concealed-by-spine-patient(what, who, start, end))
     #a = (pat,id)
     #b = (org,reader,spcty)
