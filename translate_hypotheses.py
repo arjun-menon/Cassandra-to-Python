@@ -20,11 +20,9 @@ They are the "conditions" that have to be satisfied for a horn clause to be true
 Hypotheses make up bulk of the translation work.
 """
 
-import pickle, itertools
-from string import Template
-
 from helpers import *
 from ast_nodes import *
+from string import Template
 
 class StopTranslating(Exception):
     count = 0
