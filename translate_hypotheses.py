@@ -173,6 +173,12 @@ class HypothesesTranslator(object):
                 func_name, func_args = h2u(c.left.name), [str(a) for a in c.left.args]
                 return self.substitution_func_gen([cr]+func_args, func_name + 
                             '(' + ", ".join(p(a) for a in func_args) + ') ' + op + ' ' + p(cr))
+            
+            elif type(c.left) == Variable and type(c.right) == Tuple:
+                lhs = repr(c.left)
+                tuple_elems = [h2u(repr(elem)) for elem in c.right.elems]
+                return self.substitution_func_gen([lhs]+tuple_elems, 
+                        'compare_seq(' + p(lhs) + ', ' + '(' + ', '.join(p(elem) for elem in tuple_elems) + '))' )
         
         raise self.stopTranslating("could not translate constraint: " + repr(c))
     
