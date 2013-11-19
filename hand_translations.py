@@ -32,6 +32,294 @@ hand_translations = {
     # canActivate(cli, General-practitioner(pat)) <-
     # canActivate(cli, Treating-clinician(pat, org, spcty)), 
     # spcty = "GP" 
+    #
+    # Hand Translation Reason: unable to bind vars {'spcty'} in constraint spcty == "GP"
+    #
     "S3.3.5" : r"""return canActivate(cli, Registration_authority(self.org, Wildcard(), "GP"))""",
+
+    # (S4.2.1)
+    # canActivate(pat, Conceal-request(what, who, start, end)) <-
+    # hasActivated(pat, Patient()), 
+    # count-conceal-requests(n, pat), 
+    # (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)), 
+    # n < 100 
+    #
+    # Hand Translation Reason: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
+    #
+    "S4.2.1" : r"""return {
+    # TODO
+}""",
+
+    # (S4.2.2)
+    # canActivate(ag, Conceal-request(what, who, start, end)) <-
+    # hasActivated(ag, Agent(pat)), 
+    # count-conceal-requests(n, pat), 
+    # (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)), 
+    # n < 100
+    #
+    # Hand Translation Reason: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)) 
+    # 
+    "S4.2.2" : r"""return {
+    # TODO
+}""",
+
+    # (S4.2.5)
+    # canDeactivate(cli, x, Conceal-request(what, whom, start, end)) <-
+    # hasActivated(cli, Spine-clinician(ra, org, spcty)), 
+    # canActivate(cli, General-practitioner(pat)), 
+    # pi7_1(what) = pat 
+    #
+    # Hand Translation Reason: unable to bind vars {'pat'} in constraint pi7_1(self.what) == pat 
+    #
+    "S4.2.5" : r"""return {
+    # TODO
+}""",
+
+    # (S4.2.7)
+    # count-conceal-requests(count<y>, pat) <-
+    # hasActivated(x, Conceal-request(y)), 
+    # (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)), 
+    # y = (what,who,start,end) 
+    #
+    # Hand Translation Reason: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)) 
+    #
+    "S4.2.7" : r"""return {
+    # TODO
+}""",
+
+    # (S4.2.12)
+    # count-concealed-by-spine-patient(count<x>, a, b) <-
+    # hasActivated(x, Concealed-by-spine-patient(what, who, start, end)), 
+    # a = (pat,id), 
+    # b = (org,reader,spcty), 
+    # what = (pat,ids,orgs,authors,subjects,from-time,to-time), 
+    # whom = (orgs1,readers1,spctys1), 
+    # Get-spine-record-org(pat, id) in orgs, 
+    # Get-spine-record-author(pat, id) in authors, 
+    # sub in Get-spine-record-subjects(pat, id), 
+    # sub in subjects, 
+    # Get-spine-record-time(pat, id) in [from-time, to-time], 
+    # id in ids, 
+    # org in orgs1, 
+    # reader in readers1, 
+    # spcty in spctys1, 
+    # Current-time() in [start, end], 
+    # Get-spine-record-third-parties(pat, id) = emptyset, 
+    # "non-clinical" notin Get-spine-record-subjects(pat, id) 
+    #
+    # Hand Translation Reason: unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id)) 
+    #
+    "S4.2.12" : r"""return {
+    # TODO
+}""",
+
+    # (S5.3.1)
+    # permits(pat, Read-spine-record-item(pat, id)) <-
+    # hasActivated(pat, Patient()), 
+    # hasActivated(x, One-off-consent(pat)), 
+    # count-concealed-by-spine-patient(n, a, b), 
+    # count-concealed-by-spine-clinician(m, pat, id), 
+    # third-party-consent(consenters, pat, id), 
+    # n = 0, 
+    # m = 0, 
+    # a = (pat,id), 
+    # b = ("No-org",pat,"No-spcty"), 
+    # Get-spine-record-third-parties(pat, id) subseteq consenters 
+    #
+    # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b) 
+    #
+    "S5.3.1" : r"""return {
+    # TODO
+}""",
+
+    # (S5.3.2)
+    # permits(ag, Read-spine-record-item(pat, id)) <-
+    # hasActivated(ag, Agent(pat)), 
+    # hasActivated(x, One-off-consent(pat)), 
+    # count-concealed-by-spine-patient(n, a, b), 
+    # count-concealed-by-spine-clinician(m, pat, id), 
+    # third-party-consent(consenters, pat, id), 
+    # n = 0, 
+    # m = 0, 
+    # a = (pat,id), 
+    # b = ("No-org",ag,"No-spcty"), 
+    # Get-spine-record-third-parties(pat, id) subseteq consenters 
+    #
+    # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b) 
+    #
+    "S5.3.2" : r"""return {
+    # TODO
+}""",
+
+    # (S5.3.4)
+    # permits(cli, Read-spine-record-item(pat, id)) <-
+    # hasActivated(cli, Spine-clinician(ra, org, spcty)), 
+    # hasActivated(x, One-off-consent(pat)), 
+    # canActivate(cli, Treating-clinician(pat, org, spcty)), 
+    # count-concealed-by-spine-patient(n, a, b), 
+    # n = 0, 
+    # a = (pat,id), 
+    # b = (org,cli,spcty), 
+    # Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty) 
+    #
+    # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b) 
+    #
+    "S5.3.4" : r"""return {
+    # TODO
+}""",
+
+    # (S5.3.5)
+    # permits(cli, Read-spine-record-item(pat, id)) <-
+    # hasActivated(cli, Spine-clinician(ra, org, spcty)), 
+    # hasActivated(x, One-off-consent(pat)), 
+    # canActivate(cli, Treating-clinician(pat, org, spcty)), 
+    # hasActivated(y, Authenticated-express-consent(pat, cli)), 
+    # Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty) 
+    #
+    # Hand Translation Reason: Not implemented: 3 hasAcs in a rule. 
+    #
+    "S5.3.5" : r"""return {
+    # TODO
+}""",
+
+    # (A4.2.1)
+    # canActivate(pat, Concealed-by-patient(what, who, start, end)) <-
+    # hasActivated(pat, Patient()), 
+    # count-concealed-by-patient(n, pat), 
+    # what = (pat,ids,authors,groups,subjects,from-time,to-time), 
+    # who = (orgs1,readers1,groups1,spctys1), 
+    # n < 100 
+    #
+    # Hand Translation Reason: unable to bind vars {'from_time', 'to_time', 'authors', 'groups', 'subjects', 'ids'} in constraint compare_seq(self.what, (subj, ids, authors, groups, subjects, from_time, to_time)) 
+    #
+    "A4.2.1" : r"""return {
+    True for subj, role in hasActivated if 
+    role.name == "Patient" and 
+    subj == pat and 
+    count_concealed_by_patient(subj) < 100 
+    #>>>
+    #self.what == (pat, *, *, *, *, *, *) and
+    #self.who == (*, *, *, *)
+    #<<<
+}""",
+
+    # (A4.2.2)
+    # canActivate(ag, Concealed-by-patient(what, who, start, end)) <-
+    # hasActivated(ag, Agent(pat)), 
+    # count-concealed-by-patient(n, pat), 
+    # what = (pat,ids,authors,groups,subjects,from-time,to-time), 
+    # who = (orgs1,readers1,groups1,spctys1), 
+    # n < 100 
+    #
+    # Hand Translation Reason: unable to bind vars {'from_time', 'to_time', 'authors', 'groups', 'subjects', 'ids'} in constraint compare_seq(self.what, (role.pat, ids, authors, groups, subjects, from_time, to_time)) 
+    #
+    "A4.2.2" : r"""return {
+    # TODO
+}""",
+
+    # (A4.2.7)
+    # count-concealed-by-patient(count<y>, pat) <-
+    # hasActivated(x, Concealed-by-patient(y)), 
+    # what = (pat,ids,authors,groups,subjects,from-time,to-time), 
+    # who = (orgs1,readers1,groups1,spctys1), 
+    # y = (what,who,start,end) 
+    #
+    # Hand Translation Reason: unable to bind vars {'from_time', 'to_time', 'authors', 'groups', 'subjects', 'ids', 'what'} in constraint compare_seq(what, (pat, ids, authors, groups, subjects, from_time, to_time)) 
+    #
+    "A4.2.7" : r"""return {
+    # TODO
+}""",
+
+    # (A4.2.8)
+    # count-concealed-by-patient2(count<x>, a, b) <-
+    # hasActivated(x, Concealed-by-patient(what, whom, start, end)), 
+    # a = (pat,id), 
+    # b = (org,reader,group,spcty), 
+    # what = (pat,ids,authors,groups,subjects,from-time,to-time), 
+    # whom = (orgs1,readers1,groups1,spctys1), 
+    # Get-record-author(pat, id) in authors, 
+    # Get-record-group(pat, id) in groups, 
+    # sub in Get-record-subjects(pat, id), 
+    # sub in subjects, 
+    # Get-record-time(pat, id) in [from-time, to-time], 
+    # id in ids, 
+    # org in orgs1, 
+    # reader in readers1, 
+    # group in groups1, 
+    # spcty in spctys1, 
+    # Current-time() in [start, end] 
+    #
+    # Hand Translation Reason: unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id)) 
+    #
+    "A4.2.8" : r"""return {
+    # TODO
+}""",
+
+    # (A5.3.1)
+    # permits(ag, Read-record-item(pat, id)) <-
+    # hasActivated(ag, Agent(pat)), 
+    # count-concealed-by-patient2(n, a, b), 
+    # count-concealed-by-clinician(m, pat, id), 
+    # third-party-consent(consenters, pat, id), 
+    # a = (pat,id), 
+    # b = ("No-org",ag,"No-group","No-spcty"), 
+    # n = 0, 
+    # m = 0, 
+    # Get-record-third-parties(pat, id) subseteq consenters 
+    #
+    # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
+    #
+    "A5.3.1" : r"""return {
+    # TODO
+}""",
+
+    # (A5.3.4)
+    # permits(cli, Read-record-item(pat, id)) <-
+    # hasActivated(cli, Clinician(spcty)), 
+    # canActivate(cli, ADB-treating-clinician(pat, group, spcty)), 
+    # count-concealed-by-patient2(n, a, b), 
+    # n = 0, 
+    # a = (pat,id), 
+    # b = ("ADB",cli,group,spcty), 
+    # Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty) 
+    #
+    # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
+    #
+    "A5.3.4" : r"""return {
+    # TODO
+}""",
+
+    # (A5.3.5)
+    # permits(cli, Read-record-item(pat, id)) <-
+    # hasActivated(cli, Ext-treating-clinician(pat, ra, org, spcty)), 
+    # count-concealed-by-patient2(n, a, b), 
+    # n = 0, 
+    # a = (pat,id), 
+    # b = (org,cli,"Ext-group",spcty), 
+    # Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty) 
+    #
+    # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
+    #
+    "A5.3.5" : r"""return {
+    # TODO
+}""",
+
+    # (A5.3.6)
+    # permits(pat, Read-record-item(pat, id)) <-
+    # hasActivated(pat, Patient()), 
+    # count-concealed-by-patient2(n, a, b), 
+    # count-concealed-by-clinician(m, pat, id), 
+    # third-party-consent(consenters, pat, id), 
+    # n = 0, 
+    # m = 0, 
+    # a = (pat,id), 
+    # b = ("No-org",pat,"No-group","No-spcty"), 
+    # Get-record-third-parties(pat, id) subseteq consenters 
+    #
+    # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
+    #
+    "A5.3.6" : r"""return {
+    # TODO
+}""",
 
 }
