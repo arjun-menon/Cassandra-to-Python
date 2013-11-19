@@ -26,28 +26,11 @@ from hand_translations import hand_translations
 from string import Template
 
 class StopTranslating(Exception):
-    count = 0
-    
     def __init__(self, rule, reason):
         self.rule, self.reason = rule, reason
-        self.msg = self.rule.name + " todo: " + self.reason
-        
-        StopTranslating.count += 1
-        print(StopTranslating.count, "TODO: ", self.reason, "\n", self.rule, "\n")
-        print("---------------------------------------------------------------------------\n")
-    
-    def __repr__(self):
-        return self.msg
-
-
-@typecheck
-def warn(message : str):
-    print(message)
-
 
 class CountFunctions:
     funcs = []
-
 
 def loc_trans(loc):
     if loc == '"PDS"':
@@ -58,7 +41,6 @@ def loc_trans(loc):
         loc = 'ra'
     
     return 'ehr.'+loc
-
 
 class HypothesesTranslator(object):
     def __init__(self, rule):
@@ -378,5 +360,8 @@ class HypothesesTranslator(object):
                 hypo_trans = hand_translations[self.rule.name]
             else:
                 rule_comment += "# !!! PLEASE PROVIDE HAND TRANSLATION !!!\n#\n"
+                print("Please provide a hand translation for: %s\n" % self.rule.name)
+                print("Reason:", st.reason, "\n\n", self.rule, "\n")
+                print("---------------------------------------------------------------------------\n")
         
         return rule_comment + hypo_trans

@@ -39,7 +39,6 @@ def translate():
     with open(ehr_path+"parse_tree.pickle", "rb") as f:
         ehr_ast = pickle.load(f)
 
-    StopTranslating.count = 0
     for (module_name, ast) in ehr_ast:
         translation = translate_module(ast, module_names, module_name)
 

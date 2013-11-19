@@ -66,8 +66,29 @@ def separate(alist, *conds):
 def p(s):
     return '{' + s + '}'
 
+def compare_seq(a, b):
+    """Compare sequences containing Wilcard() objects.
+    Wildcard objects, as their names suggest, are treated as wildcards.
+
+    Note: Python supports sequence type comparison. This function simply 
+    when used in conjuction with the Wildcard class, adds wildcard support.
+    """
+
+    if len(a) != len(b):
+        return False
+    for i, j in zip(a, b):
+        if isinstance(i, Wildcard) or isinstance(j, Wildcard):
+            continue
+        if i != j:
+            return False
+    return True
+
 def untranslated(obj):
     return "\n" + prefix_lines("untranslated:\n" + repr(obj), "#")
+
+@typecheck
+def warn(message : str):
+    print(message)
 
 ##################
 # Helper Classes
@@ -112,20 +133,3 @@ class vrange(object):
 class Wildcard(object):
     def __init__(self):
         pass
-
-def compare_seq(a, b):
-    """Compare sequences containing Wilcard() objects.
-    Wildcard objects, as their names suggest, are treated as wildcards.
-
-    Note: Python supports sequence type comparison. This function simply 
-    when used in conjuction with the Wildcard class, adds wildcard support.
-    """
-
-    if len(a) != len(b):
-        return False
-    for i, j in zip(a, b):
-        if isinstance(i, Wildcard) or isinstance(j, Wildcard):
-            continue
-        if i != j:
-            return False
-    return True
