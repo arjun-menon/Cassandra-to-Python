@@ -22,6 +22,7 @@ Hypotheses make up bulk of the translation work.
 
 from helpers import *
 from ast_nodes import *
+from hand_translations import hand_translations
 from string import Template
 
 class StopTranslating(Exception):
@@ -329,6 +330,11 @@ class HypothesesTranslator(object):
     
     @typecheck
     def translate_hypotheses(self, wrapper:[str,str]=['',''], pre_conditional:str='', group_key=None, countf_wildcard=False) -> lambda t: t:
+        rule_repr_without_name = repr(self.rule.concl)+ ' <-\n' + ', \n'.join([repr(i) for i in self.rule.hypos])
+        rule_comment = "#\n" + "".join( "# %s\n" % l for l in rule_repr_without_name.split('\n') ) + "#\n"
+        
+        hypo_trans = "return {}" # failsafe translation
+        
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
                                                   lambda h: type(h) == Constraint, 
@@ -362,8 +368,15 @@ class HypothesesTranslator(object):
             if len(conditionals):
                 tr += " and \n    ".join(conditionals)
             
-            return tr + ending
+            hypo_trans = tr + ending
         
         except StopTranslating as st:
-            #print(self.rule.name + " was not translated.")
-            return "".join("#" + str(x) + '\n' for x in [repr(st)] + self.rule.hypos) + "pass"
+            rule_comment += "# << AUTOMATIC TRANSLATION FAILURE >>\n# Reason: %s\n#\n" % st.reason
+            
+            if self.rule.name in hand_translations:
+                rule_comment += "# !!! USING HAND TRANSLATION INSTEAD !!!\n#\n"
+                hypo_trans = hand_translations[self.rule.name]
+            else:
+                rule_comment += "# !!! PLEASE PROVIDE HAND TRANSLATION !!!\n#\n"
+        
+        return rule_comment + hypo_trans
