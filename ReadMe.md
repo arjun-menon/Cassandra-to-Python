@@ -23,7 +23,7 @@ In the Cassandra implementation of the NHS EHR, there are many kinds of users - 
 
 The following figure (3.1) from page 30 of Moritz Becker’s thesis gives an overview of the components that constitute a *Cassandra* system:
 
-![Figure 3.1 from Moritz Becker's thesis](https://raw.github.com/arjungmenon/Cassandra-to-Python/master/figure-3.1-cassandra-components.png)
+![Figure 3.1 from Moritz Becker's thesis](https://raw.github.com/arjungmenon/Cassandra-to-Python/master/doc/figure-3.1-cassandra-components.png)
 
 The main goal of this project was to translate the core set of rules that determine what the user can do and who is authorized (which constitutes the *Policy component* in the figure above) into Python and to reorganize and remodel them into an object-oriented imperative form, *automatically*. Becker closely followed the requirements set forth by the NHS for their EHR while writing these policy rules. A complete listing of these policy rules can be found in Appendix A in Mortiz Y. Becker’s Dissertation under the title “Policy rules for NHS electronic health record system” or in the `ehr` folder.
 
