@@ -12,8 +12,101 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from typecheck import *
+from datetime import datetime
 from functools import reduce
+from typecheck import typecheck
+
+"""
+Auxiliary Classes & Functions
+"""
+
+#####################
+# Cassandra-specific
+#####################
+
+class  Role(object):
+    def __init__(self, name, **params):
+        self.name = name
+        self.__dict__.update(params)
+        self.prms = list(params)
+
+#    def __eq__(self, other):
+#        if self.name == other.name and self.args == other.args:
+#            self_params = [self.__dict__[p] for p in self.args]
+#            other_params = [other.__dict__[p] for p in other.args]
+#            
+#            matching_params = [a for (a, b) in zip(self_params, other_params)]
+#            if len(matching_params) == len(other_params):
+#                return True
+#        return False
+
+    def __repr__(self):
+        r = 'Role(name = ' + repr(self.name)
+        a = ', '.join( prm + ' = ' + repr(self.__dict__[prm]) for prm in self.prms )
+        return ( (r + ', ' + a) if a else r ) + ')'
+
+def canActivate(subject, role):
+    return role.canActivate(subject)
+
+def pi7_1(obj):
+    pass
+
+def Current_time():
+    return datetime.utcnow()
+
+
+#########################
+# Generic Helper Classes
+#########################
+
+class anyset(object): # because python sets don't allow unhashable types like other sets & dicts...
+    def __init__(self):
+        self.list_of_objects = []
+    def add(self, obj):
+        if not any_eq(obj, self.list_of_objects):
+            self.list_of_objects.append(obj)
+#    def __iter__(self):
+#        return self
+#    def __next__(self):
+#        for i in self.list_of_objects:
+#            yield i
+    def __iter__(self):
+        class ListIterator:
+            def __init__(self, me):
+                self.me = me
+                self.pos = 0
+            def __iter__(self):
+                return self
+            def __next__(self):
+                if self.pos == len(self.me):
+                    raise StopIteration
+                else:
+                    item = self.me[self.pos]
+                    self.pos += 1
+                    return item
+        return ListIterator(self.list_of_objects)
+
+class vrange(object):
+    def __init__(self, start, end):
+        self.start, self.end = start, end
+    def __contains__(self, val):
+        if not (val >= self.start and val <= self.end):
+            #raise CassandraException("test failed: %r is not in [%r, %r]" % (val, self.start, self.end))
+            return False
+        return True
+
+class Wildcard(object):
+    def __init__(self):
+        pass
+    def __eq__(self, other):
+        return True
+
+class Equals(object):
+    def __init__(self, entity):
+        self.entity = entity
+    def __eq__(self, other):
+        return self.entity == other
+
 
 ###################
 # Helper Functions
@@ -89,47 +182,3 @@ def untranslated(obj):
 @typecheck
 def warn(message : str):
     print(message)
-
-##################
-# Helper Classes
-##################
-
-class anyset(object): # because python sets don't allow unhashable types like other sets & dicts...
-    def __init__(self):
-        self.list_of_objects = []
-    def add(self, obj):
-        if not any_eq(obj, self.list_of_objects):
-            self.list_of_objects.append(obj)
-#    def __iter__(self):
-#        return self
-#    def __next__(self):
-#        for i in self.list_of_objects:
-#            yield i
-    def __iter__(self):
-        class ListIterator:
-            def __init__(self, me):
-                self.me = me
-                self.pos = 0
-            def __iter__(self):
-                return self
-            def __next__(self):
-                if self.pos == len(self.me):
-                    raise StopIteration
-                else:
-                    item = self.me[self.pos]
-                    self.pos += 1
-                    return item
-        return ListIterator(self.list_of_objects)
-
-class vrange(object):
-    def __init__(self, start, end):
-        self.start, self.end = start, end
-    def __contains__(self, val):
-        if not (val >= self.start and val <= self.end):
-            #raise CassandraException("test failed: %r is not in [%r, %r]" % (val, self.start, self.end))
-            return False
-        return True
-
-class Wildcard(object):
-    def __init__(self):
-        pass
