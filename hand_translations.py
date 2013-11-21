@@ -160,9 +160,17 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b) 
     #
-#     "S5.3.1" : r"""return {
-#     # TODO
-# }""",
+    "S5.3.1" : r"""return {
+        True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if
+        self.pat == pat and  
+        role1.name == "Patient" and 
+        subj1 == pat and 
+        role2.name == "One-off-consent" and 
+        role2.pat == pat and 
+        count_concealed_by_spine_patient((pat, self.id), ("No-org", pat, "No-spcty")) == 0 and 
+        count_concealed_by_spine_clinician(pat, self.id) == 0 and 
+        Get_spine_record_third_parties(pat, self.id) in consenters
+}""",
 
     # (S5.3.2)
     # permits(ag, Read-spine-record-item(pat, id)) <-
