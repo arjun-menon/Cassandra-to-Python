@@ -162,14 +162,15 @@ hand_translations = {
     #
     "S5.3.1" : r"""return {
         True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if
-        self.pat == pat and  
+        pat == self.pat and 
         role1.name == "Patient" and 
-        subj1 == pat and 
+        subj1 == self.pat and 
         role2.name == "One-off-consent" and 
-        role2.pat == pat and 
-        count_concealed_by_spine_patient((pat, self.id), ("No-org", pat, "No-spcty")) == 0 and 
-        count_concealed_by_spine_clinician(pat, self.id) == 0 and 
-        Get_spine_record_third_parties(pat, self.id) in consenters
+        role2.pat == self.pat and 
+        count_concealed_by_spine_patient((self.pat, self.id), ("No-org", self.pat, "No-spcty")) == 0 and 
+        count_concealed_by_spine_clinician(self.pat, self.id) == 0 and 
+        third_party_consent(Wildcard(), self.pat, self.id) and 
+        Get_spine_record_third_parties(self.pat, self.id) in consenters
 }""",
 
     # (S5.3.2)
