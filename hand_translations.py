@@ -395,9 +395,14 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
     #
-#     "A5.3.5" : r"""return {
-#     # TODO
-# }""",
+    "A5.3.5" : r"""return {
+        True for subj, role in hasActivated if 
+        subj == cli and 
+        role.name == "Ext-treating-clinician" and 
+        role.pat == self.pat and 
+        count_concealed_by_patient2((self.pat, self.id), (role.org, Wildcard(), "Ext-group", role.spcty)) == 0 and 
+        Get_record_subjects(self.pat, self.id) subseteq Permitted_subjects(role.spcty)
+}""",
 
     # (A5.3.6)
     # permits(pat, Read-record-item(pat, id)) <-
