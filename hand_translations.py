@@ -322,9 +322,23 @@ hand_translations = {
     #
     # Hand Translation Reason: unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id)) 
     #
-#     "A4.2.8" : r"""return {
-#     # TODO
-# }""",
+    "A4.2.8" : r"""return {
+        True for subj, role in hasActivated if 
+        role.name == "Concealed-by-patient" and 
+        compare_seq(role.what, (a.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
+        compare_seq(role.who, (Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
+        Get_record_author(a.pat, a.id) in role.what.authors and 
+        Get_record_group(a.pat, a.id) in role.what.groups and 
+        (True for sub in role.what.subjects if 
+            sub in Get_record_subjects(a.pat, a.id)) and 
+        Get_record_time(a.pat, a.id) in [role.what.from_time, role.what.to_time] and 
+        a.id in role.what.ids and 
+        b.org in role.who.orgs1 and 
+        b.reader in role.who.readers1 and 
+        b.group in role.who.groups1 and 
+        b.spcty in role.who.spctys1 and 
+        Current_time() in vrange(role.start, role.end)
+}""",
 
     # (A5.3.1)
     # permits(ag, Read-record-item(pat, id)) <-
