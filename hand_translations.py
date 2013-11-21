@@ -234,9 +234,18 @@ hand_translations = {
     #
     # Hand Translation Reason: Not implemented: 3 hasAcs in a rule. 
     #
-#     "S5.3.5" : r"""return {
-#     # TODO
-# }""",
+    "S5.3.5" : r"""return {
+        True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated for (subj3, role3) in hasActivated if 
+        role1.name == "Spine-clinician" and 
+        role2.name == "One-off-consent" and 
+        role3.name == "Authenticated-express-consent" and 
+        role2.pat == self.pat and 
+        role2.pat == role3.pat and 
+        role1.org == role3.org and 
+        role1.spcty == role3.spcty and 
+        canActivate(subj1, Treating_clinician(role2.pat, role1.org, role1.spcty)) and 
+        Get_spine_record_subjects(self.pat, self.id) in Permitted_subjects(role1.spcty)
+}""",
 
     # (A4.2.1)
     # canActivate(pat, Concealed-by-patient(what, who, start, end)) <-
