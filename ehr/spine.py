@@ -1,5 +1,5 @@
-from cassandra import *
-import ehr.ra, ehr.hospital, ehr.pds
+from auxiliary import *
+import ehr.pds, ehr.hospital, ehr.ra
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -23,8 +23,8 @@ class Spine_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "NHS-clinician-cert" and 
-            role.spcty == self.spcty and 
             role.cli == cli and 
+            role.spcty == self.spcty and 
             role.org == self.org and 
             canActivate(self.ra, Registration_authority()) and 
             Current_time() in vrange(role.start, role.end) and 
@@ -42,8 +42,8 @@ class Spine_clinician(Role):
         return {
             True for subj, role in ehr.ra.hasActivated if 
             role.name == "NHS-clinician-cert" and 
-            role.spcty == self.spcty and 
             role.cli == cli and 
+            role.spcty == self.spcty and 
             role.org == self.org and 
             canActivate(self.ra, Registration_authority()) and 
             Current_time() in vrange(role.start, role.end) and 
@@ -705,8 +705,8 @@ class Third_party_consent(Role):
             role2.name == "Request-third-party-consent" and 
             subj1 == x and 
             role2.id == self.id and 
-            role2.x == x and 
-            role2.pat == self.pat
+            role2.pat == self.pat and 
+            role2.x == x
         }
     
     def canActivate_2(self, cli): # S2.2.15
@@ -722,8 +722,8 @@ class Third_party_consent(Role):
             role2.name == "Request-third-party-consent" and 
             subj1 == cli and 
             role2.id == self.id and 
-            role2.x == self.x and 
             role2.pat == self.pat and 
+            role2.x == self.x and 
             canActivate(subj1, Treating_clinician(role2.pat, role1.org, role1.spcty))
         }
 
@@ -835,10 +835,10 @@ def other_consent_to_treatment_requests(x, pat, org, cli, spcty): # S2.3.8
     return len({
         True for subj, role in hasActivated if 
         role.name == "Request-consent-to-treatment" and 
-        role.spcty == spcty and 
-        role.org == org and 
         role.cli == cli and 
         role.pat == pat and 
+        role.spcty == spcty and 
+        role.org == org and 
         x != subj
     })
 
@@ -860,10 +860,10 @@ class Consent_to_treatment(Role):
             role1.name == "Patient" and 
             role2.name == "Request-consent-to-treatment" and 
             subj1 == pat and 
-            role2.spcty == self.spcty and 
             role2.cli == self.cli and 
-            role2.org == self.org and 
-            role2.pat == pat
+            role2.spcty == self.spcty and 
+            role2.pat == pat and 
+            role2.org == self.org
         }
     
     def canActivate_2(self, ag): # S2.3.10
@@ -878,10 +878,10 @@ class Consent_to_treatment(Role):
             role2.name == "Request-consent-to-treatment" and 
             subj1 == ag and 
             role1.pat == self.pat and 
-            role2.spcty == self.spcty and 
-            role2.org == self.org and 
             role2.cli == self.cli and 
-            role2.pat == self.pat
+            role2.pat == self.pat and 
+            role2.spcty == self.spcty and 
+            role2.org == self.org
         }
     
     def canActivate_3(self, cli1): # S2.3.11
@@ -898,9 +898,9 @@ class Consent_to_treatment(Role):
             subj1 == cli1 and 
             role1.spcty == self.spcty and 
             role1.org == self.org and 
+            role2.pat == self.pat and 
             role2.spcty == self.spcty and 
             role2.org == self.org and 
-            role2.pat == self.pat and 
             canActivate(subj1, Treating_clinician(role2.pat, role2.org, role2.spcty))
         }
 
@@ -1002,9 +1002,9 @@ def other_consent_to_group_treatment_requests(x, pat, org, group): # S2.4.8
     return len({
         True for subj, role in hasActivated if 
         role.name == "Request-consent-to-group-treatment" and 
+        role.pat == pat and 
         role.group == group and 
         role.org == org and 
-        role.pat == pat and 
         x != subj
     })
 
@@ -1027,8 +1027,8 @@ class Consent_to_group_treatment(Role):
             role2.name == "Request-consent-to-group-treatment" and 
             subj1 == pat and 
             role2.group == self.group and 
-            role2.org == self.org and 
-            role2.pat == pat
+            role2.pat == pat and 
+            role2.org == self.org
         }
     
     def canActivate_2(self, ag): # S2.4.10
@@ -1043,9 +1043,9 @@ class Consent_to_group_treatment(Role):
             role2.name == "Request-consent-to-group-treatment" and 
             subj1 == ag and 
             role1.pat == self.pat and 
+            role2.pat == self.pat and 
             role2.group == self.group and 
-            role2.org == self.org and 
-            role2.pat == self.pat
+            role2.org == self.org
         }
     
     def canActivate_3(self, cli1): # S2.4.11
@@ -1061,9 +1061,9 @@ class Consent_to_group_treatment(Role):
             role2.name == "Request-consent-to-group-treatment" and 
             subj1 == cli1 and 
             role1.org == self.org and 
+            role2.pat == self.pat and 
             role2.group == self.group and 
             role2.org == self.org and 
-            role2.pat == self.pat and 
             canActivate(subj1, Treating_clinician(role2.pat, role2.org, role1.spcty))
         }
 
@@ -1148,10 +1148,10 @@ class Treating_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Consent-to-treatment" and 
-            role.spcty == self.spcty and 
             role.cli == cli and 
-            role.org == self.org and 
-            role.pat == self.pat
+            role.spcty == self.spcty and 
+            role.pat == self.pat and 
+            role.org == self.org
         }
     
     def canActivate_2(self, cli): # S3.3.2
@@ -1163,8 +1163,8 @@ class Treating_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Spine-emergency-clinician" and 
-            role.org == self.org and 
             role.pat == self.pat and 
+            role.org == self.org and 
             subj == cli and 
             self.spcty == "A_and_E"
         }
@@ -1178,10 +1178,10 @@ class Treating_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Referrer" and 
-            role.spcty == self.spcty and 
             role.cli == cli and 
-            role.org == self.org and 
+            role.spcty == self.spcty and 
             role.pat == self.pat and 
+            role.org == self.org and 
             canActivate(role.cli, Spine_clinician(Wildcard(), role.org, role.spcty))
         }
     
@@ -1228,9 +1228,9 @@ class Group_treating_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Consent-to-group-treatment" and 
+            role.pat == self.pat and 
             role.group == self.group and 
             role.org == self.org and 
-            role.pat == self.pat and 
             canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty)) and 
             canActivate(self.ra, Registration_authority())
         }
@@ -1245,9 +1245,9 @@ class Group_treating_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Consent-to-group-treatment" and 
+            role.pat == self.pat and 
             role.group == self.group and 
             role.org == self.org and 
-            role.pat == self.pat and 
             canActivate(cli, ehr.ra.Workgroup_member(role.org, role.group, self.spcty)) and 
             canActivate(self.ra, Registration_authority())
         }
@@ -1351,7 +1351,12 @@ class Conceal_request(Role):
         # !!! USING HAND TRANSLATION INSTEAD !!!
         #
         return {
-            # TODO
+                True for subj, role in hasActivated if 
+                role.name == "Conceal-request" and 
+                subj == pat and 
+                compare_seq(self.what, (pat,ids,orgs,authors,subjects,from-time,to-time)) and 
+                compare_seq(self.who, (orgs1,readers1,spctys1)) and 
+                count_conceal_requests(pat) < 100
         }
     
     def canActivate_2(self, ag): # S4.2.2
@@ -1368,7 +1373,12 @@ class Conceal_request(Role):
         # !!! USING HAND TRANSLATION INSTEAD !!!
         #
         return {
-            # TODO
+                True for subj, role in hasActivated if 
+                role.name == "Agent" and 
+                subj == ag and 
+                count_conceal_requests(role.pat) < 100 and 
+                compare_seq(self.what, (role.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
+                compare_seq(self.who, (Wildcard(), Wildcard(), Wildcard()))
         }
     
     def canDeactivate(self, *params):
@@ -1452,10 +1462,10 @@ class Concealed_by_spine_patient(Role):
             role1.name == "Spine-clinician" and 
             role2.name == "Conceal-request" and 
             subj1 == cli and 
-            role2.who == self.who and 
-            role2.end == self.end and 
-            role2.start == self.start and 
             role2.what == self.what and 
+            role2.end == self.end and 
+            role2.who == self.who and 
+            role2.start == self.start and 
             canActivate(subj1, Treating_clinician(Wildcard(), role1.org, role1.spcty))
         }
     
