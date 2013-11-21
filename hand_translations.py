@@ -47,7 +47,12 @@ hand_translations = {
     # Hand Translation Reason: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1))
     #
     "S4.2.1" : r"""return {
-    # TODO
+        True for subj, role in hasActivated if 
+        role.name == "Conceal-request" and 
+        subj == pat and 
+        compare_seq(self.what, (pat,ids,orgs,authors,subjects,from-time,to-time)) and 
+        compare_seq(self.who, (orgs1,readers1,spctys1)) and 
+        count_conceal_requests(pat) < 100
 }""",
 
     # (S4.2.2)
@@ -60,7 +65,12 @@ hand_translations = {
     # Hand Translation Reason: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)) 
     # 
     "S4.2.2" : r"""return {
-    # TODO
+        True for subj, role in hasActivated if 
+        role.name == "Agent" and 
+        subj == ag and 
+        count_conceal_requests(role.pat) < 100 and 
+        compare_seq(self.what, (role.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
+        compare_seq(self.who, (Wildcard(), Wildcard(), Wildcard()))
 }""",
 
     # (S4.2.5)
@@ -193,14 +203,12 @@ hand_translations = {
     # Hand Translation Reason: unable to bind vars {'from_time', 'to_time', 'authors', 'groups', 'subjects', 'ids'} in constraint compare_seq(self.what, (subj, ids, authors, groups, subjects, from_time, to_time)) 
     #
     "A4.2.1" : r"""return {
-    True for subj, role in hasActivated if 
-    role.name == "Patient" and 
-    subj == pat and 
-    count_concealed_by_patient(subj) < 100 
-    #>>>
-    #self.what == (pat, *, *, *, *, *, *) and
-    #self.who == (*, *, *, *)
-    #<<<
+        True for subj, role in hasActivated if 
+        role.name == "Patient" and 
+        subj == pat and 
+        count_concealed_by_patient(subj) < 100 
+        compare_seq(self.what, (pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and
+        compare_seq(self.who, (Wildcard(), Wildcard(), Wildcard(), Wildcard()))
 }""",
 
     # (A4.2.2)
@@ -214,7 +222,12 @@ hand_translations = {
     # Hand Translation Reason: unable to bind vars {'from_time', 'to_time', 'authors', 'groups', 'subjects', 'ids'} in constraint compare_seq(self.what, (role.pat, ids, authors, groups, subjects, from_time, to_time)) 
     #
     "A4.2.2" : r"""return {
-    # TODO
+        True for subj, role in hasActivated if 
+        role.name == "Agent" and 
+        subj == ag and 
+        count_concealed_by_patient(role.pat) < 100 
+        compare_seq(self.what, (role.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and
+        compare_seq(self.who, (Wildcard(), Wildcard(), Wildcard(), Wildcard()))
 }""",
 
     # (A4.2.7)
