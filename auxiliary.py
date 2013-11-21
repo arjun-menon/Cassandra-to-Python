@@ -14,7 +14,7 @@
 
 from datetime import datetime
 from functools import reduce
-from typecheck import typecheck
+from typecheck import typecheck, list_of
 
 """
 Auxiliary Classes & Functions

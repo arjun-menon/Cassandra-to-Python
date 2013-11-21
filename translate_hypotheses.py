@@ -20,7 +20,7 @@ They are the "conditions" that have to be satisfied for a horn clause to be true
 Hypotheses make up bulk of the translation work.
 """
 
-from helpers import *
+from auxiliary import *
 from ast_nodes import *
 from hand_translations import hand_translations
 from string import Template
@@ -358,6 +358,7 @@ class HypothesesTranslator(object):
             if self.rule.name in hand_translations:
                 rule_comment += "# !!! USING HAND TRANSLATION INSTEAD !!!\n#\n"
                 hypo_trans = hand_translations[self.rule.name]
+                print("Using hand translation for rule", self.rule.name)
             else:
                 rule_comment += "# !!! PLEASE PROVIDE HAND TRANSLATION !!!\n#\n"
                 print("Please provide a hand translation for: %s\n" % self.rule.name)

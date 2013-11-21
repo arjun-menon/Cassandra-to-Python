@@ -114,7 +114,7 @@ def translate_module(rules, rule_sets, rule_set):
     other_rule_sets = set(rule_sets) - set([rule_set])
     other_imports = "import " + ", ".join('ehr.'+rs for rs in other_rule_sets) + '\n'
 
-    translation  = "from cassandra import *\n"
+    translation  = "from auxiliary import *\n"
     translation += other_imports
     translation += "\nhasActivated = list()  # Set of (subject, role) pairs representing currently active roles.\n"
     translation += "\nlist_of_roles = %s\n" % repr(list_of_roles)
