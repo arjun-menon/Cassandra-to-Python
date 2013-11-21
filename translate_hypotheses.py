@@ -43,6 +43,8 @@ def loc_trans(loc):
     return 'ehr.'+loc
 
 class HypothesesTranslator(object):
+    stop_count = 0
+
     def __init__(self, rule):
         self.rule = rule
         self.external_vars = None # initialized by derived class, will become dict
@@ -51,7 +53,8 @@ class HypothesesTranslator(object):
         return repr(self.rule)
     
     def stopTranslating(self, reason):
-        return StopTranslating(self.rule, reason)
+        HypothesesTranslator.stop_count += 1
+        return StopTranslating(self.rule, "[%d] " % HypothesesTranslator.stop_count + reason)
     
     @typecheck
     def build_param_bindings(self, params: list_of(str)) -> list:
@@ -358,7 +361,7 @@ class HypothesesTranslator(object):
             if self.rule.name in hand_translations:
                 rule_comment += "# !!! USING HAND TRANSLATION INSTEAD !!!\n#\n"
                 hypo_trans = hand_translations[self.rule.name]
-                print("Using hand translation for rule", self.rule.name)
+                #print("Using hand translation for rule", self.rule.name, "[case %d]" % HypothesesTranslator.stop_count)
             else:
                 rule_comment += "# !!! PLEASE PROVIDE HAND TRANSLATION !!!\n#\n"
                 print("Please provide a hand translation for: %s\n" % self.rule.name)
