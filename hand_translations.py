@@ -110,7 +110,7 @@ hand_translations = {
     # a = (pat,id), 
     # b = (org,reader,spcty), 
     # what = (pat,ids,orgs,authors,subjects,from-time,to-time), 
-    # whom = (orgs1,readers1,spctys1), 
+    # who = (orgs1,readers1,spctys1), 
     # Get-spine-record-org(pat, id) in orgs, 
     # Get-spine-record-author(pat, id) in authors, 
     # sub in Get-spine-record-subjects(pat, id), 
@@ -126,15 +126,24 @@ hand_translations = {
     #
     # Hand Translation Reason: unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id)) 
     #
-#     "S4.2.12" : r"""return len({
-#         True for subj, role in hasActivated if 
-#         role.name == "Concealed-by-spine-patient" and 
-#         compare_seq(role.what, (a.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
-#         compare_seq(role.who, (Wildcard(), Wildcard(), Wildcard())) and 
-#         Get_spine_record_org(a.pat, a.id) in role.what.orgs and 
-#         Get_spine_record_author(a.pat, a.id) in role.what.authors and 
-#         
-# })""",
+    "S4.2.12" : r"""return len({
+        True for subj, role in hasActivated if 
+        role.name == "Concealed-by-spine-patient" and 
+        compare_seq(role.what, (a.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
+        compare_seq(role.who, (Wildcard(), Wildcard(), Wildcard())) and 
+        Get_spine_record_org(a.pat, a.id) in role.what.orgs and 
+        Get_spine_record_author(a.pat, a.id) in role.what.authors and 
+        (True for sub in role.what.subjects if 
+            sub in Get_spine_record_subjects(a.pat, a.id)) and 
+        Get_spine_record_time(a.pat, a.id) in [role.what.from_time, role.what.to_time] and 
+        a.id in role.what.ids and 
+        b.org in role.who.orgs1 and 
+        b.reader in role.who.readers1 and 
+        b.spcty in role.who.spctys1 and 
+        Current_time() in vrange(role.start, role.end) and 
+        (not Get_spine_record_third_parties(a.pat, a.id)) and 
+        "non-clinical" not in Get_spine_record_subjects(a.pat, a.id)
+})""",
 
     # (S5.3.1)
     # permits(pat, Read-spine-record-item(pat, id)) <-
