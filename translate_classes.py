@@ -124,18 +124,20 @@ class canReqCreds(object):
         tr += "# These rules have not been translated.\n"
         
         # canAcs
-        tr += "\n# Restrictions on canActivate\n\n"
+        tr += "\n# Restrictions on canActivate\n"
+        tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
         for key, value in self.canAcs.items():
             tr += "# For the Role '" + key + "'\n"
             for rule in value:
-                tr += '# \n' + prefix_lines(repr(rule) + "\n", '# ')
+                tr += prefix_lines(repr(rule) + "\n", '# ') + "\n"
         
         # hasAcs
-        tr += "\n# Restrictions on hasActivate\n\n"
+        tr += "\n# Restrictions on hasActivate\n"
+        tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
         for key, value in self.hasAcs.items():
-            tr += "# For the Role '" + key + "'\n"
+            tr += "# <<< For the Role '%s' >>>\n\n" % key
             for rule in value:
-                tr += '# \n' + prefix_lines(repr(rule) + "\n", '# ')
+                tr += prefix_lines(repr(rule) + "\n", '# ') + "\n"
         
         return tr
 
