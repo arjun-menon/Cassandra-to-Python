@@ -1,5 +1,5 @@
 from auxiliary import *
-import ehr.pds, ehr.spine, ehr.ra
+import ehr.spine, ehr.ra, ehr.pds
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -52,8 +52,8 @@ def clinician_regs(cli, spcty): # A1.1.3
     return len({
         True for subj, role in hasActivated if 
         role.name == "Register-clinician" and 
-        role.cli == cli and 
-        role.spcty == spcty
+        role.spcty == spcty and 
+        role.cli == cli
     })
 
 class Clinician(Role):
@@ -69,8 +69,8 @@ class Clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Register-clinician" and 
-            role.cli == cli and 
             role.spcty == self.spcty and 
+            role.cli == cli and 
             no_main_role_active(role.cli)
         }
     
@@ -473,8 +473,8 @@ class Agent(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.pds.hasActivated if 
             role1.name == "Register-agent" and 
             role2.name == "Register-patient" and 
-            role1.agent == agent and 
             role1.pat == self.pat and 
+            role1.agent == agent and 
             role2.agent == agent and 
             no_main_role_active(role2.agent)
         }
@@ -705,11 +705,11 @@ def other_consent_to_referral_requests(x, pat, ra, org, cli, spcty): # A2.1.7
     return len({
         True for subj, role in hasActivated if 
         role.name == "Request-consent-to-referral" and 
-        role.ra == ra and 
-        role.cli == cli and 
-        role.pat == pat and 
         role.spcty == spcty and 
+        role.ra == ra and 
+        role.pat == pat and 
         role.org == org and 
+        role.cli == cli and 
         x != subj
     })
 
@@ -731,11 +731,11 @@ class Consent_to_referral(Role):
             role1.name == "Patient" and 
             role2.name == "Request-consent-to-referral" and 
             subj1 == pat and 
-            role2.ra == self.ra and 
-            role2.cli == self.cli and 
-            role2.pat == pat and 
             role2.spcty == self.spcty and 
-            role2.org == self.org
+            role2.ra == self.ra and 
+            role2.pat == pat and 
+            role2.org == self.org and 
+            role2.cli == self.cli
         }
     
     def canActivate_2(self, pat): # A2.1.9
@@ -750,11 +750,11 @@ class Consent_to_referral(Role):
             role2.name == "Request-consent-to-referral" and 
             subj1 == pat and 
             role1.pat == pat and 
-            role2.ra == self.ra and 
-            role2.cli == self.cli and 
-            role2.pat == pat and 
             role2.spcty == self.spcty and 
-            role2.org == self.org
+            role2.ra == self.ra and 
+            role2.pat == pat and 
+            role2.org == self.org and 
+            role2.cli == self.cli
         }
     
     def canActivate_3(self, cg): # A2.1.10
@@ -768,11 +768,11 @@ class Consent_to_referral(Role):
             role1.name == "Caldicott-guardian" and 
             role2.name == "Request-consent-to-referral" and 
             subj1 == cg and 
-            role2.ra == self.ra and 
-            role2.cli == self.cli and 
-            role2.pat == self.pat and 
             role2.spcty == self.spcty and 
-            role2.org == self.org
+            role2.ra == self.ra and 
+            role2.pat == self.pat and 
+            role2.org == self.org and 
+            role2.cli == self.cli
         }
     
     def onDeactivate(self, subject):
@@ -788,11 +788,11 @@ def other_referral_consents(x, pat, ra, org, cli, spcty): # A2.1.12
     return len({
         True for subj, role in hasActivated if 
         role.name == "Consent-to-referral" and 
-        role.ra == ra and 
-        role.cli == cli and 
-        role.pat == pat and 
         role.spcty == spcty and 
+        role.ra == ra and 
+        role.pat == pat and 
         role.org == org and 
+        role.cli == cli and 
         x != subj
     })
 
@@ -815,14 +815,14 @@ class Ext_treating_clinician(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Consent-to-referral" and 
             role2.name == "NHS-clinician-cert" and 
+            role1.spcty == self.spcty and 
+            role1.ra == self.ra and 
+            role1.pat == self.pat and 
             role1.org == self.org and 
             role1.cli == cli and 
-            role1.spcty == self.spcty and 
-            role1.pat == self.pat and 
-            role1.ra == self.ra and 
-            role2.cli == cli and 
             role2.spcty == self.spcty and 
             role2.org == self.org and 
+            role2.cli == cli and 
             canActivate(role1.ra, Registration_authority()) and 
             no_main_role_active(role2.cli)
         }
@@ -839,14 +839,14 @@ class Ext_treating_clinician(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.ra.hasActivated if 
             role1.name == "Consent-to-referral" and 
             role2.name == "NHS-clinician-cert" and 
+            role1.spcty == self.spcty and 
+            role1.ra == self.ra and 
+            role1.pat == self.pat and 
             role1.org == self.org and 
             role1.cli == cli and 
-            role1.spcty == self.spcty and 
-            role1.pat == self.pat and 
-            role1.ra == self.ra and 
-            role2.cli == cli and 
             role2.spcty == self.spcty and 
             role2.org == self.org and 
+            role2.cli == cli and 
             canActivate(role1.ra, Registration_authority()) and 
             no_main_role_active(role2.cli)
         }
@@ -1069,9 +1069,9 @@ class Third_party_consent(Role):
             role1.name == "Third-party" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == x and 
+            role2.x == x and 
             role2.id == self.id and 
-            role2.pat == self.pat and 
-            role2.x == x
+            role2.pat == self.pat
         }
     
     def canActivate_2(self, cg): # A2.3.17
@@ -1085,9 +1085,9 @@ class Third_party_consent(Role):
             role1.name == "Caldicott-guardian" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == cg and 
+            role2.x == self.x and 
             role2.id == self.id and 
-            role2.pat == self.pat and 
-            role2.x == self.x
+            role2.pat == self.pat
         }
     
     def canDeactivate(self, *params):
@@ -1282,8 +1282,8 @@ def team_member_regs(mem, team, spcty): # A3.2.7
     return len({
         True for subj, role in hasActivated if 
         role.name == "Register-team-member" and 
-        role.team == team and 
         role.mem == mem and 
+        role.team == team and 
         role.spcty == spcty
     })
 
@@ -1395,8 +1395,8 @@ class Head_of_ward(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Register-head-of-ward" and 
-            role.cli == cli and 
-            role.ward == self.ward
+            role.ward == self.ward and 
+            role.cli == cli
         }
     
     def canDeactivate(self, cli, cli_): # A3.4.2
@@ -1425,8 +1425,8 @@ class Register_head_of_ward(Role):
             role1.name == "HR-mgr" and 
             role2.name == "Register-ward-member" and 
             subj1 == mgr and 
-            role2.cli == self.cli and 
             role2.ward == self.ward and 
+            role2.cli == self.cli and 
             head_of_ward_regs(role2.cli, role2.ward) == 0
         }
     
@@ -1453,8 +1453,8 @@ def head_of_ward_regs(cli, ward): # A3.4.7
     return len({
         True for subj, role in hasActivated if 
         role.name == "Register-head-of-ward" and 
-        role.cli == cli and 
-        role.ward == ward
+        role.ward == ward and 
+        role.cli == cli
     })
 
 class Register_ward_member(Role):
@@ -1537,9 +1537,9 @@ def ward_member_regs(cli, ward, spcty): # A3.5.7
     return len({
         True for subj, role in hasActivated if 
         role.name == "Register-ward-member" and 
-        role.cli == cli and 
+        role.spcty == spcty and 
         role.ward == ward and 
-        role.spcty == spcty
+        role.cli == cli
     })
 
 class Register_ward_episode(Role):
@@ -1703,8 +1703,8 @@ class ADB_treating_clinician(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Register-team-member" and 
             role2.name == "Register-team-episode" and 
-            role1.cli == cli and 
             role1.spcty == self.spcty and 
+            role1.cli == cli and 
             role2.pat == self.pat and 
             canActivate(role1.cli, Clinician(role1.spcty)) and 
             self.group == role2.team
@@ -1722,8 +1722,8 @@ class ADB_treating_clinician(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "Register-ward-member" and 
             role2.name == "Register-ward-episode" and 
-            role1.cli == cli and 
             role1.spcty == self.spcty and 
+            role1.cli == cli and 
             role2.pat == self.pat and 
             canActivate(role1.cli, Clinician(role1.spcty)) and 
             self.group == role2.ward
@@ -1834,7 +1834,7 @@ class Concealed_by_patient(Role):
         # n < 100
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: unable to bind vars {'groups', 'authors', 'to_time', 'from_time', 'ids', 'subjects'} in constraint compare_seq(self.what, (subj, ids, authors, groups, subjects, from_time, to_time))
+        # Reason: [11] unable to bind vars {'subjects', 'groups', 'to_time', 'authors', 'ids', 'from_time'} in constraint compare_seq(self.what, (subj, ids, authors, groups, subjects, from_time, to_time))
         #
         # !!! USING HAND TRANSLATION INSTEAD !!!
         #
@@ -1857,7 +1857,7 @@ class Concealed_by_patient(Role):
         # n < 100
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: unable to bind vars {'groups', 'authors', 'to_time', 'from_time', 'ids', 'subjects'} in constraint compare_seq(self.what, (role.pat, ids, authors, groups, subjects, from_time, to_time))
+        # Reason: [12] unable to bind vars {'subjects', 'groups', 'to_time', 'authors', 'ids', 'from_time'} in constraint compare_seq(self.what, (role.pat, ids, authors, groups, subjects, from_time, to_time))
         #
         # !!! USING HAND TRANSLATION INSTEAD !!!
         #
@@ -1919,13 +1919,11 @@ def count_concealed_by_patient(pat): # A4.2.7
     # y = (what,who,start,end)
     #
     # << AUTOMATIC TRANSLATION FAILURE >>
-    # Reason: unable to bind vars {'groups', 'authors', 'to_time', 'from_time', 'ids', 'what', 'subjects'} in constraint compare_seq(what, (pat, ids, authors, groups, subjects, from_time, to_time))
+    # Reason: [13] unable to bind vars {'subjects', 'groups', 'to_time', 'authors', 'ids', 'from_time', 'what'} in constraint compare_seq(what, (pat, ids, authors, groups, subjects, from_time, to_time))
     #
-    # !!! USING HAND TRANSLATION INSTEAD !!!
+    # !!! PLEASE PROVIDE HAND TRANSLATION !!!
     #
-    return {
-        # TODO
-    }
+    return {}
 
 def count_concealed_by_patient2(a, b): # A4.2.8
     #
@@ -1948,13 +1946,11 @@ def count_concealed_by_patient2(a, b): # A4.2.8
     # Current-time() in [start, end]
     #
     # << AUTOMATIC TRANSLATION FAILURE >>
-    # Reason: unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id))
+    # Reason: [14] unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id))
     #
-    # !!! USING HAND TRANSLATION INSTEAD !!!
+    # !!! PLEASE PROVIDE HAND TRANSLATION !!!
     #
-    return {
-        # TODO
-    }
+    return {}
 
 class Add_record_item(Role): # Action
     def __init__(self, pat):
@@ -2097,13 +2093,11 @@ class Read_record_item(Role): # Action
         # Get-record-third-parties(pat, id) subseteq consenters
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: unbound vars {'b', 'a'} in count-concealed-by-patient2(n, a, b)
+        # Reason: [15] unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #
-        # !!! USING HAND TRANSLATION INSTEAD !!!
+        # !!! PLEASE PROVIDE HAND TRANSLATION !!!
         #
-        return {
-            # TODO
-        }
+        return {}
     
     def permits_2(self, cli): # A5.3.2
         #
@@ -2146,13 +2140,11 @@ class Read_record_item(Role): # Action
         # Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: unbound vars {'b', 'a'} in count-concealed-by-patient2(n, a, b)
+        # Reason: [16] unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #
-        # !!! USING HAND TRANSLATION INSTEAD !!!
+        # !!! PLEASE PROVIDE HAND TRANSLATION !!!
         #
-        return {
-            # TODO
-        }
+        return {}
     
     def permits_5(self, cli): # A5.3.5
         #
@@ -2165,13 +2157,11 @@ class Read_record_item(Role): # Action
         # Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: unbound vars {'b', 'a'} in count-concealed-by-patient2(n, a, b)
+        # Reason: [17] unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #
-        # !!! USING HAND TRANSLATION INSTEAD !!!
+        # !!! PLEASE PROVIDE HAND TRANSLATION !!!
         #
-        return {
-            # TODO
-        }
+        return {}
     
     def permits_6(self, pat): # A5.3.6
         #
@@ -2187,13 +2177,11 @@ class Read_record_item(Role): # Action
         # Get-record-third-parties(pat, id) subseteq consenters
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: unbound vars {'b', 'a'} in count-concealed-by-patient2(n, a, b)
+        # Reason: [18] unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
         #
-        # !!! USING HAND TRANSLATION INSTEAD !!!
+        # !!! PLEASE PROVIDE HAND TRANSLATION !!!
         #
-        return {
-            # TODO
-        }
+        return {}
 
 
 class Force_read_record_item(Role): # Action
