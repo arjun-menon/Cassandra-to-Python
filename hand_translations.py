@@ -376,9 +376,14 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
     #
-#     "A5.3.4" : r"""return {
-#     # TODO
-# }""",
+    "A5.3.4" : r"""return {
+        True for subj, role in hasActivated if 
+        subj == cli and 
+        role.name == "Clinician" and # Hmm... 'group' must be somehow tied together in the rules below (using Wildcard() for now)
+        canActivate(cli, ADB_treating_clinician(self.pat, Wildcard(), role.spcty)), 
+        count_concealed_by_patient2((self.pat, self.id), ("ADB", cli, Wildcard(), role.spcty)) == 0 and 
+        Get_record_subjects(self.pat, self.id) subseteq Permitted_subjects(role.spcty)
+}""",
 
     # (A5.3.5)
     # permits(cli, Read-record-item(pat, id)) <-
