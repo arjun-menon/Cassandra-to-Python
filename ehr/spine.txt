@@ -608,9 +608,8 @@ Current-time() in [start, end]
 canActivate(pat, Conceal-request(what, who, start, end)) <-
 hasActivated(pat, Patient()),
 count-conceal-requests(n, pat),
-(what,who)=
-((pat, ids, orgs, authors, subjects, from-time, to-time),
-(orgs1, readers1, spctys1)),
+what = (pat, ids, orgs, authors, subjects, from-time, to-time),
+who = (orgs1, readers1, spctys1),
 n < 100
 
 (S4.2.2)
@@ -618,9 +617,8 @@ n < 100
 canActivate(ag, Conceal-request(what, who, start, end)) <-
 hasActivated(ag, Agent(pat)),
 count-conceal-requests(n, pat),
-(what,who)=
-((pat, ids, orgs, authors, subjects, from-time, to-time),
-(orgs1, readers1, spctys1)),
+what = (pat, ids, orgs, authors, subjects, from-time, to-time),
+who = (orgs1, readers1, spctys1),
 n < 100
 
 (S4.2.3)
@@ -652,9 +650,8 @@ pi7_1(what) = pat
 
 count-conceal-requests(count<y>, pat) <-
 hasActivated(x, Conceal-request(y)),
-(what,who)=
-((pat, ids, orgs, authors, subjects, from-time, to-time),
-(orgs1, readers1, spctys1)),
+what = (pat, ids, orgs, authors, subjects, from-time, to-time),
+who = (orgs1, readers1, spctys1),
 y=(what, who, start, end)
 
 (S4.2.8)
