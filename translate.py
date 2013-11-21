@@ -54,7 +54,7 @@ if __name__ == "__main__":
     argparser.add_argument( '-P', '--noparse', default=False, action='store_true', help='Do not parse rules. (Use previously pickled AST.)' )
     args = argparser.parse_args()
 
-    parse_by_default = True  # default parse mode
+    parse_by_default = False  # default parse mode
     if (parse_by_default or args.parse) and (not args.noparse):
         parse()
 
