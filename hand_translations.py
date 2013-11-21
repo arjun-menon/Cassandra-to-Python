@@ -294,9 +294,12 @@ hand_translations = {
     #
     # Hand Translation Reason: unable to bind vars {'from_time', 'to_time', 'authors', 'groups', 'subjects', 'ids', 'what'} in constraint compare_seq(what, (pat, ids, authors, groups, subjects, from_time, to_time)) 
     #
-#     "A4.2.7" : r"""return {
-#     # TODO
-# }""",
+    "A4.2.7" : r"""return len({
+        True for subj, role in hasActivated if 
+        role.name == "Concealed-by-patient" and 
+        compare_seq(role.what, (role.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
+        compare_seq(role.who, (Wildcard(), Wildcard(), Wildcard()))
+})""",
 
     # (A4.2.8)
     # count-concealed-by-patient2(count<x>, a, b) <-
