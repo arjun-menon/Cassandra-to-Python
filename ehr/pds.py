@@ -1,5 +1,5 @@
 from auxiliary import *
-import ehr.ra, ehr.spine, ehr.hospital
+import ehr.spine, ehr.ra, ehr.hospital
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -362,38 +362,41 @@ def patient_regs(pat): # P2.1.3
 # These rules have not been translated.
 
 # Restrictions on canActivate
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 # Restrictions on hasActivate
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# For the Role 'Register-patient'
-# 
+# <<< For the Role 'Register-patient' >>>
+
 # (P2.2.1)
 # canReqCred(pat, "PDS".hasActivated(x, Register-patient(pat))) <-
 # hasActivated(pat, Patient())
-# 
+
 # (P2.2.2)
 # canReqCred(ag, "PDS".hasActivated(x, Register-patient(pat))) <-
 # hasActivated(ag, Agent(pat))
-# 
+
 # (P2.2.3)
 # canReqCred(usr, "PDS".hasActivated(x, Register-patient(pat))) <-
 # hasActivated(usr, Professional-user(ra, org))
-# 
+
 # (P2.2.4)
 # canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
 # ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
 # canActivate(ra, Registration-authority())
-# 
+
 # (P2.2.5)
 # canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
 # org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
 # canActivate(ra, Registration-authority())
-# 
+
 # (P2.2.5)
 # canReqCred(ra, "PDS".hasActivated(x, Register-patient(pat))) <-
 # canActivate(ra, Registration-authority())
-# 
+
 # (P2.2.5)
 # canReqCred(spine, "PDS".hasActivated(x, Register-patient(pat))) <-
 # spine = "Spine"
+
