@@ -50,8 +50,8 @@ hand_translations = {
         True for subj, role in hasActivated if 
         role.name == "Conceal-request" and 
         subj == pat and 
-        compare_seq(self.what, (pat,ids,orgs,authors,subjects,from-time,to-time)) and 
-        compare_seq(self.who, (orgs1,readers1,spctys1)) and 
+        compare_seq(self.what, (role.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
+        compare_seq(self.who, (Wildcard(), Wildcard(), Wildcard())) and 
         count_conceal_requests(pat) < 100
 }""",
 
@@ -82,20 +82,27 @@ hand_translations = {
     # Hand Translation Reason: unable to bind vars {'pat'} in constraint pi7_1(self.what) == pat 
     #
     "S4.2.5" : r"""return {
-    # TODO
+        True for subj, role in hasActivated if 
+        role.name == "Spine-clinician" and 
+        subj == cli and
+        canActivate(cli, General_practitioner( pi7_1(self.what) ))
 }""",
 
     # (S4.2.7)
     # count-conceal-requests(count<y>, pat) <-
     # hasActivated(x, Conceal-request(y)), 
-    # (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)), 
+    # what = (pat, ids, orgs, authors, subjects, from-time, to-time),
+    # who = (orgs1, readers1, spctys1), 
     # y = (what,who,start,end) 
     #
     # Hand Translation Reason: could not translate constraint: (what,who) = ((pat,ids,orgs,authors,subjects,from-time,to-time),(orgs1,readers1,spctys1)) 
     #
-    "S4.2.7" : r"""return {
-    # TODO
-}""",
+    "S4.2.7" : r"""return len({
+        True for subj, role in hasActivated if 
+        role.name == "Conceal-request" and 
+        compare_seq(role.what, (role.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
+        compare_seq(role.who, (Wildcard(), Wildcard(), Wildcard()))
+})""",
 
     # (S4.2.12)
     # count-concealed-by-spine-patient(count<x>, a, b) <-
@@ -119,9 +126,15 @@ hand_translations = {
     #
     # Hand Translation Reason: unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id)) 
     #
-    "S4.2.12" : r"""return {
-    # TODO
-}""",
+#     "S4.2.12" : r"""return len({
+#         True for subj, role in hasActivated if 
+#         role.name == "Concealed-by-spine-patient" and 
+#         compare_seq(role.what, (a.pat, Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard(), Wildcard())) and 
+#         compare_seq(role.who, (Wildcard(), Wildcard(), Wildcard())) and 
+#         Get_spine_record_org(a.pat, a.id) in role.what.orgs and 
+#         Get_spine_record_author(a.pat, a.id) in role.what.authors and 
+#         
+# })""",
 
     # (S5.3.1)
     # permits(pat, Read-spine-record-item(pat, id)) <-
@@ -138,9 +151,9 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b) 
     #
-    "S5.3.1" : r"""return {
-    # TODO
-}""",
+#     "S5.3.1" : r"""return {
+#     # TODO
+# }""",
 
     # (S5.3.2)
     # permits(ag, Read-spine-record-item(pat, id)) <-
@@ -157,9 +170,9 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b) 
     #
-    "S5.3.2" : r"""return {
-    # TODO
-}""",
+#     "S5.3.2" : r"""return {
+#     # TODO
+# }""",
 
     # (S5.3.4)
     # permits(cli, Read-spine-record-item(pat, id)) <-
@@ -174,9 +187,9 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b) 
     #
-    "S5.3.4" : r"""return {
-    # TODO
-}""",
+#     "S5.3.4" : r"""return {
+#     # TODO
+# }""",
 
     # (S5.3.5)
     # permits(cli, Read-spine-record-item(pat, id)) <-
@@ -188,9 +201,9 @@ hand_translations = {
     #
     # Hand Translation Reason: Not implemented: 3 hasAcs in a rule. 
     #
-    "S5.3.5" : r"""return {
-    # TODO
-}""",
+#     "S5.3.5" : r"""return {
+#     # TODO
+# }""",
 
     # (A4.2.1)
     # canActivate(pat, Concealed-by-patient(what, who, start, end)) <-
@@ -239,9 +252,9 @@ hand_translations = {
     #
     # Hand Translation Reason: unable to bind vars {'from_time', 'to_time', 'authors', 'groups', 'subjects', 'ids', 'what'} in constraint compare_seq(what, (pat, ids, authors, groups, subjects, from_time, to_time)) 
     #
-    "A4.2.7" : r"""return {
-    # TODO
-}""",
+#     "A4.2.7" : r"""return {
+#     # TODO
+# }""",
 
     # (A4.2.8)
     # count-concealed-by-patient2(count<x>, a, b) <-
@@ -264,9 +277,9 @@ hand_translations = {
     #
     # Hand Translation Reason: unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id)) 
     #
-    "A4.2.8" : r"""return {
-    # TODO
-}""",
+#     "A4.2.8" : r"""return {
+#     # TODO
+# }""",
 
     # (A5.3.1)
     # permits(ag, Read-record-item(pat, id)) <-
@@ -282,9 +295,9 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
     #
-    "A5.3.1" : r"""return {
-    # TODO
-}""",
+#     "A5.3.1" : r"""return {
+#     # TODO
+# }""",
 
     # (A5.3.4)
     # permits(cli, Read-record-item(pat, id)) <-
@@ -298,9 +311,9 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
     #
-    "A5.3.4" : r"""return {
-    # TODO
-}""",
+#     "A5.3.4" : r"""return {
+#     # TODO
+# }""",
 
     # (A5.3.5)
     # permits(cli, Read-record-item(pat, id)) <-
@@ -313,9 +326,9 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
     #
-    "A5.3.5" : r"""return {
-    # TODO
-}""",
+#     "A5.3.5" : r"""return {
+#     # TODO
+# }""",
 
     # (A5.3.6)
     # permits(pat, Read-record-item(pat, id)) <-
@@ -331,8 +344,8 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b) 
     #
-    "A5.3.6" : r"""return {
-    # TODO
-}""",
+#     "A5.3.6" : r"""return {
+#     # TODO
+# }""",
 
 }
