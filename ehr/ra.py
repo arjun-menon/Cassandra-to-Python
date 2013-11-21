@@ -1,5 +1,5 @@
 from auxiliary import *
-import ehr.hospital, ehr.spine, ehr.pds
+import ehr.spine, ehr.hospital, ehr.pds
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -311,8 +311,8 @@ class Workgroup_member(Role):
             role2.name == "Register-team-member" and 
             role1.org == self.org and 
             role2.group == self.group and 
-            role2.spcty == self.spcty and 
             role2.cli == cli and 
+            role2.spcty == self.spcty and 
             Current_time() in vrange(role1.start, role1.end)
         }
     
@@ -329,8 +329,8 @@ class Workgroup_member(Role):
             role2.name == "Register-ward-member" and 
             role1.org == self.org and 
             role2.group == self.group and 
-            role2.spcty == self.spcty and 
             role2.cli == cli and 
+            role2.spcty == self.spcty and 
             Current_time() in vrange(role1.start, role1.end)
         }
 # Credential Request Restrictions
@@ -351,6 +351,26 @@ class Workgroup_member(Role):
 
 # Restrictions on hasActivate
 
+# For the Role 'NHS-registration-authority'
+# 
+# (R1.2.1)
+# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
+# ra = "RA-ADB"
+# For the Role 'NHS-Caldicott-guardian-cert'
+# 
+# (R2.2.4)
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
+# e = cg
+# 
+# (R2.2.5)
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
+# hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
+# e = org, 
+# Current-time() in [start2, end2]
+# 
+# (R2.2.6)
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
+# canActivate(e, NHS-service())
 # For the Role 'NHS-clinician-cert'
 # 
 # (R2.1.4)
@@ -398,24 +418,4 @@ class Workgroup_member(Role):
 # 
 # (R2.3.9)
 # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
-# canActivate(e, NHS-service())
-# For the Role 'NHS-registration-authority'
-# 
-# (R1.2.1)
-# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
-# ra = "RA-ADB"
-# For the Role 'NHS-Caldicott-guardian-cert'
-# 
-# (R2.2.4)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
-# e = cg
-# 
-# (R2.2.5)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
-# hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
-# e = org, 
-# Current-time() in [start2, end2]
-# 
-# (R2.2.6)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
 # canActivate(e, NHS-service())
