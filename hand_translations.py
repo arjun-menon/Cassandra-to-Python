@@ -188,9 +188,17 @@ hand_translations = {
     #
     # Hand Translation Reason: unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b) 
     #
-#     "S5.3.2" : r"""return {
-#     # TODO
-# }""",
+    "S5.3.2" : r"""return {
+        True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if  
+        role1.name == "Agent" and 
+        subj1 == ag and 
+        role2.name == "One-off-consent" and 
+        role2.pat == self.pat and 
+        count_concealed_by_spine_patient((self.pat, self.id), ("No-org", self.pat, "No-spcty")) == 0 and 
+        count_concealed_by_spine_clinician(self.pat, self.id) == 0 and 
+        third_party_consent(Wildcard(), self.pat, self.id) and 
+        Get_spine_record_third_parties(self.pat, self.id) in consenters
+}""",
 
     # (S5.3.4)
     # permits(cli, Read-spine-record-item(pat, id)) <-
