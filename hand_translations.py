@@ -169,8 +169,7 @@ hand_translations = {
         role2.pat == self.pat and 
         count_concealed_by_spine_patient((self.pat, self.id), ("No-org", self.pat, "No-spcty")) == 0 and 
         count_concealed_by_spine_clinician(self.pat, self.id) == 0 and 
-        third_party_consent(Wildcard(), self.pat, self.id) and 
-        Get_spine_record_third_parties(self.pat, self.id) in consenters
+        Get_spine_record_third_parties(self.pat, self.id) in third_party_consent(self.pat, self.id)
 }""",
 
     # (S5.3.2)
@@ -196,8 +195,7 @@ hand_translations = {
         role2.pat == self.pat and 
         count_concealed_by_spine_patient((self.pat, self.id), ("No-org", self.pat, "No-spcty")) == 0 and 
         count_concealed_by_spine_clinician(self.pat, self.id) == 0 and 
-        third_party_consent(Wildcard(), self.pat, self.id) and 
-        Get_spine_record_third_parties(self.pat, self.id) in consenters
+        Get_spine_record_third_parties(self.pat, self.id) in third_party_consent(self.pat, self.id)
 }""",
 
     # (S5.3.4)
@@ -361,7 +359,7 @@ hand_translations = {
         role.pat == self.pat and 
         count_concealed_by_patient2((self.pat, self.id), ("No-org", ag, "No-group", "No-spcty")) == 0 and 
         count_concealed_by_clinician(self.pat, self.id) == 0 and 
-        Get_record_third_parties(self.pat, self.id) in third_party_consent(consenters, self.pat, self.id)
+        Get_record_third_parties(self.pat, self.id) in third_party_consent(self.pat, self.id)
 }""",
 
     # (A5.3.4)
@@ -379,7 +377,8 @@ hand_translations = {
     "A5.3.4" : r"""return {
         True for subj, role in hasActivated if 
         subj == cli and 
-        role.name == "Clinician" and # Hmm... 'group' must be somehow tied together in the rules below (using Wildcard() for now)
+        role.name == "Clinician" and
+        # Hmm... 'group' must be somehow tied together in the rules below (using Wildcard() for now)
         canActivate(cli, ADB_treating_clinician(self.pat, Wildcard(), role.spcty)), 
         count_concealed_by_patient2((self.pat, self.id), ("ADB", cli, Wildcard(), role.spcty)) == 0 and 
         Get_record_subjects(self.pat, self.id) subseteq Permitted_subjects(role.spcty)
