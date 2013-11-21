@@ -1781,9 +1781,19 @@ class Read_spine_record_item(Role): # Action
         # << AUTOMATIC TRANSLATION FAILURE >>
         # Reason: [7] unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
         #
-        # !!! PLEASE PROVIDE HAND TRANSLATION !!!
+        # !!! USING HAND TRANSLATION INSTEAD !!!
         #
-        return {}
+        return {
+                True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if
+                pat == self.pat and 
+                role1.name == "Patient" and 
+                subj1 == self.pat and 
+                role2.name == "One-off-consent" and 
+                role2.pat == self.pat and 
+                count_concealed_by_spine_patient((self.pat, self.id), ("No-org", self.pat, "No-spcty")) == 0 and 
+                count_concealed_by_spine_clinician(self.pat, self.id) == 0 and 
+                Get_spine_record_third_parties(self.pat, self.id) in third_party_consent(self.pat, self.id)
+        }
     
     def permits_2(self, ag): # S5.3.2
         #
@@ -1802,9 +1812,18 @@ class Read_spine_record_item(Role): # Action
         # << AUTOMATIC TRANSLATION FAILURE >>
         # Reason: [8] unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
         #
-        # !!! PLEASE PROVIDE HAND TRANSLATION !!!
+        # !!! USING HAND TRANSLATION INSTEAD !!!
         #
-        return {}
+        return {
+                True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+                role1.name == "Agent" and 
+                subj1 == ag and 
+                role2.name == "One-off-consent" and 
+                role2.pat == self.pat and 
+                count_concealed_by_spine_patient((self.pat, self.id), ("No-org", self.pat, "No-spcty")) == 0 and 
+                count_concealed_by_spine_clinician(self.pat, self.id) == 0 and 
+                Get_spine_record_third_parties(self.pat, self.id) in third_party_consent(self.pat, self.id)
+        }
     
     def permits_3(self, cli): # S5.3.3
         #
@@ -1839,9 +1858,18 @@ class Read_spine_record_item(Role): # Action
         # << AUTOMATIC TRANSLATION FAILURE >>
         # Reason: [9] unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
         #
-        # !!! PLEASE PROVIDE HAND TRANSLATION !!!
+        # !!! USING HAND TRANSLATION INSTEAD !!!
         #
-        return {}
+        return {
+                True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
+                subj1 == cli and 
+                role1.name == "Spine-clinician" and 
+                role2.name == "One-off-consent" and 
+                role2.pat == self.pat and 
+                canActivate(cli, Treating_clinician(self.pat, role1.org, role1.spcty) and 
+                count_concealed_by_spine_patient((self.pat, self.id), (role1.org, cli, role1.spcty)) == 0 and 
+                Get_spine_record_subjects(self.pat, self.id) in Permitted_subjects(role1.spcty)
+        }
     
     def permits_5(self, cli): # S5.3.5
         #
@@ -1855,9 +1883,20 @@ class Read_spine_record_item(Role): # Action
         # << AUTOMATIC TRANSLATION FAILURE >>
         # Reason: [10] Not implemented: 3 hasAcs in a rule.
         #
-        # !!! PLEASE PROVIDE HAND TRANSLATION !!!
+        # !!! USING HAND TRANSLATION INSTEAD !!!
         #
-        return {}
+        return {
+                True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated for (subj3, role3) in hasActivated if 
+                role1.name == "Spine-clinician" and 
+                role2.name == "One-off-consent" and 
+                role3.name == "Authenticated-express-consent" and 
+                role2.pat == self.pat and 
+                role2.pat == role3.pat and 
+                role1.org == role3.org and 
+                role1.spcty == role3.spcty and 
+                canActivate(subj1, Treating_clinician(role2.pat, role1.org, role1.spcty)) and 
+                Get_spine_record_subjects(self.pat, self.id) in Permitted_subjects(role1.spcty)
+        }
 
 
 class Force_read_spine_record_item(Role): # Action
