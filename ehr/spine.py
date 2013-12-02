@@ -69,11 +69,11 @@ def count_spine_clinician_activations(user): # S1.1.4
     # hasActivated(u, Spine-clinician(ra, org, spcty)), 
     # u = user
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Spine-clinician" and 
         subj == user
-    })
+    ]
 
 class Spine_admin(Role):
     def __init__(self):
@@ -107,11 +107,11 @@ def count_spine_admin_activations(user): # S1.2.4
     # hasActivated(u, Spine-admin()), 
     # u = user
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Spine-admin" and 
         subj == user
-    })
+    ]
 
 class Register_spine_admin(Role):
     def __init__(self, adm2):
@@ -151,11 +151,11 @@ def spine_admin_regs(adm): # S1.2.7
     # spine-admin-regs(count<x>, adm) <-
     # hasActivated(x, Register-spine-admin(adm))
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Register-spine-admin" and 
         role.adm == adm
-    })
+    ]
 
 class Patient(Role):
     def __init__(self):
@@ -192,11 +192,11 @@ def count_patient_activations(user): # S1.3.4
     # hasActivated(u, Patient()), 
     # u = user
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Patient" and 
         subj == user
-    })
+    ]
 
 class Register_patient(Role):
     def __init__(self, pat):
@@ -266,11 +266,11 @@ def patient_regs(pat): # S1.3.7
     # patient-regs(count<x>, pat) <-
     # hasActivated(x, Register-patient(pat))
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Register-patient" and 
         role.pat == pat
-    })
+    ]
 
 class Agent(Role):
     def __init__(self, pat):
@@ -308,13 +308,13 @@ def other_agent_regs(x, ag, pat): # S1.4.4
     # hasActivated(y, Register-agent(ag, pat)), 
     # x != y
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Register-agent" and 
         role.ag == ag and 
         role.pat == pat and 
         x != subj
-    })
+    ]
 
 def count_agent_activations(user): # S1.4.5
     #
@@ -322,11 +322,11 @@ def count_agent_activations(user): # S1.4.5
     # hasActivated(u, Agent(pat)), 
     # u = user
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Agent" and 
         subj == user
-    })
+    ]
 
 class Register_agent(Role):
     def __init__(self, agent, pat):
@@ -399,12 +399,12 @@ def agent_regs(pat): # S1.4.14
     # agent-regs(count<x>, pat) <-
     # hasActivated(pat, Register-agent(x, pat))
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Register-agent" and 
         role.pat == pat and 
         subj == role.pat
-    })
+    ]
 
 class Registration_authority(Role):
     def __init__(self):
@@ -638,12 +638,12 @@ def other_third_party_consent_requests(y, z): # S2.2.9
     # hasActivated(x, Request-third-party-consent(z, pat, id)), 
     # x != y
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Request-third-party-consent" and 
         role.z == z and 
         subj != y
-    })
+    ]
 
 class Third_party(Role):
     def __init__(self):
@@ -680,11 +680,11 @@ def count_third_party_activations(user): # S2.2.13
     # hasActivated(u, Third-party()), 
     # u = user
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Third-party" and 
         subj == user
-    })
+    ]
 
 class Third_party_consent(Role):
     def __init__(self, x, pat, id):
@@ -704,8 +704,8 @@ class Third_party_consent(Role):
             role1.name == "Third-party" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == x and 
-            role2.id == self.id and 
             role2.pat == self.pat and 
+            role2.id == self.id and 
             role2.x == x
         }
     
@@ -721,8 +721,8 @@ class Third_party_consent(Role):
             role1.name == "Spine-clinician" and 
             role2.name == "Request-third-party-consent" and 
             subj1 == cli and 
-            role2.id == self.id and 
             role2.pat == self.pat and 
+            role2.id == self.id and 
             role2.x == self.x and 
             canActivate(subj1, Treating_clinician(role2.pat, role1.org, role1.spcty))
         }
@@ -735,8 +735,8 @@ def third_party_consent(pat, id): # S2.2.17
     return {
         role.consenter for subj, role in hasActivated if 
         role.name == "Third-party-consent" and 
-        role.id == id and 
-        role.pat == pat
+        role.pat == pat and 
+        role.id == id
     }
 
 class Request_consent_to_treatment(Role):
@@ -781,8 +781,8 @@ class Request_consent_to_treatment(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Spine-clinician" and 
-            role.org2 == self.org2 and 
             role.spcty2 == self.spcty2 and 
+            role.org2 == self.org2 and 
             subj == cli2
         }
     
@@ -832,15 +832,15 @@ def other_consent_to_treatment_requests(x, pat, org, cli, spcty): # S2.3.8
     # hasActivated(y, Request-consent-to-treatment(pat, org, cli, spcty)), 
     # x != y
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Request-consent-to-treatment" and 
-        role.cli == cli and 
         role.pat == pat and 
-        role.org == org and 
+        role.cli == cli and 
         role.spcty == spcty and 
+        role.org == org and 
         x != subj
-    })
+    ]
 
 class Consent_to_treatment(Role):
     def __init__(self, pat, org, cli, spcty):
@@ -860,10 +860,10 @@ class Consent_to_treatment(Role):
             role1.name == "Patient" and 
             role2.name == "Request-consent-to-treatment" and 
             subj1 == pat and 
-            role2.cli == self.cli and 
             role2.pat == pat and 
-            role2.org == self.org and 
-            role2.spcty == self.spcty
+            role2.cli == self.cli and 
+            role2.spcty == self.spcty and 
+            role2.org == self.org
         }
     
     def canActivate_2(self, ag): # S2.3.10
@@ -878,10 +878,10 @@ class Consent_to_treatment(Role):
             role2.name == "Request-consent-to-treatment" and 
             subj1 == ag and 
             role1.pat == self.pat and 
-            role2.cli == self.cli and 
             role2.pat == self.pat and 
-            role2.org == self.org and 
-            role2.spcty == self.spcty
+            role2.cli == self.cli and 
+            role2.spcty == self.spcty and 
+            role2.org == self.org
         }
     
     def canActivate_3(self, cli1): # S2.3.11
@@ -898,8 +898,8 @@ class Consent_to_treatment(Role):
             subj1 == cli1 and 
             role1.spcty == self.spcty and 
             role1.org == self.org and 
-            role2.spcty == self.spcty and 
             role2.pat == self.pat and 
+            role2.spcty == self.spcty and 
             role2.org == self.org and 
             canActivate(subj1, Treating_clinician(role2.pat, role2.org, role2.spcty))
         }
@@ -999,14 +999,14 @@ def other_consent_to_group_treatment_requests(x, pat, org, group): # S2.4.8
     # hasActivated(y, Request-consent-to-group-treatment(pat, org, group)), 
     # x != y
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Request-consent-to-group-treatment" and 
         role.pat == pat and 
         role.group == group and 
         role.org == org and 
         x != subj
-    })
+    ]
 
 class Consent_to_group_treatment(Role):
     def __init__(self, pat, org, group):
@@ -1026,8 +1026,8 @@ class Consent_to_group_treatment(Role):
             role1.name == "Patient" and 
             role2.name == "Request-consent-to-group-treatment" and 
             subj1 == pat and 
-            role2.group == self.group and 
             role2.pat == pat and 
+            role2.group == self.group and 
             role2.org == self.org
         }
     
@@ -1148,10 +1148,10 @@ class Treating_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Consent-to-treatment" and 
-            role.spcty == self.spcty and 
             role.pat == self.pat and 
-            role.org == self.org and 
-            role.cli == cli
+            role.cli == cli and 
+            role.spcty == self.spcty and 
+            role.org == self.org
         }
     
     def canActivate_2(self, cli): # S3.3.2
@@ -1178,10 +1178,10 @@ class Treating_clinician(Role):
         return {
             True for subj, role in hasActivated if 
             role.name == "Referrer" and 
-            role.spcty == self.spcty and 
             role.pat == self.pat and 
-            role.org == self.org and 
             role.cli == cli and 
+            role.spcty == self.spcty and 
+            role.org == self.org and 
             canActivate(role.cli, Spine_clinician(Wildcard(), role.org, role.spcty))
         }
     
@@ -1322,13 +1322,13 @@ def count_concealed_by_spine_clinician(pat, id): # S4.1.6
     # id in ids, 
     # Current-time() in [start, end]
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Concealed-by-spine-clinician" and 
         role.pat == pat and 
         id in role.ids and 
         Current_time() in vrange(role.start, role.end)
-    })
+    ]
 
 class Conceal_request(Role):
     def __init__(self, what, who, start, end):
@@ -1347,7 +1347,7 @@ class Conceal_request(Role):
         # n < 100
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: [2] unable to bind vars {'from_time', 'to_time', 'subjects', 'authors', 'ids', 'orgs'} in constraint compare_seq(self.what, (subj, ids, orgs, authors, subjects, from_time, to_time))
+        # Reason: [2] unable to bind vars {'authors', 'ids', 'subjects', 'from_time', 'orgs', 'to_time'} in constraint compare_seq(self.what, (subj, ids, orgs, authors, subjects, from_time, to_time))
         #
         # !!! USING HAND TRANSLATION INSTEAD !!!
         #
@@ -1370,7 +1370,7 @@ class Conceal_request(Role):
         # n < 100
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: [3] unable to bind vars {'from_time', 'to_time', 'subjects', 'authors', 'ids', 'orgs'} in constraint compare_seq(self.what, (role.pat, ids, orgs, authors, subjects, from_time, to_time))
+        # Reason: [3] unable to bind vars {'authors', 'ids', 'subjects', 'from_time', 'orgs', 'to_time'} in constraint compare_seq(self.what, (role.pat, ids, orgs, authors, subjects, from_time, to_time))
         #
         # !!! USING HAND TRANSLATION INSTEAD !!!
         #
@@ -1444,7 +1444,7 @@ def count_conceal_requests(pat): # S4.2.7
     # y = (what,who,start,end)
     #
     # << AUTOMATIC TRANSLATION FAILURE >>
-    # Reason: [5] unable to bind vars {'from_time', 'to_time', 'subjects', 'authors', 'ids', 'orgs', 'what'} in constraint compare_seq(what, (pat, ids, orgs, authors, subjects, from_time, to_time))
+    # Reason: [5] unable to bind vars {'authors', 'ids', 'what', 'subjects', 'from_time', 'orgs', 'to_time'} in constraint compare_seq(what, (pat, ids, orgs, authors, subjects, from_time, to_time))
     #
     # !!! USING HAND TRANSLATION INSTEAD !!!
     #
@@ -1473,8 +1473,8 @@ class Concealed_by_spine_patient(Role):
             subj1 == cli and 
             role2.end == self.end and 
             role2.what == self.what and 
-            role2.start == self.start and 
             role2.who == self.who and 
+            role2.start == self.start and 
             canActivate(subj1, Treating_clinician(Wildcard(), role1.org, role1.spcty))
         }
     
@@ -1530,7 +1530,7 @@ def count_concealed_by_spine_patient(a, b): # S4.2.12
     # "non-clinical" notin Get-spine-record-subjects(pat, id)
     #
     # << AUTOMATIC TRANSLATION FAILURE >>
-    # Reason: [6] unable to bind vars {'id', 'pat'} in constraint compare_seq(a, (pat, id))
+    # Reason: [6] unable to bind vars {'pat', 'id'} in constraint compare_seq(a, (pat, id))
     #
     # !!! USING HAND TRANSLATION INSTEAD !!!
     #
@@ -1646,11 +1646,11 @@ def count_authenticated_express_consent(pat): # S4.3.8
     # count-authenticated-express-consent(count<cli>, pat) <-
     # hasActivated(x, Authenticated-express-consent(pat, cli))
     #
-    return len({
+    return len([
         True for subj, role in hasActivated if 
         role.name == "Authenticated-express-consent" and 
         role.pat == pat
-    })
+    ]
 
 class Add_spine_record_item(Role): # Action
     def __init__(self, pat):
@@ -1779,7 +1779,7 @@ class Read_spine_record_item(Role): # Action
         # Get-spine-record-third-parties(pat, id) subseteq consenters
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: [7] unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
+        # Reason: [7] unbound vars {'b', 'a'} in count-concealed-by-spine-patient(n, a, b)
         #
         # !!! USING HAND TRANSLATION INSTEAD !!!
         #
@@ -1810,7 +1810,7 @@ class Read_spine_record_item(Role): # Action
         # Get-spine-record-third-parties(pat, id) subseteq consenters
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: [8] unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
+        # Reason: [8] unbound vars {'b', 'a'} in count-concealed-by-spine-patient(n, a, b)
         #
         # !!! USING HAND TRANSLATION INSTEAD !!!
         #
@@ -1856,7 +1856,7 @@ class Read_spine_record_item(Role): # Action
         # Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
         #
         # << AUTOMATIC TRANSLATION FAILURE >>
-        # Reason: [9] unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
+        # Reason: [9] unbound vars {'b', 'a'} in count-concealed-by-spine-patient(n, a, b)
         #
         # !!! USING HAND TRANSLATION INSTEAD !!!
         #

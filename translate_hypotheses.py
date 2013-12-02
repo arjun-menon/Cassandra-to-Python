@@ -213,7 +213,16 @@ class HypothesesTranslator(object):
             
             loc = loc_trans( repr(hasAc.location) ) +'.' if hasAc.location else ''
             
-            return "return %s{\n    $group_key for subj, role in %shasActivated if \n    " % (wrapper[0], loc), "\n}" + wrapper[1]
+            #tr = "return %s{\n    $group_key for subj, role in %shasActivated if \n    " % (wrapper[0], loc)
+            #ending = "\n}" + wrapper[1]
+            
+            tr = "return " + wrapper[0] 
+            tr += '[' if wrapper[0] == "len(" else '{'
+            tr += "\n    $group_key for subj, role in %shasActivated if \n    " % loc
+            ending = "\n"
+            ending += ']' if wrapper[0] == "len(" else '}' + wrapper[1]
+            
+            return tr, ending
             
         elif len(hasAcs) == 2:
             h1, h2 = hasAcs
@@ -318,7 +327,7 @@ class HypothesesTranslator(object):
         rule_repr_without_name = repr(self.rule.concl)+ ' <-\n' + ', \n'.join([repr(i) for i in self.rule.hypos])
         rule_comment = "#\n" + "".join( "# %s\n" % l for l in rule_repr_without_name.split('\n') ) + "#\n"
         
-        hypo_trans = "return {}" # failsafe translation
+        hypo_trans = "return {}" # untranslated hyptheses return this
         
         try:
             ctrs, canAcs, hasAcs, funcs = separate(self.rule.hypos, 
