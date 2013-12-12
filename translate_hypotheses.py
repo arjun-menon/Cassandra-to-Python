@@ -213,9 +213,6 @@ class HypothesesTranslator(object):
             
             loc = loc_trans( repr(hasAc.location) ) +'.' if hasAc.location else ''
             
-            #tr = "return %s{\n    $group_key for subj, role in %shasActivated if \n    " % (wrapper[0], loc)
-            #ending = "\n}" + wrapper[1]
-            
             tr = "return " + wrapper[0] 
             tr += '[' if wrapper[0] == "len(" else '{'
             tr += "\n    $group_key for subj, role in %shasActivated if \n    " % loc
