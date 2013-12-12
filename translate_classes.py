@@ -114,7 +114,7 @@ class canReqCreds(object):
     
     def translate(self):
         #tr = "def canReqCred(subject, issuer, "
-        tr  = ""
+        tr  = "\n"
         
         tr += "# Credential Request Restrictions\n"
         tr += "# ===============================\n"
@@ -126,18 +126,26 @@ class canReqCreds(object):
         # canAcs
         tr += "\n# Restrictions on canActivate\n"
         tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
-        for key, value in self.canAcs.items():
-            tr += "# For the Role '" + key + "'\n"
-            for rule in value:
-                tr += prefix_lines(repr(rule) + "\n", '# ') + "\n"
+        for role_name, rules in self.canAcs.items():
+            tr += "# For the Role '" + role_name + "'\n"
+            for rule in rules:
+                role_params = [str(rp) for rp in rule.concl.args[1].args[1].args]
+                
+                tr += prefix_lines(repr(rule) + "\n", '# ')
+#                 tr += "def canReqCred_%s_canActivate(" % role_name
+#                 tr += ", ".join(role_params)
+#                 tr += "):\n"
+#                 tr += "    pass"
+                tr += "\n"
         
         # hasAcs
         tr += "\n# Restrictions on hasActivate\n"
         tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
-        for key, value in self.hasAcs.items():
-            tr += "# <<< For the Role '%s' >>>\n\n" % key
-            for rule in value:
-                tr += prefix_lines(repr(rule) + "\n", '# ') + "\n"
+        for role_name, rules in self.hasAcs.items():
+            tr += "# <<< For the Role '%s' >>>\n\n" % role_name
+            for rule in rules:
+                tr += prefix_lines(repr(rule) + "\n", '# ')
+                tr += "\n"
         
         return tr
 
