@@ -1,5 +1,5 @@
 from auxiliary import *
-import ehr.pds, ehr.spine, ehr.hospital
+import ehr.spine, ehr.hospital, ehr.pds
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -354,6 +354,28 @@ class Workgroup_member(Role):
 # Restrictions on hasActivate
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# <<< For the Role 'NHS-registration-authority' >>>
+
+# (R1.2.1)
+# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
+# ra = "RA-ADB"
+
+# <<< For the Role 'NHS-clinician-cert' >>>
+
+# (R2.1.4)
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+# hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
+# e = org, 
+# Current-time() in [start2, end2]
+
+# (R2.1.5)
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+# canActivate(e, NHS-service())
+
+# (R2.1.6)
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+# e = cli
+
 # <<< For the Role 'NHS-Caldicott-guardian-cert' >>>
 
 # (R2.2.4)
@@ -403,26 +425,4 @@ class Workgroup_member(Role):
 # (R2.3.9)
 # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
 # canActivate(e, NHS-service())
-
-# <<< For the Role 'NHS-registration-authority' >>>
-
-# (R1.2.1)
-# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
-# ra = "RA-ADB"
-
-# <<< For the Role 'NHS-clinician-cert' >>>
-
-# (R2.1.4)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-# hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
-# e = org, 
-# Current-time() in [start2, end2]
-
-# (R2.1.5)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-# canActivate(e, NHS-service())
-
-# (R2.1.6)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-# e = cli
 
