@@ -1,4 +1,11 @@
-from translator import *
+
+import pickle, itertools
+from ast_nodes import *
+from translate_rules import SpecialPredicates
+
+rules_collections = None
+with open("ehr/parse_tree.pickle", "rb") as f:
+    rules_collections = pickle.load(f)
 
 rules = rules_collections[0][1] + rules_collections[1][1] + rules_collections[2][1] + rules_collections[3][1]
 
@@ -50,7 +57,7 @@ def count_rule_kinds():
     list(map(c, SpecialPredicates.list_all()))
     print("funcs: " + str(len([r for r in rules if r.concl.name not in SpecialPredicates.list_all()])) + '\n')
     
-#count_rule_kinds()
+count_rule_kinds()
 
 def print_func_rules():
     for i in (r for r in rules if r.concl.name not in SpecialPredicates.list_all()):
