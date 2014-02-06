@@ -217,7 +217,7 @@ class HypothesesTranslator(object):
             tr += '[' if wrapper[0] == "len(" else '{'
             tr += "\n    $group_key for subj, role in %shasActivated if \n    " % loc
             ending = "\n"
-            ending += ']' if wrapper[0] == "len(" else '}' + wrapper[1]
+            ending += '])' if wrapper[0] == "len(" else '}' + wrapper[1]
             
             return tr, ending
             

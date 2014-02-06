@@ -1,5 +1,5 @@
 from auxiliary import *
-import ehr.ra, ehr.spine, ehr.hospital
+import ehr.hospital, ehr.ra, ehr.spine
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
@@ -41,7 +41,7 @@ def count_PDS_manager_activations(user): # P1.1.4
         True for subj, role in hasActivated if 
         role.name == "PDS-manager" and 
         subj == user
-    ]
+    ])
 
 class Register_PDS_manager(Role):
     def __init__(self, adm2):
@@ -85,7 +85,7 @@ def pds_admin_regs(adm): # P1.1.7
         True for subj, role in hasActivated if 
         role.name == "Register-PDS-manager" and 
         role.adm == adm
-    ]
+    ])
 
 class Patient(Role):
     def __init__(self):
@@ -123,7 +123,7 @@ def count_patient_activations(user): # P1.2.4
         True for subj, role in hasActivated if 
         role.name == "Patient" and 
         subj == user
-    ]
+    ])
 
 class Agent(Role):
     def __init__(self, pat):
@@ -163,7 +163,7 @@ def count_agent_activations(user): # P1.3.5
         True for subj, role in hasActivated if 
         role.name == "Agent" and 
         subj == user
-    ]
+    ])
 
 class Professional_user(Role):
     def __init__(self, ra, org):
@@ -263,7 +263,7 @@ def count_professional_user_activations(user): # P1.4.6
         True for subj, role in hasActivated if 
         role.name == "Professional-user" and 
         subj == user
-    ]
+    ])
 
 def no_main_role_active(user): # P1.5.1
     return  count_agent_activations(user) == 0 and \
@@ -352,7 +352,7 @@ def patient_regs(pat): # P2.1.3
         True for subj, role in hasActivated if 
         role.name == "Register-patient" and 
         role.pat == pat
-    ]
+    ])
 
 # Credential Request Restrictions
 # ===============================
@@ -365,9 +365,10 @@ def patient_regs(pat): # P2.1.3
 # Restrictions on canActivate
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# <<< No canActivate rules in this module. >>>
 
-# Restrictions on hasActivate
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Restrictions on hasActivated
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # <<< For the Role 'Register-patient' >>>
 
