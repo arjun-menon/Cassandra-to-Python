@@ -1,5 +1,5 @@
 from auxiliary import *
-import ehr.spine, ehr.ra, ehr.hospital
+import ehr.hospital, ehr.spine, ehr.ra
 
 hasActivated = list()  # Set of (subject, role) pairs representing currently active roles.
 
