@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 # Copyright (C) 2011-2012 Arjun G. Menon
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -14,7 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from translate_module import *
+from . L1_ModuleTranslator import *
 import pickle
 
 ehr_path = "ehr/"
@@ -24,7 +22,11 @@ parse_by_default = False
 
 def parse():
     from datetime import datetime
-    from grammar import parse_ehr_file
+    from grammar import parse_ehr
+
+    def parse_ehr_file(file_name):
+        with open(file_name) as f:
+            return parse_ehr( f.read() )
     
     print("Parsing... ", end='')
     start_time = datetime.now()
@@ -48,18 +50,3 @@ def translate_all():
         with open(ehr_path + file_name, 'w') as f:
             f.write(translation)
         print("Done. Wrote to %s\n\n" % file_name)
-
-def main():
-    import argparse
-    argparser = argparse.ArgumentParser(description="Translate Cassandra rules to Python.")
-    argparser.add_argument( '-p', '--parse', default=False, action='store_true', help='Parse & pickle rules. (Do this only once.)' )
-    argparser.add_argument( '-P', '--noparse', default=False, action='store_true', help='Do not parse rules. (Use previously pickled AST.)' )
-    args = argparser.parse_args()
-
-    if (parse_by_default or args.parse) and (not args.noparse):
-        parse()
-
-    translate_all()
-
-if __name__ == "__main__":
-    main()

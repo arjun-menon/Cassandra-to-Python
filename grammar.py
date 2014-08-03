@@ -1,5 +1,6 @@
-import tpg
 from ast_nodes import *
+
+import tpg
 
 class EhrParser(tpg.Parser):
     r"""
@@ -85,7 +86,3 @@ class EhrParser(tpg.Parser):
 
 def parse_ehr(code):
     return EhrParser()(code)
-
-def parse_ehr_file(file_name):
-    with open(file_name) as f:
-        return parse_ehr( f.read() )

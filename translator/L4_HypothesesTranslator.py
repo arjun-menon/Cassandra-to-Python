@@ -14,10 +14,10 @@
 
 """Generates Python snippets for Datalog-with-constraints hypotheses.
 
-Hypothese are the latter part of horn clauses (ie. after the ->).
+Hypotheses form the latter part of horn clauses (ie. after the ->).
 They are the "conditions" that have to be satisfied for a horn clause to be true.
 
-Hypotheses make up bulk of the translation work.
+Hypotheses constitute the bulk of the translation work.
 """
 
 from auxiliary import *

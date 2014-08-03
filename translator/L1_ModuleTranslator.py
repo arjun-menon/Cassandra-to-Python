@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from translate_classes import *
+from . L2_ClassTranslator import *
 
 def generate_outline(rules):
     """
