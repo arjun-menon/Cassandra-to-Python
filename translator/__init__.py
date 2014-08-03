@@ -12,36 +12,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from . parser import parse
 from . L1_ModuleTranslator import *
-import pickle
 
-ehr_path = "ehr/"
-module_names = ['spine', 'pds', 'hospital', 'ra']
-
-parse_by_default = False
-
-def parse():
-    from datetime import datetime
-    from grammar import parse_ehr
-
-    def parse_ehr_file(file_name):
-        with open(file_name) as f:
-            return parse_ehr( f.read() )
-    
-    print("Parsing... ", end='')
-    start_time = datetime.now()
-
-    # Parse & pickle the EHRs' ASTs:
-    ehr_ast = [ ( rule_set, parse_ehr_file(ehr_path+"%s.txt" % rule_set) ) for rule_set in module_names ]
-    with open(ehr_path+"parse_tree.pickle", "wb") as f:
-        pickle.dump(ehr_ast, f)
-
-    end_time = datetime.now()
-    print("Done. (took %.2f seconds)\n" % (end_time - start_time).total_seconds())
-
-def translate_all():
-    with open(ehr_path+"parse_tree.pickle", "rb") as f:
-        ehr_ast = pickle.load(f)
+def translate_all(ehr_path, module_names, force_parse=False):
+    ehr_ast = parse(ehr_path, module_names, force_parse)
 
     for (module_name, ast) in ehr_ast:
         translation = translate_module(ast, module_names, module_name)
