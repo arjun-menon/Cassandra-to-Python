@@ -20,6 +20,8 @@ import pickle
 ehr_path = "ehr/"
 module_names = ['spine', 'pds', 'hospital', 'ra']
 
+parse_by_default = False
+
 def parse():
     from datetime import datetime
     from grammar import parse_ehr_file
@@ -35,7 +37,7 @@ def parse():
     end_time = datetime.now()
     print("Done. (took %.2f seconds)\n" % (end_time - start_time).total_seconds())
 
-def translate():
+def translate_all():
     with open(ehr_path+"parse_tree.pickle", "rb") as f:
         ehr_ast = pickle.load(f)
 
@@ -47,15 +49,17 @@ def translate():
             f.write(translation)
         print("Done. Wrote to %s\n\n" % file_name)
 
-if __name__ == "__main__":
+def main():
     import argparse
     argparser = argparse.ArgumentParser(description="Translate Cassandra rules to Python.")
     argparser.add_argument( '-p', '--parse', default=False, action='store_true', help='Parse & pickle rules. (Do this only once.)' )
     argparser.add_argument( '-P', '--noparse', default=False, action='store_true', help='Do not parse rules. (Use previously pickled AST.)' )
     args = argparser.parse_args()
 
-    parse_by_default = False  # default parse mode
     if (parse_by_default or args.parse) and (not args.noparse):
         parse()
 
-    translate()
+    translate_all()
+
+if __name__ == "__main__":
+    main()
