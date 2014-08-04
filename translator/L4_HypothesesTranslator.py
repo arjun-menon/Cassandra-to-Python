@@ -295,7 +295,7 @@ class HypothesesTranslator(object):
                 conditionals.append( ctr_cond_func() )
             else:
                 raise self.stopTranslating("unable to bind vars %s in constraint %s" 
-                                           % (remaining_ctr_vars, ctr_cond_func()))
+                                        % ( sorted(remaining_ctr_vars), ctr_cond_func() ))
     
     def handle_other_functions(self, conditionals, funcs):
         for f in funcs:

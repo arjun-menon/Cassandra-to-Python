@@ -1834,7 +1834,7 @@ class Concealed_by_patient(Role):
         # n < 100
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [11] unable to bind vars {'authors', 'from_time', 'groups', 'subjects', 'to_time', 'ids'} in constraint compare_seq(self.what, (subj, ids, authors, groups, subjects, from_time, to_time))
+        # Reason: [11] unable to bind vars ['authors', 'from_time', 'groups', 'ids', 'subjects', 'to_time'] in constraint compare_seq(self.what, (subj, ids, authors, groups, subjects, from_time, to_time))
         #
         return {
                 True for subj, role in hasActivated if 
@@ -1855,7 +1855,7 @@ class Concealed_by_patient(Role):
         # n < 100
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [12] unable to bind vars {'authors', 'from_time', 'groups', 'subjects', 'to_time', 'ids'} in constraint compare_seq(self.what, (role.pat, ids, authors, groups, subjects, from_time, to_time))
+        # Reason: [12] unable to bind vars ['authors', 'from_time', 'groups', 'ids', 'subjects', 'to_time'] in constraint compare_seq(self.what, (role.pat, ids, authors, groups, subjects, from_time, to_time))
         #
         return {
                 True for subj, role in hasActivated if 
@@ -1915,7 +1915,7 @@ def count_concealed_by_patient(pat): # A4.2.7
     # y = (what,who,start,end)
     #
     # Using a hand translation, because this rule could not be translated automatically.
-    # Reason: [13] unable to bind vars {'what', 'authors', 'from_time', 'groups', 'subjects', 'to_time', 'ids'} in constraint compare_seq(what, (pat, ids, authors, groups, subjects, from_time, to_time))
+    # Reason: [13] unable to bind vars ['authors', 'from_time', 'groups', 'ids', 'subjects', 'to_time', 'what'] in constraint compare_seq(what, (pat, ids, authors, groups, subjects, from_time, to_time))
     #
     return len({
             True for subj, role in hasActivated if 
@@ -1945,7 +1945,7 @@ def count_concealed_by_patient2(a, b): # A4.2.8
     # Current-time() in [start, end]
     #
     # Using a hand translation, because this rule could not be translated automatically.
-    # Reason: [14] unable to bind vars {'pat', 'id'} in constraint compare_seq(a, (pat, id))
+    # Reason: [14] unable to bind vars ['id', 'pat'] in constraint compare_seq(a, (pat, id))
     #
     return {
             True for subj, role in hasActivated if 

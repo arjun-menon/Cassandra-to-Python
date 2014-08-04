@@ -1205,7 +1205,7 @@ class General_practitioner(Role):
         # spcty = "GP"
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [1] unable to bind vars {'spcty'} in constraint spcty == "GP"
+        # Reason: [1] unable to bind vars ['spcty'] in constraint spcty == "GP"
         #
         return canActivate(cli, Registration_authority(self.org, Wildcard(), "GP"))
 
@@ -1345,7 +1345,7 @@ class Conceal_request(Role):
         # n < 100
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [2] unable to bind vars {'authors', 'from_time', 'orgs', 'subjects', 'to_time', 'ids'} in constraint compare_seq(self.what, (subj, ids, orgs, authors, subjects, from_time, to_time))
+        # Reason: [2] unable to bind vars ['authors', 'from_time', 'ids', 'orgs', 'subjects', 'to_time'] in constraint compare_seq(self.what, (subj, ids, orgs, authors, subjects, from_time, to_time))
         #
         return {
                 True for subj, role in hasActivated if 
@@ -1366,7 +1366,7 @@ class Conceal_request(Role):
         # n < 100
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [3] unable to bind vars {'authors', 'from_time', 'orgs', 'subjects', 'to_time', 'ids'} in constraint compare_seq(self.what, (role.pat, ids, orgs, authors, subjects, from_time, to_time))
+        # Reason: [3] unable to bind vars ['authors', 'from_time', 'ids', 'orgs', 'subjects', 'to_time'] in constraint compare_seq(self.what, (role.pat, ids, orgs, authors, subjects, from_time, to_time))
         #
         return {
                 True for subj, role in hasActivated if 
@@ -1414,7 +1414,7 @@ class Conceal_request(Role):
         # pi7_1(what) = pat
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [4] unable to bind vars {'pat'} in constraint pi7_1(self.what) == pat
+        # Reason: [4] unable to bind vars ['pat'] in constraint pi7_1(self.what) == pat
         #
         return {
                 True for subj, role in hasActivated if 
@@ -1436,7 +1436,7 @@ def count_conceal_requests(pat): # S4.2.7
     # y = (what,who,start,end)
     #
     # Using a hand translation, because this rule could not be translated automatically.
-    # Reason: [5] unable to bind vars {'what', 'authors', 'from_time', 'orgs', 'subjects', 'to_time', 'ids'} in constraint compare_seq(what, (pat, ids, orgs, authors, subjects, from_time, to_time))
+    # Reason: [5] unable to bind vars ['authors', 'from_time', 'ids', 'orgs', 'subjects', 'to_time', 'what'] in constraint compare_seq(what, (pat, ids, orgs, authors, subjects, from_time, to_time))
     #
     return len({
             True for subj, role in hasActivated if 
@@ -1520,7 +1520,7 @@ def count_concealed_by_spine_patient(a, b): # S4.2.12
     # "non-clinical" notin Get-spine-record-subjects(pat, id)
     #
     # Using a hand translation, because this rule could not be translated automatically.
-    # Reason: [6] unable to bind vars {'pat', 'id'} in constraint compare_seq(a, (pat, id))
+    # Reason: [6] unable to bind vars ['id', 'pat'] in constraint compare_seq(a, (pat, id))
     #
     return len({
             True for subj, role in hasActivated if 
