@@ -19,12 +19,10 @@ Some rules are difficult to translate automatically. Or rather, significant
 additional work would be necessary before the translator is capable of 
 translating such rules. As we probably will not be using this translator
 for anything besides Becker's NHS EHR specification in Cassandra, we have 
-opted to hand translate these rules.
-
-The dictionary below contains hand translations for all non-automatically 
-translated rules. The translator first checks whether there is a hand 
-translation available, before translating any rule. If there is, it 
-outputs the translation provided here, in this dictionary.
+opted to hand translate these rules. When the translator encounters a type 
+of rules that it cannot translate automatically (i.e. one that throws the 
+L4_HypothesesTranslator.StopTranslating exception), it retrieves a hand 
+translation, if available, from the dictionary below.
 """
 
 hand_translations = {
