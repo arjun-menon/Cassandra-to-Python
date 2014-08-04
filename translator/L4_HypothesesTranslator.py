@@ -358,7 +358,7 @@ class HypothesesTranslator(object):
             
             # add conditionals to 'tr':
             if len(conditionals):
-                tr += " and \n    ".join(conditionals)
+                tr += " and \n    ".join( sorted(conditionals) )
             
             hypo_trans = tr + ending
         

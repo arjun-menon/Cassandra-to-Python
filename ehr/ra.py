@@ -18,9 +18,9 @@ class Register_RA_manager(Role):
         #
         return {
             True for subj, role in hasActivated if 
+            RA_manager_regs(self.mgr2) == 0 and 
             role.name == "RA-manager" and 
-            subj == mgr and 
-            RA_manager_regs(self.mgr2) == 0
+            subj == mgr
         }
     
     def canDeactivate(self, mgr, x): # R1.1.2
@@ -45,8 +45,8 @@ def RA_manager_regs(mgr): # R1.1.3
     #
     return len([
         True for subj, role in hasActivated if 
-        role.name == "Register-RA-manager" and 
-        role.mgr == mgr
+        role.mgr == mgr and 
+        role.name == "Register-RA-manager"
     ])
 
 class RA_manager(Role):
@@ -60,8 +60,8 @@ class RA_manager(Role):
         #
         return {
             True for subj, role in hasActivated if 
-            role.name == "Register-RA-manager" and 
-            role.mgr == mgr
+            role.mgr == mgr and 
+            role.name == "Register-RA-manager"
         }
     
     def canDeactivate(self, mgr, mgr_): # R1.1.5
@@ -113,9 +113,9 @@ class Registration_authority(Role):
         #
         return {
             True for subj, role in hasActivated if 
+            Current_time() in vrange(role.start, role.end) and 
             role.name == "NHS-registration-authority" and 
-            role.ra == ra and 
-            Current_time() in vrange(role.start, role.end)
+            role.ra == ra
         }
     
     def canActivate_2(self, ra): # R1.2.5
@@ -126,9 +126,9 @@ class Registration_authority(Role):
         #
         return {
             True for subj, role in ehr.ra.hasActivated if 
+            Current_time() in vrange(role.start, role.end) and 
             role.name == "NHS-registration-authority" and 
-            role.ra == ra and 
-            Current_time() in vrange(role.start, role.end)
+            role.ra == ra
         }
 
 class NHS_clinician_cert(Role):
@@ -148,11 +148,11 @@ class NHS_clinician_cert(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "RA-manager" and 
             role2.name == "NHS-health-org-cert" and 
-            subj1 == mgr and 
             role2.org == self.org and 
-            self.start in vrange(role2.start2, role2.end2) and 
             self.end in vrange(role2.start2, role2.end2) and 
-            self.start < self.end
+            self.start < self.end and 
+            self.start in vrange(role2.start2, role2.end2) and 
+            subj1 == mgr
         }
     
     def canDeactivate(self, mgr, x): # R2.1.2
@@ -183,11 +183,11 @@ class NHS_Caldicott_guardian_cert(Role):
             True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
             role1.name == "RA-manager" and 
             role2.name == "NHS-health-org-cert" and 
-            subj1 == mgr and 
             role2.org == self.org and 
-            self.start in vrange(role2.start2, role2.end2) and 
             self.end in vrange(role2.start2, role2.end2) and 
-            self.start < self.end
+            self.start < self.end and 
+            self.start in vrange(role2.start2, role2.end2) and 
+            subj1 == mgr
         }
     
     def canDeactivate(self, mgr, x): # R2.2.2
@@ -245,11 +245,11 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3i
     #
     return len([
         True for subj, role in hasActivated if 
+        end in vrange(role.start2, role.end2) and 
         role.name == "NHS-health-org-cert" and 
         role.org == org and 
-        start in vrange(role.start2, role.end2) and 
-        end in vrange(role.start2, role.end2) and 
         start < end and 
+        start in vrange(role.start2, role.end2) and 
         x != subj
     ])
 
@@ -264,12 +264,12 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3ii
     #
     return len([
         True for subj, role in hasActivated if 
+        end in vrange(role.start2, role.end2) and 
         role.name == "NHS-health-org-cert" and 
         role.org == org and 
-        start in vrange(role.start2, role.end2) and 
-        end in vrange(role.start2, role.end2) and 
+        start != role.start2 and 
         start < end and 
-        start != role.start2
+        start in vrange(role.start2, role.end2)
     ])
 
 def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
@@ -283,12 +283,12 @@ def other_NHS_health_org_regs(x, org, start, end): # R2.3.3iii
     #
     return len([
         True for subj, role in hasActivated if 
+        end != role.end2 and 
+        end in vrange(role.start2, role.end2) and 
         role.name == "NHS-health-org-cert" and 
         role.org == org and 
-        start in vrange(role.start2, role.end2) and 
-        end in vrange(role.start2, role.end2) and 
         start < end and 
-        end != role.end2
+        start in vrange(role.start2, role.end2)
     ])
 
 class Workgroup_member(Role):
@@ -307,13 +307,13 @@ class Workgroup_member(Role):
         #
         return {
             True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.org.hasActivated if 
+            Current_time() in vrange(role1.start, role1.end) and 
             role1.name == "NHS-health-org-cert" and 
-            role2.name == "Register-team-member" and 
             role1.org == self.org and 
             role2.cli == cli and 
             role2.group == self.group and 
-            role2.spcty == self.spcty and 
-            Current_time() in vrange(role1.start, role1.end)
+            role2.name == "Register-team-member" and 
+            role2.spcty == self.spcty
         }
     
     def canActivate_2(self, cli): # R3.1.2
@@ -325,13 +325,13 @@ class Workgroup_member(Role):
         #
         return {
             True for (subj1, role1) in hasActivated for (subj2, role2) in ehr.org.hasActivated if 
+            Current_time() in vrange(role1.start, role1.end) and 
             role1.name == "NHS-health-org-cert" and 
-            role2.name == "Register-ward-member" and 
             role1.org == self.org and 
             role2.cli == cli and 
             role2.group == self.group and 
-            role2.spcty == self.spcty and 
-            Current_time() in vrange(role1.start, role1.end)
+            role2.name == "Register-ward-member" and 
+            role2.spcty == self.spcty
         }
 
 # Credential Request Restrictions
@@ -354,22 +354,6 @@ class Workgroup_member(Role):
 # Restrictions on hasActivated
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# <<< For the Role 'NHS-clinician-cert' >>>
-
-# (R2.1.4)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-# hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
-# e = org, 
-# Current-time() in [start2, end2]
-
-# (R2.1.5)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-# canActivate(e, NHS-service())
-
-# (R2.1.6)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-# e = cli
-
 # <<< For the Role 'NHS-Caldicott-guardian-cert' >>>
 
 # (R2.2.4)
@@ -385,12 +369,6 @@ class Workgroup_member(Role):
 # (R2.2.6)
 # canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
 # canActivate(e, NHS-service())
-
-# <<< For the Role 'NHS-registration-authority' >>>
-
-# (R1.2.1)
-# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
-# ra = "RA-ADB"
 
 # <<< For the Role 'NHS-health-org-cert' >>>
 
@@ -425,4 +403,26 @@ class Workgroup_member(Role):
 # (R2.3.9)
 # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
 # canActivate(e, NHS-service())
+
+# <<< For the Role 'NHS-clinician-cert' >>>
+
+# (R2.1.4)
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+# hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
+# e = org, 
+# Current-time() in [start2, end2]
+
+# (R2.1.5)
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+# canActivate(e, NHS-service())
+
+# (R2.1.6)
+# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+# e = cli
+
+# <<< For the Role 'NHS-registration-authority' >>>
+
+# (R1.2.1)
+# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
+# ra = "RA-ADB"
 
