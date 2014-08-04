@@ -2106,7 +2106,7 @@ class Read_record_item(Role): # Action
         # Get-record-third-parties(pat, id) subseteq consenters
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [15] unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
+        # Reason: [15] unbound vars ['a', 'b'] in count-concealed-by-patient2(n, a, b)
         #
         return {
                 True for subj, role in hasActivated if 
@@ -2159,7 +2159,7 @@ class Read_record_item(Role): # Action
         # Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [16] unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
+        # Reason: [16] unbound vars ['a', 'b'] in count-concealed-by-patient2(n, a, b)
         #
         return {
                 True for subj, role in hasActivated if 
@@ -2182,7 +2182,7 @@ class Read_record_item(Role): # Action
         # Get-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [17] unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
+        # Reason: [17] unbound vars ['a', 'b'] in count-concealed-by-patient2(n, a, b)
         #
         return {
                 True for subj, role in hasActivated if 
@@ -2207,7 +2207,7 @@ class Read_record_item(Role): # Action
         # Get-record-third-parties(pat, id) subseteq consenters
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [18] unbound vars {'a', 'b'} in count-concealed-by-patient2(n, a, b)
+        # Reason: [18] unbound vars ['a', 'b'] in count-concealed-by-patient2(n, a, b)
         #
         return {
                 True for subj, role in hasActivated if 

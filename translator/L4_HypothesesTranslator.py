@@ -277,7 +277,7 @@ class HypothesesTranslator(object):
                 if countf_wildcard:
                     self.external_vars.update( { v : "Wildcard()" for v in unbound_vars } )
                 else:
-                    raise self.stopTranslating("unbound vars %r in %r" % (unbound_vars, f))
+                    raise self.stopTranslating("unbound vars %r in %r" % (sorted(unbound_vars), f))
             
             # create a mapping from the return value of f to its code
             self.external_vars.update( { f_return : code_gen() } )

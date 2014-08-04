@@ -1767,7 +1767,7 @@ class Read_spine_record_item(Role): # Action
         # Get-spine-record-third-parties(pat, id) subseteq consenters
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [7] unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
+        # Reason: [7] unbound vars ['a', 'b'] in count-concealed-by-spine-patient(n, a, b)
         #
         return {
                 True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if
@@ -1796,7 +1796,7 @@ class Read_spine_record_item(Role): # Action
         # Get-spine-record-third-parties(pat, id) subseteq consenters
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [8] unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
+        # Reason: [8] unbound vars ['a', 'b'] in count-concealed-by-spine-patient(n, a, b)
         #
         return {
                 True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
@@ -1840,7 +1840,7 @@ class Read_spine_record_item(Role): # Action
         # Get-spine-record-subjects(pat, id) subseteq Permitted-subjects(spcty)
         #
         # Using a hand translation, because this rule could not be translated automatically.
-        # Reason: [9] unbound vars {'a', 'b'} in count-concealed-by-spine-patient(n, a, b)
+        # Reason: [9] unbound vars ['a', 'b'] in count-concealed-by-spine-patient(n, a, b)
         #
         return {
                 True for (subj1, role1) in hasActivated for (subj2, role2) in hasActivated if 
