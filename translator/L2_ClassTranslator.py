@@ -126,7 +126,7 @@ class canReqCreds(object):
         # canAcs
         tr += "\n# Restrictions on canActivate\n"
         tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
-        for role_name, rules in self.canAcs.items():
+        for role_name, rules in sorted(self.canAcs.items()):
             tr += "# For the Role '" + role_name + "'\n"
             for rule in rules:
                 role_params = [str(rp) for rp in rule.concl.args[1].args[1].args]
@@ -144,7 +144,7 @@ class canReqCreds(object):
         # hasAcs
         tr += "\n# Restrictions on hasActivated\n"
         tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
-        for role_name, rules in self.hasAcs.items():
+        for role_name, rules in sorted(self.hasAcs.items()):
             tr += "# <<< For the Role '%s' >>>\n\n" % role_name
             for rule in rules:
                 tr += prefix_lines(repr(rule) + "\n", '# ')

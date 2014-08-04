@@ -370,12 +370,6 @@ class Workgroup_member(Role):
 # canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
 # canActivate(e, NHS-service())
 
-# <<< For the Role 'NHS-registration-authority' >>>
-
-# (R1.2.1)
-# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
-# ra = "RA-ADB"
-
 # <<< For the Role 'NHS-clinician-cert' >>>
 
 # (R2.1.4)
@@ -425,4 +419,10 @@ class Workgroup_member(Role):
 # (R2.3.9)
 # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
 # canActivate(e, NHS-service())
+
+# <<< For the Role 'NHS-registration-authority' >>>
+
+# (R1.2.1)
+# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
+# ra = "RA-ADB"
 
