@@ -363,16 +363,13 @@ class HypothesesTranslator(object):
             hypo_trans = tr + ending
         
         except StopTranslating as st:
-            rule_comment += "# << AUTOMATIC TRANSLATION FAILURE >>\n# Reason: %s\n#\n" % st.reason
-            
             if self.rule.name in hand_translations:
-                rule_comment += "# !!! USING HAND TRANSLATION INSTEAD !!!\n#\n"
+                rule_comment += "# Using a hand translation, because this rule could not be translated automatically.\n# Reason: %s\n#\n" % st.reason
                 hypo_trans = hand_translations[self.rule.name]
-                #print("Using hand translation for rule", self.rule.name, "[case %d]" % HypothesesTranslator.stop_count)
             else:
-                rule_comment += "# !!! PLEASE PROVIDE HAND TRANSLATION !!!\n#\n"
+                rule_comment += "# Unable to translate this rule automatically.\n# Reason: %s\n#\n" % st.reason
+                rule_comment += "# Please provide a hand translation! (TODO/FIXME)\n#\n"
                 print("Please provide a hand translation for: %s\n" % self.rule.name)
                 print("Reason:", st.reason, "\n\n", self.rule, "\n")
-                print("---------------------------------------------------------------------------\n")
         
         return rule_comment + hypo_trans

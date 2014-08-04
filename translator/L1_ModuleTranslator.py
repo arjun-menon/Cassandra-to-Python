@@ -112,7 +112,7 @@ def translate_module(rules, rule_sets, rule_set):
     outline, list_of_roles = generate_outline(rules)
     
     other_rule_sets = set(rule_sets) - set([rule_set])
-    other_imports = "import " + ", ".join('ehr.'+rs for rs in other_rule_sets) + '\n'
+    other_imports = "import " + ", ".join('ehr.'+rs for rs in sorted(other_rule_sets)) + '\n'
 
     translation  = "from auxiliary import *\n"
     translation += other_imports
