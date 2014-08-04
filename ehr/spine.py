@@ -1908,7 +1908,8 @@ class Force_read_spine_record_item(Role): # Action
 # Restrictions on canActivate
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# For the Role 'Agent'
+# <<< For the Role 'Agent' >>>
+
 # (S1.4.6)
 # canReqCred(ag, "Spine".canActivate(ag, Agent(pat))) <-
 # hasActivated(ag, Agent(pat))
@@ -1925,8 +1926,5 @@ class Force_read_spine_record_item(Role): # Action
 # canActivate(ra, Registration-authority()), 
 # Current-time() in [start, end]
 
+# <<< No restrictions on hasActivated rules in this module. >>>
 
-# Restrictions on hasActivated
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# <<< No hasActivated rules in this module. >>>

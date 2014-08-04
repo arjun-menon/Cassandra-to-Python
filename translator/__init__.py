@@ -24,4 +24,4 @@ def translate_all(ehr_path, module_names, force_parse=False):
         file_name = "%s.py" % module_name
         with open(ehr_path + file_name, 'w') as f:
             f.write(translation)
-        print("Done. Wrote to %s\n\n" % file_name)
+        print("Done. Written to '%s'.\n" % file_name)

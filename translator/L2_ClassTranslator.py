@@ -121,38 +121,41 @@ class canReqCreds(object):
         tr += "# These rules determine if certain predicates can be \n"
         tr += "# invoked, such as canActivate or hasActivated.\n\n"
         tr += "# They restrict who can invoke such predicates.\n"
-        tr += "# These rules have not been translated.\n"
+        tr += "# These rules have not been translated.\n\n"
         
         # canAcs
-        tr += "\n# Restrictions on canActivate\n"
-        tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
-        for role_name, rules in sorted(self.canAcs.items()):
-            tr += "# For the Role '" + role_name + "'\n"
-            for rule in rules:
-                role_params = [str(rp) for rp in rule.concl.args[1].args[1].args]
-                
-                tr += prefix_lines(repr(rule) + "\n", '# ')
-#                 tr += "def canReqCred_%s_canActivate(" % role_name
-#                 tr += ", ".join(role_params)
-#                 tr += "):\n"
-#                 tr += "    pass"
-                tr += "\n"
-            
+        if self.canAcs:
+            tr += "# Restrictions on canActivate\n"
+            tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
+            for role_name, rules in sorted(self.canAcs.items()):
+                #tr += "# For the Role '" + role_name + "'\n"
+                tr += "# <<< For the Role '%s' >>>\n\n" % role_name
+                for rule in rules:
+                    role_params = [str(rp) for rp in rule.concl.args[1].args[1].args]
+                    
+                    tr += prefix_lines(repr(rule) + "\n", '# ')
+    #                 tr += "def canReqCred_%s_canActivate(" % role_name
+    #                 tr += ", ".join(role_params)
+    #                 tr += "):\n"
+    #                 tr += "    pass"
+                    tr += "\n"
+
         if not self.canAcs:
-            tr += "# <<< No canActivate rules in this module. >>>\n"
-        
+            tr += "# <<< No restrictions on canActivate rules in this module. >>>\n\n"
+
         # hasAcs
-        tr += "\n# Restrictions on hasActivated\n"
-        tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
-        for role_name, rules in sorted(self.hasAcs.items()):
-            tr += "# <<< For the Role '%s' >>>\n\n" % role_name
-            for rule in rules:
-                tr += prefix_lines(repr(rule) + "\n", '# ')
-                tr += "\n"
-            
+        if self.hasAcs:
+            tr += "# Restrictions on hasActivated\n"
+            tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
+            for role_name, rules in sorted(self.hasAcs.items()):
+                tr += "# <<< For the Role '%s' >>>\n\n" % role_name
+                for rule in rules:
+                    tr += prefix_lines(repr(rule) + "\n", '# ')
+                    tr += "\n"
+
         if not self.hasAcs:
-            tr += "# <<< No hasActivated rules in this module. >>>\n"
-        
+            tr += "# <<< No restrictions on hasActivated rules in this module. >>>\n\n"
+
         return tr
 
 class ActionClass(object):

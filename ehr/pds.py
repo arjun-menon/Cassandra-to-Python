@@ -362,10 +362,7 @@ def patient_regs(pat): # P2.1.3
 # They restrict who can invoke such predicates.
 # These rules have not been translated.
 
-# Restrictions on canActivate
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# <<< No canActivate rules in this module. >>>
+# <<< No restrictions on canActivate rules in this module. >>>
 
 # Restrictions on hasActivated
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

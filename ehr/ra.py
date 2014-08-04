@@ -345,11 +345,11 @@ class Workgroup_member(Role):
 # Restrictions on canActivate
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# For the Role 'Workgroup-member'
+# <<< For the Role 'Workgroup-member' >>>
+
 # (R3.1.3)
 # canReqCred(spine, "RA-ADB".canActivate(cli, Workgroup-member(org, group, spcty))) <-
 # spine = "Spine"
-
 
 # Restrictions on hasActivated
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
