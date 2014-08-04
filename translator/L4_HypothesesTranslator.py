@@ -22,7 +22,8 @@ Hypotheses constitute the bulk of the translation work.
 
 from auxiliary import *
 from ast_nodes import *
-from hand_translations import hand_translations
+from . hand_translations import hand_translations
+
 from string import Template
 
 class StopTranslating(Exception):

@@ -15,15 +15,16 @@
 """
 Hand Translations of Selected Rules
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Some rules are difficult to translate automatically. Or rather, 
-the translator would have to be seriously augmented to be capable 
-of translating such rules. It is not worth investing such effort 
-into this translator, as we probably will not be using this translator
-for anything besides Becker's NHS EHR specification in Cassandra.
+Some rules are difficult to translate automatically. Or rather, significant 
+additional work would be necessary before the translator is capable of 
+translating such rules. As we probably will not be using this translator
+for anything besides Becker's NHS EHR specification in Cassandra, we have 
+opted to hand translate these rules.
 
-As such, the translations for those specific rules are provided for here.
-Whenever a rule has a hand-translation, the translator will simply output 
-it, instead of trying to automatically translate the rule itself.
+The dictionary below contains hand translations for all non-automatically 
+translated rules. The translator first checks whether there is a hand 
+translation available, before translating any rule. If there is, it 
+outputs the translation provided here, in this dictionary.
 """
 
 hand_translations = {
