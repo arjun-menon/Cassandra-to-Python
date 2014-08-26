@@ -163,14 +163,13 @@ The `ehr` directory contains both the input Datalog rules as well as the corresp
 To translate all four modules, execute `translate.py`. When any of the original EHR rules changed, it is necessary to re-parse them in order for the translation to reflect the change.
 
 The `translate.py` script takes a few command-line arguments that control whether the original EHR should re-parsed or not. The `-h` option can be used to view them:
-        usage: translate.py [-h] [-p] [-P]
+        usage: translate.py [-h] [-p]
 
         Translate Cassandra rules to Python.
 
         optional arguments:
-          -h, --help     show this help message and exit
-          -p, --parse    Parse & pickle rules. (Do this only once.)
-          -P, --noparse  Do not parse rules. (Use previously pickled AST.)
+          -h, --help   show this help message and exit
+          -p, --parse  Forcibly reparse the EHR.
 
 ### Caveats
 
