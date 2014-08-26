@@ -131,19 +131,30 @@ A few test cases that put the translated rules into action can be found in `driv
 
 ### Translation Pathway
 
-Prior to translation, the EHR needs to be parsed, and an Abstract Systax Tree (AST) must be constructed out of it. The classes representing nodes in this AST reside in `ast_nodes.py`. (These classes are widely used.) The TPG parser generator grammar & parser is in `ehrparse.py`. Much of the actual translator however resides in the Python modules starting with `translate*`.
+Prior to translation, the EHR needs to be parsed, and an Abstract Systax Tree (AST) must be constructed out of it. The classes representing nodes in this AST reside in `ast_nodes.py`. (These classes are widely used.) The TPG parser generator grammar is in `grammar.py`. Much of the actual translator however resides in the Python package `translator`.
 
-The order of depth in which these modules are invoked is shown below:
+The order of depth in which these modules are invoked inside the `translator` package is evident from their naming: `L1_ModuleTranslator.py` **→** `L2_ClassTranslator.py` **→** `L3_RuleTranslator.py` **→** `L4_HypothesesTranslator.py`. The `translate_all` function inside `translator`'s '__init__.py` performs a full translation of all the EHR modules. `translate.py` provides a light-weight command-line interface to the `translator` package's `translate_all` function.
 
-`translate.py` **→** `translate_module.py` **→** `translate_classes.py` **→** `translate_rules.py` **→** `translate_hypotheses.py`
+The purpose of each module in the 'translator' package is briefly described below:
 
-The function of each module is described below:
+  * `parser.py` – If necessary, this module invokes the parser (in `grammar.py`) and pickles the ASTs of each EHR module. 
+If the EHR specification changes in the future, it checks the last modified date, and updates the pickle.
 
-* `translate.py` – This file provides the command-line interface for using the translator. If necessary, it first invokes the parser (in `ehrparse.py`) and pickles the ASTs of each EHR module. It then calls the function `translate_module` of `translate_module.py` on the AST of each module. This function then returns the Python translation for that EHR module. The _Python code_ is then written to `.py` files named after the modules in the `ehr/` folder.
+  * `__init__.py` – The `translate_all` function invokes the parser using the above module, and then calls the function `translate_module` of `L1_ModuleTranslator.py` on the AST of each module. This function then writes the Python translation for that EHR module to `.py` files named after the modules, in the `ehr/` folder.
 
-* `translate_module.py` – The module is responsible for translating each EHR module to its corresponding `.py` Python module. The `translate_module` function, contained in this module, takes the AST of an EHR module, and passes it onto a function called `generate_outline`. `generate_outline` then analyzes the AST (representing the rules in the EHR module) for object-oriented patterns and constructs *translation objects* pertaining to each type of pattern (e.g. Role, Action, etc.). It stores within each of these object the rules of the EHR pertaining to that object. The actual translation of these objects is handled in the other `translate_` modules which implement the classes for each of these patterns.
+  * `L1_ModuleTranslator.py` – The module is responsible for translating each EHR module to its corresponding `.py` Python module. The `translate_module` function, contained in this module, takes the AST of an EHR module, and passes it onto a function called `generate_outline`. `generate_outline` then analyzes the AST (representing the rules in the EHR module) for object-oriented patterns and constructs *translation objects* pertaining to each type of pattern (e.g. Role, Action, etc.). It stores within each of these object the rules of the EHR pertaining to that object. The actual translation of these objects is handled in the other deeper modules which implement the classes for each of these patterns.
 
-    The translation objects are expected to provide a method called **translate** (implemented elsewhere) which returns the Python translation of the rules stored in that translation object. In case this method is unavailable, the original Cassandra code pertaining to that object is returned commented Python-style with #s. The `translate_module`, first calls `generate_outline`, then invokes the `translate` method of all of the translation objects returned by `generate_outline` and combines the returned *Python code fragments* into code for a cohesive Python module. These modules are then written to `.py` files by the `translate` function in `translate.py`.
+    The translation objects are expected to provide a method called **translate** (implemented elsewhere) which returns the Python translation of the rules stored in that translation object. In case this method is unavailable, the original Cassandra code pertaining to that object is returned commented Python-style with #s. The `translate_module`, first calls `generate_outline`, then invokes the `translate` method of all of the translation objects returned by `generate_outline` and combines the returned *Python code fragments* into code for a cohesive Python module.
+
+  * `L2_ClassTranslator.py` – This module handles the translation of different *classes of rules*. The most common class of rules are "*Role*" rules. A Role class handles the translation of *canActivate*, *canDeactivate*, and *isDeactivated* rules. In the previous module `L1_ModuleTranslator`, all of the rules pertaining to one particular role were collated together and placed in these *Role* classes. Translating a single *Role*, generates a Python class with all of its associated rules as methods within that class. Two other *classes of rules* handled here are *action rules* and *canReqCred* rules.
+
+  * `L3_RuleTranslator.py` – This module handles translation of individual rules themselves. Several classes that specialize in the translation of different kinds of rules are defined in this module.
+
+  * `L4_HypothesesTranslator.py` – This is where the bulk of the translation work takes place. Hypothese are quite delicate and difficult to translate, and this module can, for the most part, translate the hypotheses' of most of the rules in the NHS EHR.
+
+  * `hand_translations.py` – The hypotheses of certain rules cannot be automatically translated by `L4_HypothesesTranslator.py`. Hand translations are provided for those rules in this module. When `L4_HypothesesTranslator` encounters a rule that it is not able to translate, it throws an exception. The exception handler checks if a 
+  hand translation is provided in this module, and if one has been provided, uses it as the hypotheses translation. If 
+  none has been provided, a TODO is placed in the generated code asking the user to provide a hand translation.
 
 Usage
 -----
