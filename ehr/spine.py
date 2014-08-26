@@ -1906,7 +1906,7 @@ class Force_read_spine_record_item(Role): # Action
 
 # <<< For the Role 'Agent' >>>
 
-def canReqCred_canActivate_Agent_1(self, ag): # S1.4.6
+def canReqCred_canActivate_Agent_1(ag): # S1.4.6
     #
     # canReqCred(ag, "Spine".canActivate(ag, Agent(pat))) <-
     # hasActivated(ag, Agent(pat))
@@ -1917,7 +1917,7 @@ def canReqCred_canActivate_Agent_1(self, ag): # S1.4.6
         subj == ag
     }
 
-def canReqCred_canActivate_Agent_2(self, org): # S1.4.7
+def canReqCred_canActivate_Agent_2(org): # S1.4.7
     #
     # canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
     # ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
@@ -1932,7 +1932,7 @@ def canReqCred_canActivate_Agent_2(self, org): # S1.4.7
         role.org == org
     }
 
-def canReqCred_canActivate_Agent_3(self, org): # S1.4.8
+def canReqCred_canActivate_Agent_3(org): # S1.4.8
     #
     # canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
     # org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 

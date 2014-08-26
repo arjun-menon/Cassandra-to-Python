@@ -365,33 +365,81 @@ def patient_regs(pat): # P2.1.3
 
 # <<< For the Role 'Register-patient' >>>
 
-# (P2.2.1)
-# canReqCred(pat, "PDS".hasActivated(x, Register-patient(pat))) <-
-# hasActivated(pat, Patient())
+def canReqCred_canActivate_Register_patient_1(pat, pat): # P2.2.1
+    #
+    # canReqCred(pat, "PDS".hasActivated(x, Register-patient(pat))) <-
+    # hasActivated(pat, Patient())
+    #
+    return {
+        True for subj, role in hasActivated if 
+        role.name == "Patient" and 
+        subj == pat
+    }
 
-# (P2.2.2)
-# canReqCred(ag, "PDS".hasActivated(x, Register-patient(pat))) <-
-# hasActivated(ag, Agent(pat))
+def canReqCred_canActivate_Register_patient_2(ag, pat): # P2.2.2
+    #
+    # canReqCred(ag, "PDS".hasActivated(x, Register-patient(pat))) <-
+    # hasActivated(ag, Agent(pat))
+    #
+    return {
+        True for subj, role in hasActivated if 
+        role.name == "Agent" and 
+        role.pat == pat and 
+        subj == ag
+    }
 
-# (P2.2.3)
-# canReqCred(usr, "PDS".hasActivated(x, Register-patient(pat))) <-
-# hasActivated(usr, Professional-user(ra, org))
+def canReqCred_canActivate_Register_patient_3(usr, pat): # P2.2.3
+    #
+    # canReqCred(usr, "PDS".hasActivated(x, Register-patient(pat))) <-
+    # hasActivated(usr, Professional-user(ra, org))
+    #
+    return {
+        True for subj, role in hasActivated if 
+        role.name == "Professional-user" and 
+        subj == usr
+    }
 
-# (P2.2.4)
-# canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
-# ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
-# canActivate(ra, Registration-authority())
+def canReqCred_canActivate_Register_patient_4(org, pat): # P2.2.4
+    #
+    # canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
+    # ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
+    # canActivate(ra, Registration-authority())
+    #
+    return {
+        True for subj, role in hasActivated if 
+        canActivate(Wildcard(), Registration_authority()) and 
+        role.name == "NHS-health-org-cert" and 
+        role.org == org
+    }
 
-# (P2.2.5)
-# canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
-# org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
-# canActivate(ra, Registration-authority())
+def canReqCred_canActivate_Register_patient_5(org, pat): # P2.2.5
+    #
+    # canReqCred(org, "PDS".hasActivated(x, Register-patient(pat))) <-
+    # org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
+    # canActivate(ra, Registration-authority())
+    #
+    return {
+        True for subj, role in ehr.org.hasActivated if 
+        canActivate(Wildcard(), Registration_authority()) and 
+        role.name == "NHS-health-org-cert" and 
+        role.org == org
+    }
 
-# (P2.2.5)
-# canReqCred(ra, "PDS".hasActivated(x, Register-patient(pat))) <-
-# canActivate(ra, Registration-authority())
+def canReqCred_canActivate_Register_patient_6(ra, pat): # P2.2.5
+    #
+    # canReqCred(ra, "PDS".hasActivated(x, Register-patient(pat))) <-
+    # canActivate(ra, Registration-authority())
+    #
+    return (
+        canActivate(ra, Registration_authority())
+    )
 
-# (P2.2.5)
-# canReqCred(spine, "PDS".hasActivated(x, Register-patient(pat))) <-
-# spine = "Spine"
+def canReqCred_canActivate_Register_patient_7(spine, pat): # P2.2.5
+    #
+    # canReqCred(spine, "PDS".hasActivated(x, Register-patient(pat))) <-
+    # spine = "Spine"
+    #
+    return (
+        spine == "Spine"
+    )
 

@@ -343,7 +343,7 @@ class Workgroup_member(Role):
 
 # <<< For the Role 'Workgroup-member' >>>
 
-def canReqCred_canActivate_Workgroup-member_1(self, spine): # R3.1.3
+def canReqCred_canActivate_Workgroup-member_1(spine): # R3.1.3
     #
     # canReqCred(spine, "RA-ADB".canActivate(cli, Workgroup-member(org, group, spcty))) <-
     # spine = "Spine"
@@ -357,73 +357,160 @@ def canReqCred_canActivate_Workgroup-member_1(self, spine): # R3.1.3
 
 # <<< For the Role 'NHS-Caldicott-guardian-cert' >>>
 
-# (R2.2.4)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
-# e = cg
+def canReqCred_canActivate_NHS_Caldicott_guardian_cert_1(e, org, cg, start, end): # R2.2.4
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
+    # e = cg
+    #
+    return (
+        e == cg
+    )
 
-# (R2.2.5)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
-# hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
-# e = org, 
-# Current-time() in [start2, end2]
+def canReqCred_canActivate_NHS_Caldicott_guardian_cert_2(e, org, cg, start, end): # R2.2.5
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
+    # hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
+    # e = org, 
+    # Current-time() in [start2, end2]
+    #
+    return {
+        True for subj, role in hasActivated if 
+        Current_time() in vrange(role.start2, role.end2) and 
+        e == role.org and 
+        role.name == "NHS-health-org-cert" and 
+        role.org == org
+    }
 
-# (R2.2.6)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
-# canActivate(e, NHS-service())
+def canReqCred_canActivate_NHS_Caldicott_guardian_cert_3(e, org, cg, start, end): # R2.2.6
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-Caldicott-guardian-cert(org, cg, start, end))) <-
+    # canActivate(e, NHS-service())
+    #
+    return (
+        canActivate(e, NHS_service())
+    )
 
 # <<< For the Role 'NHS-clinician-cert' >>>
 
-# (R2.1.4)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-# hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
-# e = org, 
-# Current-time() in [start2, end2]
+def canReqCred_canActivate_NHS_clinician_cert_1(e, org, cli, spcty, start, end): # R2.1.4
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+    # hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
+    # e = org, 
+    # Current-time() in [start2, end2]
+    #
+    return {
+        True for subj, role in hasActivated if 
+        Current_time() in vrange(role.start2, role.end2) and 
+        e == role.org and 
+        role.name == "NHS-health-org-cert" and 
+        role.org == org
+    }
 
-# (R2.1.5)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-# canActivate(e, NHS-service())
+def canReqCred_canActivate_NHS_clinician_cert_2(e, org, cli, spcty, start, end): # R2.1.5
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+    # canActivate(e, NHS-service())
+    #
+    return (
+        canActivate(e, NHS_service())
+    )
 
-# (R2.1.6)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
-# e = cli
+def canReqCred_canActivate_NHS_clinician_cert_3(e, org, cli, spcty, start, end): # R2.1.6
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-clinician-cert(org, cli, spcty, start, end))) <-
+    # e = cli
+    #
+    return (
+        e == cli
+    )
 
 # <<< For the Role 'NHS-health-org-cert' >>>
 
-# (R2.3.4)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
-# hasActivated(y, NHS-Caldicott-guardian-cert(org, cg, start2, end2)), 
-# Current-time() in [start2, end2], 
-# e = cg
+def canReqCred_canActivate_NHS_health_org_cert_1(e, org, start, end): # R2.3.4
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
+    # hasActivated(y, NHS-Caldicott-guardian-cert(org, cg, start2, end2)), 
+    # Current-time() in [start2, end2], 
+    # e = cg
+    #
+    return {
+        True for subj, role in hasActivated if 
+        Current_time() in vrange(role.start2, role.end2) and 
+        e == role.cg and 
+        role.name == "NHS-Caldicott-guardian-cert" and 
+        role.org == org
+    }
 
-# (R2.3.5)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
-# hasActivated(y, NHS-clinician-cert(org, cli, spcty, start2, end2)), 
-# Current-time() in [start2, end2], 
-# e = cli
+def canReqCred_canActivate_NHS_health_org_cert_2(e, org, start, end): # R2.3.5
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
+    # hasActivated(y, NHS-clinician-cert(org, cli, spcty, start2, end2)), 
+    # Current-time() in [start2, end2], 
+    # e = cli
+    #
+    return {
+        True for subj, role in hasActivated if 
+        Current_time() in vrange(role.start2, role.end2) and 
+        e == role.cli and 
+        role.name == "NHS-clinician-cert" and 
+        role.org == org
+    }
 
-# (R2.3.6)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
-# e = org
+def canReqCred_canActivate_NHS_health_org_cert_3(e, org, start, end): # R2.3.6
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
+    # e = org
+    #
+    return (
+        e == org
+    )
 
-# (R2.3.7)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org2, start, end))) <-
-# ra.hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
-# canActivate(ra, Registration-authority()), 
-# e = org
+def canReqCred_canActivate_NHS_health_org_cert_4(e, org2, start, end): # R2.3.7
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org2, start, end))) <-
+    # ra.hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
+    # canActivate(ra, Registration-authority()), 
+    # e = org
+    #
+    return {
+        True for subj, role in hasActivated if 
+        canActivate(Wildcard(), Registration_authority()) and 
+        e == role.org and 
+        role.name == "NHS-health-org-cert"
+    }
 
-# (R2.3.8)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org2, start, end))) <-
-# org@ra.hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
-# canActivate(ra, Registration-authority()), 
-# e = org
+def canReqCred_canActivate_NHS_health_org_cert_5(e, org2, start, end): # R2.3.8
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org2, start, end))) <-
+    # org@ra.hasActivated(y, NHS-health-org-cert(org, start2, end2)), 
+    # canActivate(ra, Registration-authority()), 
+    # e = org
+    #
+    return {
+        True for subj, role in ehr.org.hasActivated if 
+        canActivate(Wildcard(), Registration_authority()) and 
+        e == role.org and 
+        role.name == "NHS-health-org-cert"
+    }
 
-# (R2.3.9)
-# canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
-# canActivate(e, NHS-service())
+def canReqCred_canActivate_NHS_health_org_cert_6(e, org, start, end): # R2.3.9
+    #
+    # canReqCred(e, "RA-ADB".hasActivated(x, NHS-health-org-cert(org, start, end))) <-
+    # canActivate(e, NHS-service())
+    #
+    return (
+        canActivate(e, NHS_service())
+    )
 
 # <<< For the Role 'NHS-registration-authority' >>>
 
-# (R1.2.1)
-# canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
-# ra = "RA-ADB"
+def canReqCred_canActivate_NHS_registration_authority_1(x, ra, start, end): # R1.2.1
+    #
+    # canReqCred(x, "NHS".hasActivated(x, NHS-registration-authority(ra, start, end))) <-
+    # ra = "RA-ADB"
+    #
+    return (
+        ra == "RA_ADB"
+    )
 

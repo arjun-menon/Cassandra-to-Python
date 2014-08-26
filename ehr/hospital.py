@@ -2263,7 +2263,12 @@ class Force_read_record_item(Role): # Action
 
 # <<< For the Role 'NHS-health-org-cert' >>>
 
-# (A1.7.4)
-# canReqCred(x, "RA-ADB".hasActivated(y, NHS-health-org-cert(org, start, end))) <-
-# org = "ADB"
+def canReqCred_canActivate_NHS_health_org_cert_1(x, org, start, end): # A1.7.4
+    #
+    # canReqCred(x, "RA-ADB".hasActivated(y, NHS-health-org-cert(org, start, end))) <-
+    # org = "ADB"
+    #
+    return (
+        org == "ADB"
+    )
 
