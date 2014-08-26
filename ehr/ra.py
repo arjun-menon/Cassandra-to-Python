@@ -336,20 +336,21 @@ class Workgroup_member(Role):
 
 # Credential Request Restrictions
 # ===============================
-# These rules determine if certain predicates can be 
-# invoked, such as canActivate or hasActivated.
-
-# They restrict who can invoke such predicates.
-# These rules have not been translated.
+# These rules place restrictions on access to certain canActivate and hasActivated predicates.
 
 # Restrictions on canActivate
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # <<< For the Role 'Workgroup-member' >>>
 
-# (R3.1.3)
-# canReqCred(spine, "RA-ADB".canActivate(cli, Workgroup-member(org, group, spcty))) <-
-# spine = "Spine"
+def canReqCred_canActivate_Workgroup-member_1(self, spine): # R3.1.3
+    #
+    # canReqCred(spine, "RA-ADB".canActivate(cli, Workgroup-member(org, group, spcty))) <-
+    # spine = "Spine"
+    #
+    return (
+        spine == "Spine"
+    )
 
 # Restrictions on hasActivated
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

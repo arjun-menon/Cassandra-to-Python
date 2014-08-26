@@ -113,32 +113,22 @@ class canReqCreds(object):
         self.hasAcs = { name : [r for r in hasAcs if name==r.concl.args[1].args[1].name] for name in hasAcRoleNames }
     
     def translate(self):
-        #tr = "def canReqCred(subject, issuer, "
         tr  = "\n"
         
         tr += "# Credential Request Restrictions\n"
         tr += "# ===============================\n"
-        tr += "# These rules determine if certain predicates can be \n"
-        tr += "# invoked, such as canActivate or hasActivated.\n\n"
-        tr += "# They restrict who can invoke such predicates.\n"
-        tr += "# These rules have not been translated.\n\n"
-        
+        tr += "# These rules place restrictions on access to certain canActivate and hasActivated predicates.\n\n"
+
         # canAcs
         if self.canAcs:
             tr += "# Restrictions on canActivate\n"
             tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
             for role_name, rules in sorted(self.canAcs.items()):
                 #tr += "# For the Role '" + role_name + "'\n"
-                tr += "# <<< For the Role '%s' >>>\n\n" % role_name
-                for rule in rules:
-                    role_params = [str(rp) for rp in rule.concl.args[1].args[1].args]
-                    
-                    tr += prefix_lines(repr(rule) + "\n", '# ')
-    #                 tr += "def canReqCred_%s_canActivate(" % role_name
-    #                 tr += ", ".join(role_params)
-    #                 tr += "):\n"
-    #                 tr += "    pass"
-                    tr += "\n"
+                tr += "# <<< For the Role '%s' >>>\n" % role_name
+                for i, rule in enumerate(rules):
+                    tr += canReqCred_canActivate(rule, rule.concl.args[1].args[1].name, i+1).translate()
+                tr += "\n"
 
         if not self.canAcs:
             tr += "# <<< No restrictions on canActivate rules in this module. >>>\n\n"

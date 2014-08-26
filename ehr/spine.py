@@ -1899,32 +1899,53 @@ class Force_read_spine_record_item(Role): # Action
 
 # Credential Request Restrictions
 # ===============================
-# These rules determine if certain predicates can be 
-# invoked, such as canActivate or hasActivated.
-
-# They restrict who can invoke such predicates.
-# These rules have not been translated.
+# These rules place restrictions on access to certain canActivate and hasActivated predicates.
 
 # Restrictions on canActivate
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # <<< For the Role 'Agent' >>>
 
-# (S1.4.6)
-# canReqCred(ag, "Spine".canActivate(ag, Agent(pat))) <-
-# hasActivated(ag, Agent(pat))
+def canReqCred_canActivate_Agent_1(self, ag): # S1.4.6
+    #
+    # canReqCred(ag, "Spine".canActivate(ag, Agent(pat))) <-
+    # hasActivated(ag, Agent(pat))
+    #
+    return {
+        True for subj, role in hasActivated if 
+        role.name == "Agent" and 
+        subj == ag
+    }
 
-# (S1.4.7)
-# canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
-# ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
-# canActivate(ra, Registration-authority()), 
-# Current-time() in [start, end]
+def canReqCred_canActivate_Agent_2(self, org): # S1.4.7
+    #
+    # canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
+    # ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
+    # canActivate(ra, Registration-authority()), 
+    # Current-time() in [start, end]
+    #
+    return {
+        True for subj, role in hasActivated if 
+        Current_time() in vrange(role.start, role.end) and 
+        canActivate(Wildcard(), Registration_authority()) and 
+        role.name == "NHS-health-org-cert" and 
+        role.org == org
+    }
 
-# (S1.4.8)
-# canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
-# org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
-# canActivate(ra, Registration-authority()), 
-# Current-time() in [start, end]
+def canReqCred_canActivate_Agent_3(self, org): # S1.4.8
+    #
+    # canReqCred(org, "Spine".canActivate(ag, Agent(pat))) <-
+    # org@ra.hasActivated(x, NHS-health-org-cert(org, start, end)), 
+    # canActivate(ra, Registration-authority()), 
+    # Current-time() in [start, end]
+    #
+    return {
+        True for subj, role in ehr.org.hasActivated if 
+        Current_time() in vrange(role.start, role.end) and 
+        canActivate(Wildcard(), Registration_authority()) and 
+        role.name == "NHS-health-org-cert" and 
+        role.org == org
+    }
 
 # <<< No restrictions on hasActivated rules in this module. >>>
 

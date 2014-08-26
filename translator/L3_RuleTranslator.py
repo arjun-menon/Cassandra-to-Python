@@ -154,7 +154,6 @@ def {func_name}({func_args}): # {rule_name}
         
         return untranslated(self.rule)
 
-
 class PermitsRule(HypothesesTranslator):
     def __init__(self, rule):
         super().__init__(rule)
@@ -170,6 +169,26 @@ def permits{num}(self, {subject}): # {rule_name}
 {hypotheses_translation}""".format(
              rule_name = self.rule.name
             ,num = "" if number==0 else "_" + str(number)
+            ,subject = self.subject
+            ,hypotheses_translation = tab(self.translate_hypotheses())
+        )
+
+class canReqCred_canActivate(HypothesesTranslator):
+    def __init__(self, rule, the_role_name, n):
+        super().__init__(rule)
+        self.subject = str(self.rule.concl.args[0])
+        self.the_role_name = the_role_name
+        self.n = n
+
+    def translate(self):
+        self.external_vars = { self.subject : self.subject }
+
+        return """
+def canReqCred_canActivate_{the_role_name}_{n}(self, {subject}): # {rule_name}
+{hypotheses_translation}""".format(
+             the_role_name = self.the_role_name
+            ,n = self.n
+            ,rule_name = self.rule.name
             ,subject = self.subject
             ,hypotheses_translation = tab(self.translate_hypotheses())
         )

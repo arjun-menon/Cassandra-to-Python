@@ -2254,11 +2254,7 @@ class Force_read_record_item(Role): # Action
 
 # Credential Request Restrictions
 # ===============================
-# These rules determine if certain predicates can be 
-# invoked, such as canActivate or hasActivated.
-
-# They restrict who can invoke such predicates.
-# These rules have not been translated.
+# These rules place restrictions on access to certain canActivate and hasActivated predicates.
 
 # <<< No restrictions on canActivate rules in this module. >>>
 
