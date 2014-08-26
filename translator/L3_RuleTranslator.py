@@ -184,11 +184,34 @@ class canReqCred_canActivate(HypothesesTranslator):
         self.external_vars = { self.subject : self.subject }
 
         return """
-def canReqCred_canActivate_{the_role_name}_{n}(self, {subject}): # {rule_name}
+def canReqCred_canActivate_{the_role_name}_{n}({subject}): # {rule_name}
 {hypotheses_translation}""".format(
              the_role_name = self.the_role_name
             ,n = self.n
             ,rule_name = self.rule.name
             ,subject = self.subject
+            ,hypotheses_translation = tab(self.translate_hypotheses())
+        )
+
+class canReqCred_hasActivated(HypothesesTranslator):
+    def __init__(self, rule, the_role_name, n):
+        super().__init__(rule)
+        self.subject = str(self.rule.concl.args[0])
+        self.params = [str(p) for p in self.rule.concl.args[1].args[1].args]
+        self.the_role_name = the_role_name
+        self.n = n
+
+    def translate(self):
+        self.external_vars = { self.subject : self.subject }
+        self.external_vars.update( { p : p for p in self.params } )
+
+        return """
+def canReqCred_canActivate_{the_role_name}_{n}({subject}{params}): # {rule_name}
+{hypotheses_translation}""".format(
+             the_role_name = h2u(self.the_role_name)
+            ,n = self.n
+            ,rule_name = self.rule.name
+            ,subject = self.subject
+            ,params = (', ' if len(self.params) else '') + ', '.join(self.params)
             ,hypotheses_translation = tab(self.translate_hypotheses())
         )

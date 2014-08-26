@@ -138,10 +138,10 @@ class canReqCreds(object):
             tr += "# Restrictions on hasActivated\n"
             tr +=   "# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n"
             for role_name, rules in sorted(self.hasAcs.items()):
-                tr += "# <<< For the Role '%s' >>>\n\n" % role_name
-                for rule in rules:
-                    tr += prefix_lines(repr(rule) + "\n", '# ')
-                    tr += "\n"
+                tr += "# <<< For the Role '%s' >>>\n" % role_name
+                for i, rule in enumerate(rules):
+                    tr += canReqCred_hasActivated(rule, rule.concl.args[1].args[1].name, i+1).translate()
+                tr += "\n"
 
         if not self.hasAcs:
             tr += "# <<< No restrictions on hasActivated rules in this module. >>>\n\n"
