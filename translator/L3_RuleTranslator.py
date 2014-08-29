@@ -206,7 +206,7 @@ class canReqCred_hasActivated(HypothesesTranslator):
         self.external_vars.update( { p : p for p in self.params } )
 
         return """
-def canReqCred_canActivate_{the_role_name}_{n}({subject}{params}): # {rule_name}
+def canReqCred_hasActivated_{the_role_name}_{n}({subject}{params}): # {rule_name}
 {hypotheses_translation}""".format(
              the_role_name = h2u(self.the_role_name)
             ,n = self.n
